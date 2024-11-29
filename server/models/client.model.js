@@ -1,11 +1,11 @@
-import bcrypt from "bcrypt";
-import jwt from "jsonwebtoken";
-import mongoose from "mongoose";
+import bcrypt from 'bcrypt';
+import jwt from 'jsonwebtoken';
+import mongoose from 'mongoose';
 const saltRounds = 10;
 
 const policySchema = new mongoose.Schema({
     policy_id: {
-        type: mongoose.Schema.Types.ObjectId, ref: "Policy"
+        type: mongoose.Schema.Types.ObjectId, ref: 'Policy'
     },
     interested_in: {
         type: Boolean
@@ -142,8 +142,8 @@ const clientSchema = new mongoose.Schema({
     }
 }, { timestamps: true });
 
-clientSchema.pre("save", async function (next) {
-    if (!this.isModified("password")) return next();
+clientSchema.pre('save', async function (next) {
+    if (!this.isModified('password')) return next();
 
     this.password = await bcrypt.hash(this.password, saltRounds);
     next();
@@ -168,5 +168,6 @@ clientSchema.methods.generateRefreshToken = async function () {
         { expiresIn: process.env.REFRESH_TOKEN_EXPIRY }
     );
 }
-const Client = mongoose.model("Client", clientSchema);
+
+const Client = mongoose.model('Client', clientSchema);
 export default Client;

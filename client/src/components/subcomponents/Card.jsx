@@ -1,11 +1,7 @@
-import * as React from "react"
-
-const Card = ({ label, description, icon }) => {
+const Card = ({ label, description }) => {
     return (
-        <div>
-            <div className='text-center'>
-                <p>{label}</p>
-            </div>
+        <div className="p-4">
+            <p className="font-semibold text-center">{label}</p>
             <p className='text-sm text-gray-500 text-center'>{description}</p>
         </div>
     );

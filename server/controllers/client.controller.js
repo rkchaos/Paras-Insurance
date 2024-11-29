@@ -1,9 +1,9 @@
-import Client from "../models/client.model.js";
+import Client from '../models/client.model.js';
 
 const cookiesOptions = {
     httpOnly: true,
     secure: true,
-    sameSite: "None"
+    sameSite: 'None'
 };
 
 const condenseClientInfo = (client) => {
@@ -35,10 +35,10 @@ const register = async (req, res) => {
         const { firstName, lastName, email, phone, password } = req.body;
 
         const isClientEmailUnique = await Client.findOne({ 'personalDetails.contact.email': email });
-        if (isClientEmailUnique) return res.status(400).json({ message: "Email already registered. Login" });
+        if (isClientEmailUnique) return res.status(400).json({ message: 'Email already registered. Login' });
 
         const isClientPhoneUnique = await Client.findOne({ 'personalDetails.contact.phone': phone });
-        if (isClientPhoneUnique) return res.status(400).json({ message: "Phone already registered. Login" });
+        if (isClientPhoneUnique) return res.status(400).json({ message: 'Phone already registered. Login' });
 
         const newClient = await Client.create({
             user_type: 'Lead',
@@ -57,12 +57,12 @@ const register = async (req, res) => {
         const clientInfo = condenseClientInfo(newClient);
 
         res.status(200)
-            .cookie("accessToken", accessToken, cookiesOptions)
-            .cookie("refreshToken", refreshToken, cookiesOptions)
+            .cookie('accessToken', accessToken, cookiesOptions)
+            .cookie('refreshToken', refreshToken, cookiesOptions)
             .json(clientInfo);
     } catch (error) {
         console.log(error);
-        res.status(503).json({ message: "Network error. Try agin" });
+        res.status(503).json({ message: 'Network error. Try agin' });
     }
 }
 
@@ -71,23 +71,23 @@ const login = async (req, res) => {
         const { emailOrPhone, password } = req.body;
         const checkForEmail = await Client.findOne({ 'personalDetails.contact.email': emailOrPhone });
         const checkForPhone = await Client.findOne({ 'personalDetails.contact.phone': emailOrPhone });
-        if (!checkForEmail && !checkForPhone) return res.status(404).json({ message: "No such client found" });
+        if (!checkForEmail && !checkForPhone) return res.status(404).json({ message: 'No such client found' });
 
         let existingClient;
         if (checkForEmail) existingClient = checkForEmail;
         if (checkForPhone) existingClient = checkForPhone;
 
         const isPasswordCorrect = await existingClient.isPasswordCorrect(password);
-        if (!isPasswordCorrect) return res.status(400).json({ message: "Invalid credentials" });
+        if (!isPasswordCorrect) return res.status(400).json({ message: 'Invalid credentials' });
 
         const { accessToken, refreshToken } = await generateAccessAndRefreshTokens(existingClient);
         const clientInfo = condenseClientInfo(existingClient);
 
         res.status(200)
-            .cookie("accessToken", accessToken, cookiesOptions)
-            .cookie("refreshToken", refreshToken, cookiesOptions)
+            .cookie('accessToken', accessToken, cookiesOptions)
+            .cookie('refreshToken', refreshToken, cookiesOptions)
             .json(clientInfo);
-    } catch (error) { res.status(503).json({ message: "Network error. Try again" }) }
+    } catch (error) { res.status(503).json({ message: 'Network error. Try again' }) }
 }
 
 const logout = async (req, res) => {
@@ -99,10 +99,10 @@ const logout = async (req, res) => {
             }
         );
         res.status(200)
-            .clearCookie("accessToken", cookiesOptions)
-            .clearCookie("refreshToken", cookiesOptions)
-            .json({ message: "Successfully logged out" });
-    } catch (error) { res.status(503).json({ message: "Network error. Try again" }) }
+            .clearCookie('accessToken', cookiesOptions)
+            .clearCookie('refreshToken', cookiesOptions)
+            .json({ message: 'Successfully logged out' });
+    } catch (error) { res.status(503).json({ message: 'Network error. Try again' }) }
 }
 
 export {
