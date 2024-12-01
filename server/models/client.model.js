@@ -4,23 +4,23 @@ import mongoose from 'mongoose';
 const saltRounds = 10;
 
 const policySchema = new mongoose.Schema({
-    policy_id: {
+    policyId: {
         type: mongoose.Schema.Types.ObjectId, ref: 'Policy'
     },
-    interested_in: {
+    interestedIn: {
         type: Boolean
     }
 });
 
 const clientSchema = new mongoose.Schema({
-    user_type: {
+    userType: {
         type: String
     },
     password: {
         type: String
     },
-    refreshToken: { 
-        type: String 
+    refreshToken: {
+        type: String
     },
     personalDetails: {
         firstName: {
@@ -75,7 +75,7 @@ const clientSchema = new mongoose.Schema({
             }
         }
     },
-    financial_details: {
+    financialDetails: {
         pan_card: {
             type: String
         },
@@ -95,9 +95,10 @@ const clientSchema = new mongoose.Schema({
         }
     },
     KYC: {
-        type: Boolean
+        type: Boolean,
+        default: false
     },
-    employment_details: {
+    employmentDetails: {
         company_name: {
             type: String
         },
@@ -108,7 +109,7 @@ const clientSchema = new mongoose.Schema({
             type: Number
         }
     },
-    lead_details: {
+    leadDetails: {
         source: {
             type: String
         },
@@ -129,7 +130,7 @@ const clientSchema = new mongoose.Schema({
             default: []
         }
     },
-    interaction_history: {
+    interactionHistory: {
         type: mongoose.Schema.Types.Array,
         default: []
     },

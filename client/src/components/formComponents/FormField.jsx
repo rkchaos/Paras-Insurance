@@ -12,6 +12,8 @@ function FormField(props) {
         case 'text':
         case 'number':
             return <TextField {...props} />;
+        case 'email':
+            return <TextField {...props} />;
         case 'date':
             return <DateField {...props} />;
         case 'tel':

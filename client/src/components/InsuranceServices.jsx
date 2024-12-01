@@ -44,7 +44,7 @@ const InsuranceServices = () => {
                                 </div>
                                 <div>
                                     <h3 className="font-semibold mb-1">Comprehensive Coverage</h3>
-                                    <p className="text-sm text-gray-500">All-in-one protection for your peace of mind.</p>
+                                    <p className="text-sm text-gray-500">Comprehensive, all-in-one protection for your ultimate peace of mind.</p>
                                 </div>
                             </div>
                         </div>

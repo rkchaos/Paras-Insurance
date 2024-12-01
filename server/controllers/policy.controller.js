@@ -23,7 +23,6 @@ const fetchAllPolicies = async (req, res) => {
 
 const fetchAllPolicyFields = async (req, res) => {
     try {
-        console.log(req.query);
         const { policyId } = req.query;
         const policy = await Policy.findById(policyId);
         res.status(200).json(policy);

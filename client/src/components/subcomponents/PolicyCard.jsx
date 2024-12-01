@@ -1,4 +1,4 @@
-const Card = ({ label, description }) => {
+const PolicyCard = ({ label, description }) => {
     return (
         <div className="p-4">
             <p className="font-semibold text-center">{label}</p>
@@ -7,4 +7,4 @@ const Card = ({ label, description }) => {
     );
 }
 
-export default Card;
+export default PolicyCard;

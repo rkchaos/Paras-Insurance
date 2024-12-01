@@ -2,45 +2,45 @@ import { Link } from 'react-router-dom';
 
 const Footer = () => {
     return (
-        <footer className="bg-gray-900 text-white pt-12 pb-8 px-40">
+        <footer className="bg-gray-900 text-white pt-12 pb-8 px-4 md:px-40">
             <div className="container mx-auto">
-                <div className="grid grid-cols-1 md:grid-cols-4 gap-8">
+                <div className="grid grid-cols-2 sm:grid-cols-1 md:grid-cols-4 gap-4 sm:gap-8">
                     <div>
-                        <h5 className="font-bold text-xl mb-4">Paras Insurance</h5>
-                        <ul className="space-y-2">
-                            <li><Link to="/" className="hover:text-gray-400">Home</Link></li>
-                            <li><Link to="/" className="hover:text-gray-400">Insurance Products</Link></li>
-                            <li><Link to="/" className="hover:text-gray-400">Renew your policy</Link></li>
-                            <li><Link to="/" className="hover:text-gray-400">Claim</Link></li>
-                            <li><Link to="/" className="hover:text-gray-400">Support</Link></li>
+                        <h5 className="font-bold text-md sm:text-xl mb-4">Paras Insurance</h5>
+                        <ul className="sm:space-y-2">
+                            <li><Link to="/" className="text-xs sm:text-md hover:text-gray-400">Home</Link></li>
+                            <li><Link to="/" className="text-xs sm:text-md hover:text-gray-400">Insurance Products</Link></li>
+                            <li><Link to="/" className="text-xs sm:text-md hover:text-gray-400">Renew your policy</Link></li>
+                            <li><Link to="/" className="text-xs sm:text-md hover:text-gray-400">Claim</Link></li>
+                            <li><Link to="/" className="text-xs sm:text-md hover:text-gray-400">Support</Link></li>
                         </ul>
                     </div>
                     <div>
-                        <h5 className="font-bold text-xl mb-4">Guides</h5>
-                        <ul className="space-y-2">
-                            <li><Link to="/" className="hover:text-gray-400">Getting started</Link></li>
-                            <li><Link to="/" className="hover:text-gray-400">Onbording</Link></li>
-                            <li><Link to="/" className="hover:text-gray-400">Examples</Link></li>
+                        <h5 className="font-bold text-md sm:text-xl mb-4">Guides</h5>
+                        <ul className="sm:space-y-2">
+                            <li><Link to="/" className="text-xs sm:text-md hover:text-gray-400">Getting started</Link></li>
+                            <li><Link to="/" className="text-xs sm:text-md hover:text-gray-400">Onbording</Link></li>
+                            <li><Link to="/" className="text-xs sm:text-md hover:text-gray-400">Examples</Link></li>
                         </ul>
                     </div>
                     <div>
-                        <h5 className="font-bold text-xl mb-4">Companies</h5>
-                        <ul className="space-y-2">
-                            <li><Link to="/" className="hover:text-gray-400">TATA</Link></li>
-                            <li><Link to="/" className="hover:text-gray-400">HDFC</Link></li>
-                            <li><Link to="/" className="hover:text-gray-400">NIVA BUPA</Link></li>
-                            <li><Link to="/" className="hover:text-gray-400">ABHI</Link></li>
-                            <li><Link to="/" className="hover:text-gray-400">MAGMA HDI</Link></li>
-                            <li><Link to="/" className="hover:text-gray-400">ICICI</Link></li>
+                        <h5 className="font-bold text-md sm:text-xl mb-4">Companies</h5>
+                        <ul className="sm:space-y-2">
+                            <li><Link to="/" className="text-xs sm:text-md hover:text-gray-400">TATA</Link></li>
+                            <li><Link to="/" className="text-xs sm:text-md hover:text-gray-400">HDFC</Link></li>
+                            <li><Link to="/" className="text-xs sm:text-md hover:text-gray-400">NIVA BUPA</Link></li>
+                            <li><Link to="/" className="text-xs sm:text-md hover:text-gray-400">ABHI</Link></li>
+                            <li><Link to="/" className="text-xs sm:text-md hover:text-gray-400">MAGMA HDI</Link></li>
+                            <li><Link to="/" className="text-xs sm:text-md hover:text-gray-400">ICICI</Link></li>
                         </ul>
                     </div>
                     <div>
-                        <h5 className="font-bold text-xl mb-4">Community</h5>
-                        <ul className="space-y-2">
-                            <li><Link to="/" className="hover:text-gray-400">Issues</Link></li>
-                            <li><Link to="/" className="hover:text-gray-400">Discussions</Link></li>
-                            <li><Link to="/" className="hover:text-gray-400">Corporate sponsors</Link></li>
-                            <li><Link to="/" className="hover:text-gray-400">Open Collective</Link></li>
+                        <h5 className="font-bold text-md sm:text-xl mb-4">Community</h5>
+                        <ul className="sm:space-y-2">
+                            <li><Link to="/" className="text-xs sm:text-md hover:text-gray-400">Issues</Link></li>
+                            <li><Link to="/" className="text-xs sm:text-md hover:text-gray-400">Discussions</Link></li>
+                            <li><Link to="/" className="text-xs sm:text-md hover:text-gray-400">Corporate sponsors</Link></li>
+                            <li><Link to="/" className="text-xs sm:text-md hover:text-gray-400">Open Collective</Link></li>
                         </ul>
                     </div>
                 </div>

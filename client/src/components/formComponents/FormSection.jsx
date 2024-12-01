@@ -1,10 +1,10 @@
 import FormField from './FormField';
 
-function FormSection({ fields }) {
+function FormSection({ fields, data, handleFormDataChange }) {
     return (
         <div className='form-section space-y-2'>
             {fields.map((field, index) => (
-                <FormField key={`${field.id}-${index}`} {...field} />
+                <FormField key={`${field.id}-${index}`} {...field} data={data} handleFormDataChange={handleFormDataChange} />
             ))}
         </div>
     );

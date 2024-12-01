@@ -1,6 +1,7 @@
 import { Link } from 'react-router-dom';
-import { Activity, Car, Briefcase, Plane, Home, HeartPulse, Bike, Landmark, Baby, Building2 } from 'lucide-react';
-import Card from './subcomponents/Card';
+import { Activity, Car, Plane, HeartPulse } from 'lucide-react';
+// import { Activity, Car, Briefcase, Plane, Home, HeartPulse, Bike, Landmark, Baby, Building2 } from 'lucide-react';
+import PolicyCard from './subcomponents/PolicyCard';
 import { useEffect, useState } from 'react';
 import { fetchAllPolicies } from '../api';
 import { tailChase } from 'ldrs';
@@ -29,7 +30,7 @@ const ServicesGrid = () => {
         <section className='py-8 md:py-12 px-8 bg-gray-50'>
             <div className='container px-4 md:px-6'>
                 <h2 className='text-3xl font-bold text-center mb-8'>Our Insurance Products</h2>
-                <div className='flex gap-6 justify-center'>
+                <div className='flex flex-col sm:flex-row gap-6 justify-center'>
                     {services.length == 0 ?
                         <l-tail-chase size="40" speed="1.75" color="#111827" />
                         :
@@ -38,7 +39,7 @@ const ServicesGrid = () => {
                                 <div className='w-full flex justify-center'>
                                     {renderIcon(service.policy_icon)}
                                 </div>
-                                <Card
+                                <PolicyCard
                                     label={service.policy_name}
                                     description={service.policy_description}
                                     className='bg-white h-full transition-shadow hover:shadow-md'

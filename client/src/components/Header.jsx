@@ -29,10 +29,10 @@ const Header = () => {
                     </Link>
                 </nav>
                 {isLoggedIn ?
-                    <div className='flex gap-2 items-center justify-center'>
+                    <Link to={`/profile/${condenseClientInfo._id}`} className='flex gap-2 items-center justify-center'>
                         <FaRegUserCircle />
                         <p>{condenseClientInfo.firstName}</p>
-                    </div>
+                    </Link>
                     :
                     <Button label="Login" onClickFunction={() => navigate('/auth')} />
                 }

@@ -1,8 +1,9 @@
 import { useState, useRef, useContext } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { FaEye, FaEyeSlash } from 'react-icons/fa';
-import { register, login } from '../api';
+import { register, login, forgotPassword } from '../api';
 import { ClientContext } from '../contexts/Client.context';
+import ForgotPasswordModal from '../components/ForgotPasswordModal';
 
 const Authentication = () => {
     const navigate = useNavigate();
@@ -13,6 +14,7 @@ const Authentication = () => {
     const emailField = useRef(null);
     const phoneField = useRef(null);
     const passwordField = useRef(null);
+    const confirmPasswordField = useRef(null);
     const emailOrPhoneField = useRef(null);
 
     const [isRegister, setIsRegister] = useState(false);
@@ -28,6 +30,7 @@ const Authentication = () => {
         email: '',
         phone: '',
         password: '',
+        confirmPassword: "",
         emailOrPhone: '',
     });
     function handleAuthDataChange(event) {
@@ -38,7 +41,15 @@ const Authentication = () => {
     }
 
     const [showPassword, setShowPassword] = useState(false);
+    const [showConfirmPassword, setShowConfirmPassword] = useState(false);
     const [error, setError] = useState(false);
+    const handleError = (error) => {
+        if (error.code === 'ERR_NETWORK') {
+            setError('Server is down. Please try again later.');
+        } else {
+            setError(error?.response?.data?.message);
+        }
+    }
 
     async function handleSubmit(event) {
         event.preventDefault();
@@ -47,16 +58,20 @@ const Authentication = () => {
                 firstNameField.current.focus();
                 return false;
             }
-            if (authData.lastName.trim() === '') {
-                lastNameField.current.focus();
-                return false;
-            }
             if (authData.email.trim() === '') {
                 emailField.current.focus();
                 return false;
             }
             if (authData.phone.trim() === '') {
                 phoneField.current.focus();
+                return false;
+            }
+            if (authData.confirmPassword.trim() === "") {
+                confirmPasswordField.current.focus();
+                return false;
+            } else if (authData.confirmPassword.trim() !== authData.password.trim()) {
+                confirmPasswordField.current.focus();
+                setError('Password do not match.')
                 return false;
             }
         } else {
@@ -76,11 +91,7 @@ const Authentication = () => {
                 setIsLoggedIn(true);
                 navigate('/');
             } catch (error) {
-                if (error.code === 'ERR_NETWORK') {
-                    setError('Server is down. Please try again later.');
-                } else {
-                    setError(error.response.data.message);
-                }
+                handleError(error);
             }
         } else {
             try {
@@ -89,19 +100,31 @@ const Authentication = () => {
                 setIsLoggedIn(true);
                 navigate('/');
             } catch (error) {
-                if (error.code === 'ERR_NETWORK') {
-                    setError('Server is down. Please try again later.');
-                } else {
-                    setError(error.response.data.message);
-                }
+                handleError(error);
             }
         }
     }
 
+    const [showForgotPasswordModal, setForgotPasswordModal] = useState(false);
+    const [modalFieldIsDisabled, setModalFieldIsDisabled] = useState(false);
+    const [modalText, setModalText] = useState("");
+    const handleForgotPassword = async (email) => {
+        try {
+            setModalText('');
+            const { data } = await forgotPassword({ email });
+            setModalText(data?.message);
+            if (data?.message === 'No such user found.') {
+                setModalFieldIsDisabled(false);
+            }
+        } catch (error) {
+            handleError(error);
+        }
+    }
+
     return (
-        <div className='bg-gray-100 flex flex-col justify-center py-12 sm:px-6 lg:px-8'>
+        <div className='bg-gray-100 flex flex-col justify-center py-4 sm:px-6 lg:px-8'>
             <h1 className='font-bold text-3xl text-center'>{isRegister ? 'Register' : 'Login'}</h1>
-            <div className='mt-8 sm:mx-auto sm:w-full sm:max-w-md'>
+            <div className='mt-4 sm:mx-auto sm:w-full sm:max-w-md'>
                 <div className='bg-white py-8 px-4 shadow sm:rounded-lg sm:px-10'>
                     {isRegister && (
                         <form className='space-y-4' onSubmit={handleSubmit}>
@@ -155,7 +178,7 @@ const Authentication = () => {
                             </div>
                             <div>
                                 <label htmlFor='password' className='block text-sm font-medium text-gray-700'>
-                                    Create Password
+                                    Create Password*
                                 </label>
                                 <div className='mt-1 relative'>
                                     <input
@@ -165,6 +188,28 @@ const Authentication = () => {
                                     />
                                     <button
                                         type='button' onClick={() => setShowPassword(!showPassword)}
+                                        className='absolute inset-y-0 right-0 pr-3 flex items-center'
+                                    >
+                                        {showPassword ? (
+                                            <FaEyeSlash className='h-5 w-5 text-gray-400' />
+                                        ) : (
+                                            <FaEye className='h-5 w-5 text-gray-400' />
+                                        )}
+                                    </button>
+                                </div>
+                            </div>
+                            <div>
+                                <label htmlFor='confirmPassword' className='block text-sm font-medium text-gray-700'>
+                                    Confirm Password*
+                                </label>
+                                <div className='mt-1 relative'>
+                                    <input
+                                        id='confirmPassword' name='confirmPassword' type={showConfirmPassword ? 'text' : 'password'} ref={confirmPasswordField} placeholder='Retype your password' required
+                                        className='appearance-none block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm placeholder-gray-400 focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm'
+                                        value={authData.confirmPassword} onChange={handleAuthDataChange}
+                                    />
+                                    <button
+                                        type='button' onClick={() => setShowConfirmPassword(!showConfirmPassword)}
                                         className='absolute inset-y-0 right-0 pr-3 flex items-center'
                                     >
                                         {showPassword ? (
@@ -219,6 +264,10 @@ const Authentication = () => {
                                             )}
                                         </button>
                                     </div>
+                                    <span
+                                        onClick={() => setForgotPasswordModal(true)}
+                                        className='text-sm font-semibold mt-1 text-blue-600 hover:underline cursor-pointer'
+                                    >Forgot password?</span>
                                 </div>
                                 <button
                                     type='submit'
@@ -250,6 +299,14 @@ const Authentication = () => {
                     </p>
                 </div>
             </div>
+            <ForgotPasswordModal
+                isOpen={showForgotPasswordModal}
+                onClose={() => setForgotPasswordModal(false)}
+                modalText={modalText}
+                modalFieldIsDisabled={modalFieldIsDisabled}
+                setModalFieldIsDisabled={setModalFieldIsDisabled}
+                onSubmit={handleForgotPassword}
+            ></ForgotPasswordModal>
         </div>
     );
 }
