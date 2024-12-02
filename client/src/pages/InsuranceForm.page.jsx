@@ -2,7 +2,7 @@ import { useContext, useEffect, useState } from 'react';
 import { tailChase } from 'ldrs';
 import { useNavigate, useParams } from 'react-router-dom';
 import { assignPolicy, fetchAllPolicyFields } from '../api';
-import FormSection from '../components/formComponents/formSection';
+import FormSection from '../components/formComponents/FormSection';
 import { ClientContext } from '../contexts/Client.context';
 import RegisterModal from '../components/RegisterModal';
 
