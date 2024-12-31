@@ -29,7 +29,9 @@ function CheckboxField({ label, id, name, required, children, data, handleFormDa
     return (
         <div className="form-field">
             <fieldset>
-                <legend className="text-sm font-medium text-gray-700 mb-1">{label}</legend>
+                <legend className="text-sm font-medium text-gray-700 mb-1">
+                    {label}{required && <span className="text-red-600">*</span>}
+                </legend>
                 <div className="space-y-2">
                     {repeat
                         ?

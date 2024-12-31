@@ -7,7 +7,9 @@ function TelField({ label, id, name, placeholder, required, pattern, data, handl
 
     return (
         <div className='form-field'>
-            <label htmlFor={id} className='block text-sm font-medium text-gray-700 mb-1'>{label}</label>
+            <label htmlFor={id} className='block text-sm font-medium text-gray-700 mb-1'>
+                {label}{required && <span className="text-red-600">*</span>}
+            </label>
             {repeat
                 ?
                 <input

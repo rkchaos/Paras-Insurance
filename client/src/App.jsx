@@ -11,9 +11,10 @@ import ClientProfile from './pages/ClientProfile.page';
 import ResetPassword from './pages/ResetPassword.page';
 import { tailChase } from 'ldrs';
 import useFetchClient from './utils/useFetchClient';
+import Dashboard from './components/Dashboard';
 
 const App = () => {
-    const { loading } = useFetchClient();
+    const { loading, isLoggedIn, condenseClientInfo } = useFetchClient();
     tailChase.register();
 
     if (loading) {
@@ -24,13 +25,27 @@ const App = () => {
         );
     }
 
+    if (isLoggedIn && condenseClientInfo.role !== 'user') {
+        return (
+            <Router>
+                <Routes>
+                    <Route exact path='/' element={<Dashboard />} />
+                    <Route path='/auth' element={<Authentication />} />
+                    <Route path='/insurance-form' element={<InsuranceForm />}></Route>
+                    <Route path='/profile/:id' element={<ClientProfile />}></Route>
+                    <Route path='/resetPassword/:resetToken' element={<ResetPassword />}></Route>
+                </Routes>
+            </Router>
+        );
+    }
+
     return (
         <Router>
             <Header />
             <Routes>
                 <Route exact path='/' element={<Home />} />
                 <Route path='/auth' element={<Authentication />} />
-                <Route path='/insurance-form/:id' element={<InsuranceForm />}></Route>
+                <Route path='/insurance-form' element={<InsuranceForm />}></Route>
                 <Route path='/profile/:id' element={<ClientProfile />}></Route>
                 <Route path='/resetPassword/:resetToken' element={<ResetPassword />}></Route>
             </Routes>

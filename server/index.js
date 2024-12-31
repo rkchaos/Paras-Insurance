@@ -28,6 +28,10 @@ import clientRoutes from './routes/client.route.js';
 app.use('/client', clientRoutes);
 import policyRoutes from './routes/policy.route.js';
 app.use('/policy', policyRoutes);
+import employeeRoutes from './routes/employee.route.js';
+app.use('/employee', employeeRoutes);
+import companyRoutes from './routes/company.route.js';
+app.use('/company', companyRoutes);
 import assignedPolicyRoutes from './routes/assignedPolicy.route.js';
 app.use('/assignedPolicy', assignedPolicyRoutes);
 

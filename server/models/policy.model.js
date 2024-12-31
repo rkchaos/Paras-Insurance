@@ -19,20 +19,20 @@ const formSchema = new mongoose.Schema({
 });
 
 const policySchema = new mongoose.Schema({
-    policy_name: {
+    policyName: {
         type: String,
         required: true,
     },
-    policy_type: {
+    policyType: {
         type: String,
         required: true,
     },
-    policy_description: {
+    policyDescription: {
         type: String,
         required: true,
     },
-    policy_icon: {
-        type: Number,
+    policyIcon: {
+        type: String,
         required: true,
     },
     form: {

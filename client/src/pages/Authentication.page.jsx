@@ -1,8 +1,11 @@
 import { useState, useRef, useContext } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { FaEye, FaEyeSlash } from 'react-icons/fa';
+// importing api end-points
 import { register, login, forgotPassword } from '../api';
+// importing contexts
 import { ClientContext } from '../contexts/Client.context';
+// importing components
 import ForgotPasswordModal from '../components/ForgotPasswordModal';
 
 const Authentication = () => {
@@ -18,7 +21,7 @@ const Authentication = () => {
     const emailOrPhoneField = useRef(null);
 
     const [isRegister, setIsRegister] = useState(false);
-    function handleIsRegister() {
+    const handleIsRegister = () => {
         setIsRegister(prevIsRegister => {
             return !prevIsRegister;
         });
@@ -30,10 +33,10 @@ const Authentication = () => {
         email: '',
         phone: '',
         password: '',
-        confirmPassword: "",
+        confirmPassword: '',
         emailOrPhone: '',
     });
-    function handleAuthDataChange(event) {
+    const handleAuthDataChange = (event) => {
         const { name, value } = event.target;
         setAuthData(prevAuthData => {
             return { ...prevAuthData, [name]: value };
@@ -51,7 +54,7 @@ const Authentication = () => {
         }
     }
 
-    async function handleSubmit(event) {
+    const handleSubmit = async (event) => {
         event.preventDefault();
         if (isRegister) {
             if (authData.firstName.trim() === '') {
@@ -66,7 +69,7 @@ const Authentication = () => {
                 phoneField.current.focus();
                 return false;
             }
-            if (authData.confirmPassword.trim() === "") {
+            if (authData.confirmPassword.trim() === '') {
                 confirmPasswordField.current.focus();
                 return false;
             } else if (authData.confirmPassword.trim() !== authData.password.trim()) {
@@ -107,7 +110,7 @@ const Authentication = () => {
 
     const [showForgotPasswordModal, setForgotPasswordModal] = useState(false);
     const [modalFieldIsDisabled, setModalFieldIsDisabled] = useState(false);
-    const [modalText, setModalText] = useState("");
+    const [modalText, setModalText] = useState('');
     const handleForgotPassword = async (email) => {
         try {
             setModalText('');
@@ -130,7 +133,7 @@ const Authentication = () => {
                         <form className='space-y-4' onSubmit={handleSubmit}>
                             <div>
                                 <label htmlFor='firstName' className='block text-sm font-medium text-gray-700'>
-                                    First Name*
+                                    First Name<span className='text-red-600'>*</span>
                                 </label>
                                 <div className='mt-1'>
                                     <input
@@ -154,7 +157,7 @@ const Authentication = () => {
                             </div>
                             <div>
                                 <label htmlFor='email' className='block text-sm font-medium text-gray-700'>
-                                    Email*
+                                    Email<span className='text-red-600'>*</span>
                                 </label>
                                 <div className='mt-1'>
                                     <input
@@ -166,7 +169,7 @@ const Authentication = () => {
                             </div>
                             <div>
                                 <label htmlFor='phone' className='block text-sm font-medium text-gray-700'>
-                                    Phone number*
+                                    Phone number<span className='text-red-600'>*</span>
                                 </label>
                                 <div className='mt-1'>
                                     <input
@@ -178,7 +181,7 @@ const Authentication = () => {
                             </div>
                             <div>
                                 <label htmlFor='password' className='block text-sm font-medium text-gray-700'>
-                                    Create Password*
+                                    Create Password<span className='text-red-600'>*</span>
                                 </label>
                                 <div className='mt-1 relative'>
                                     <input
@@ -200,7 +203,7 @@ const Authentication = () => {
                             </div>
                             <div>
                                 <label htmlFor='confirmPassword' className='block text-sm font-medium text-gray-700'>
-                                    Confirm Password*
+                                    Confirm Password<span className='text-red-600'>*</span>
                                 </label>
                                 <div className='mt-1 relative'>
                                     <input

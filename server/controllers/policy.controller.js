@@ -26,15 +26,20 @@ const fetchAllPolicyFields = async (req, res) => {
         const { policyId } = req.query;
         const policy = await Policy.findById(policyId);
         res.status(200).json(policy);
-
     } catch (error) {
         console.log(error);
         res.status(503).json({ message: 'Network error. Try agin' });
     }
 }
 
+const fetchEveryPolicyId = async (req, res) => {
+    const everyPolicyId = await Policy.find({}, { _id: 1, policyName: 1 });
+    res.status(200).json(everyPolicyId);
+}
+
 export {
     createPolicy,
     fetchAllPolicies,
     fetchAllPolicyFields,
+    fetchEveryPolicyId,
 };

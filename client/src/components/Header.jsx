@@ -1,8 +1,10 @@
 import { useContext } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import { Button } from './subcomponents/Button';
+import { User } from 'lucide-react';
+// importing contexts
 import { ClientContext } from '../contexts/Client.context';
-import { FaRegUserCircle } from 'react-icons/fa';
+// importing components
+import { Button } from './subcomponents/Button';
 
 const Header = () => {
     const navigate = useNavigate();
@@ -15,22 +17,26 @@ const Header = () => {
                     Paras Insurance
                 </Link>
                 <nav className='hidden md:flex gap-8'>
-                    <Link to='/' className='text-sm hover:text-primary'>
+                    {/* <Link to='/' className='text-sm hover:opacity-95'>
                         Insurance Products
                     </Link>
-                    <Link to='/' className='text-sm hover:text-primary'>
+                    <Link to='/' className='text-sm hover:opacity-95'>
                         Renew Your Policy
                     </Link>
-                    <Link to='/' className='text-sm hover:text-primary'>
-                        Claim
+                    <Link to='/' className='text-sm hover:opacity-95'>
+                        Start a SIP
                     </Link>
-                    <Link to='/' className='text-sm hover:text-primary'>
+                    <Link to='/' className='text-sm hover:opacity-95'>
                         Support
-                    </Link>
+                    </Link> */}
                 </nav>
                 {isLoggedIn ?
-                    <Link to={`/profile/${condenseClientInfo._id}`} className='flex gap-2 items-center justify-center'>
-                        <FaRegUserCircle />
+                    <Link to={`/profile/${condenseClientInfo._id}`}
+                        className='flex gap-2 items-center justify-center hover:opacity-95'
+                    >
+                        <div className="w-8 h-8 bg-gray-200 rounded-full flex items-center justify-center">
+                            <User size={20} className="text-gray-600" />
+                        </div>
                         <p>{condenseClientInfo.firstName}</p>
                     </Link>
                     :

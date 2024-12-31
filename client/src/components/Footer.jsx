@@ -11,7 +11,7 @@ const Footer = () => {
                             <li><Link to="/" className="text-xs sm:text-md hover:text-gray-400">Home</Link></li>
                             <li><Link to="/" className="text-xs sm:text-md hover:text-gray-400">Insurance Products</Link></li>
                             <li><Link to="/" className="text-xs sm:text-md hover:text-gray-400">Renew your policy</Link></li>
-                            <li><Link to="/" className="text-xs sm:text-md hover:text-gray-400">Claim</Link></li>
+                            <li><Link to="/" className="text-xs sm:text-md hover:text-gray-400">Start a SIP</Link></li>
                             <li><Link to="/" className="text-xs sm:text-md hover:text-gray-400">Support</Link></li>
                         </ul>
                     </div>

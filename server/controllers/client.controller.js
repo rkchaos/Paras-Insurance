@@ -1,7 +1,8 @@
 import Client from '../models/client.model.js';
 import { ObjectId } from "mongodb";
-import nodemailer from "nodemailer";
 import jwt from "jsonwebtoken";
+import nodemailer from "nodemailer";
+import Employee from '../models/employee.model.js';
 
 const cookiesOptions = {
     httpOnly: true,
@@ -17,15 +18,21 @@ const transporter = nodemailer.createTransport({
     }
 });
 
-const condenseClientInfo = (client) => {
+const condenseClientInfo = async (client) => {
+    const employee = await Employee.findOne({ clientId: client._id });
     const clientSessionObj = {
         _id: client._id,
         firstName: client.personalDetails.firstName,
         lastName: client.personalDetails.lastName,
         email: client.personalDetails.contact.email,
         phone: client.personalDetails.contact.phone,
+        role: employee ? employee.role : 'user'
     };
-    return clientSessionObj;
+    if (employee) {
+        return { ...clientSessionObj, employeeId: employee._id };
+    } else {
+        return clientSessionObj;
+    }
 }
 
 const generateAccessAndRefreshTokens = async (client) => {
@@ -77,7 +84,7 @@ const sendMail = async ({ res, to, client, resetToken }) => {
 
 const fetchCondenseInfo = async (req, res) => {
     try {
-        const clientInfo = condenseClientInfo(req.client);
+        const clientInfo = await condenseClientInfo(req.client);
 
         if (!req.refreshedAccessToken) return res.status(200).json(clientInfo);
 
@@ -116,7 +123,7 @@ const register = async (req, res) => {
         });
 
         const { accessToken, refreshToken } = await generateAccessAndRefreshTokens(newClient);
-        const clientInfo = condenseClientInfo(newClient);
+        const clientInfo = await condenseClientInfo(newClient);
 
         res.status(200)
             .cookie('accessToken', accessToken, cookiesOptions)
@@ -218,7 +225,7 @@ const login = async (req, res) => {
         if (!isPasswordCorrect) return res.status(400).json({ message: 'Invalid credentials' });
 
         const { accessToken, refreshToken } = await generateAccessAndRefreshTokens(existingClient);
-        const clientInfo = condenseClientInfo(existingClient);
+        const clientInfo = await condenseClientInfo(existingClient);
 
         res.status(200)
             .cookie('accessToken', accessToken, cookiesOptions)
@@ -286,7 +293,7 @@ const resetPassword = async (req, res) => {
         await client.save();
 
         const { accessToken, refreshToken } = await generateAccessAndRefreshTokens(client);
-        const clientInfo = condenseClientInfo(client);
+        const clientInfo = await condenseClientInfo(client);
 
         res.status(200)
             .cookie('accessToken', accessToken, cookiesOptions)

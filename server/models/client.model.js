@@ -53,7 +53,7 @@ const clientSchema = new mongoose.Schema({
             state: {
                 type: String
             },
-            zipcode: {
+            PINCODE: {
                 type: String
             },
             country: {
@@ -76,20 +76,20 @@ const clientSchema = new mongoose.Schema({
         }
     },
     financialDetails: {
-        pan_card: {
+        panCard: {
             type: String
         },
-        aadhaar_number: {
+        aadhaarNo: {
             type: String
         },
-        account_details: {
-            account_number: {
+        accountDetails: {
+            accountNo: {
                 type: String
             },
-            ifsc_code: {
+            ifscCode: {
                 type: String
             },
-            bank_name: {
+            bankName: {
                 type: String
             }
         }
@@ -99,13 +99,13 @@ const clientSchema = new mongoose.Schema({
         default: false
     },
     employmentDetails: {
-        company_name: {
+        companyName: {
             type: String
         },
         designation: {
             type: String
         },
-        annual_income: {
+        annualIncome: {
             type: Number
         }
     },
@@ -113,13 +113,13 @@ const clientSchema = new mongoose.Schema({
         source: {
             type: String
         },
-        interest_level: {
+        interestLevel: {
             type: String
         },
-        lead_stage: {
+        leadStage: {
             type: String
         },
-        assigned_to: {
+        assignedTo: {
             type: String
         },
         priority: {
@@ -131,7 +131,20 @@ const clientSchema = new mongoose.Schema({
         }
     },
     interactionHistory: {
-        type: mongoose.Schema.Types.Array,
+        type: [
+            {
+                type: {
+                    type: String,
+                },
+                description: {
+                    type: String,
+                },
+                timestamp: {
+                    type: Date,
+                    default: Date.now,
+                }
+            }
+        ],
         default: []
     },
     policies: {
@@ -144,15 +157,31 @@ const clientSchema = new mongoose.Schema({
 }, { timestamps: true });
 
 clientSchema.pre('save', async function (next) {
-    if (!this.isModified('password')) return next();
+    if (this.isNew) {
+        this.interactionHistory.push({
+            type: 'Account Creation',
+            description: 'Account created.',
+        });
+    }
 
-    this.password = await bcrypt.hash(this.password, saltRounds);
+    if (this.isModified('password')) {
+        this.password = await bcrypt.hash(this.password, saltRounds);
+    }
+
     next();
 });
 
 clientSchema.methods.isPasswordCorrect = async function (password) {
     return await bcrypt.compare(password, this.password);
 }
+
+clientSchema.methods.addInteraction = async function (type, description) {
+    this.interactionHistory.push({
+        type,
+        description,
+    });
+    await this.save();
+};
 
 clientSchema.methods.generateAccessToken = async function () {
     return await jwt.sign(

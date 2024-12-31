@@ -9,14 +9,14 @@ const Testimonials = () => {
 
     return (
         <section className='py-12 md:py-24 bg-gray-50'>
-            <div className='container px-4 md:px-40'>
+            <div className='px-4 md:px-20 lg:px-40'>
                 <h2 className='text-3xl text-left'>What Our Customers</h2>
                 <h2 className='text-3xl text-left mb-12'>Are Saying</h2>
                 <div className='grid gap-8 md:grid-cols-3'>
                     {reviews.map(({ customerName, review }, index) => (
                         <div key={index} className='bg-white p-6 rounded-lg shadow-sm'>
                             <div className='flex items-center gap-4 mb-4'>
-                                <div className='w-12 h-12 rounded-full overflow-hidden'>
+                                <div className='size-12 md:size-6 lg:size-12 rounded-full overflow-hidden'>
                                     <img
                                         src='https://static.thenounproject.com/png/363640-200.png'
                                         alt={customerName}

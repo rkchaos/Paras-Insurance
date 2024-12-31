@@ -15,6 +15,15 @@ export const resetPassword = (authData) => API.patch('/client/resetPassword', au
 // Policy
 export const fetchAllPolicies = () => API.get('/policy/fetchAll');
 export const fetchAllPolicyFields = (policyId) => API.get('/policy/fetchAllFields', { params: policyId });
+export const fetchEveryPolicyId = () => API.get('/policy/fetchEveryPolicyId');
 
 // AssignedPolicy
 export const assignPolicy = (assignedPolicyData) => API.post('/assignedPolicy/assign', assignedPolicyData);
+
+// Employee
+export const fetchAllEmployees = () => API.get('/employee/fetchAll');
+export const addEmployee = (formData) => API.post('/employee/add', formData);
+
+// Company
+export const fetchAllCompanies = () => API.get('/company/fetchAll');
+export const createCompany = (formData) => API.post('/company/create', formData);
