@@ -1,8 +1,6 @@
-import React from 'react';
-
-export function ScrollArea({ children, className = '' }) {
+export const ScrollArea = ({ children, className = '' }) => {
     return (
-        <div className={`overflow-auto ${className}`}>
+        <div className={`overflow-auto block ${className}`}>
             {children}
         </div>
     );

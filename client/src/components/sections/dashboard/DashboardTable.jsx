@@ -139,7 +139,12 @@ const DashboardTable = ({ unassignedPolicies, onSendCompanyPolicies, onAssignPol
                                     <div className="text-sm text-gray-500">{policy.clientDetails.email}</div>
                                 </td>
                                 <td className="px-6 py-4 whitespace-nowrap">
-                                    <div className="text-sm text-gray-500">{policy.clientDetails.gender ? policy.clientDetails.gender : '-'}</div>
+                                    <span className={`px-2 inline-flex text-xs leading-5 font-semibold rounded-full ${policy.clientDetails.gender?.toLowerCase() === 'male'
+                                        ? 'bg-green-100 text-blue-800'
+                                        : policy.clientDetails.gender?.toLowerCase() === 'female' ? 'bg-red-100 text-pink-800' : 'bg-yellow-100 text-yellow-800'
+                                        }`}>
+                                        {policy.clientDetails.gender?.toLowerCase() === 'male' ? 'Male' : policy.clientDetails.gender?.toLowerCase() === 'female' ? 'Female' : '-'}
+                                    </span>
                                 </td>
                                 <td className="px-6 py-4 whitespace-nowrap text-sm">
                                     <div className="flex space-x-2">

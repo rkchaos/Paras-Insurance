@@ -3,7 +3,7 @@ import { tailChase } from 'ldrs';
 import { useNavigate, useParams } from 'react-router-dom';
 import { Timeline, TimelineDot, TimelineItem, TimelineConnector, TimelineContent, TimelineOppositeContent, timelineOppositeContentClasses, TimelineSeparator } from '@mui/lab';
 // importing api end-points
-import { fetchAllClientData, logout } from '../api';
+import { deleteProfile, fetchAllClientData, logout } from '../api';
 // importing contexts
 import { ClientContext } from '../contexts/Client.context';
 // importing components
@@ -62,6 +62,18 @@ const ClientProfile = () => {
         } catch (error) {
             console.error(error);
         }
+    }
+
+    const handleDelete = async () => {
+        try {
+            await deleteProfile();
+            setIsLoggedIn(false);
+            setCondenseClientInfo(null);
+            navigate('/');
+        } catch (error) {
+            console.error(error);
+        }
+
     }
 
     const repeatedFields = (n, field) => {
@@ -178,10 +190,16 @@ const ClientProfile = () => {
                                     )}
 
                                 </div>
-                                <button
-                                    onClick={handleLogout}
-                                    className='m-6 py-1 px-2 bg-red-600 text-white rounded-md hover:opacity-95'
-                                >Logout</button>
+                                <div className='flex '>
+                                    <button
+                                        onClick={handleLogout}
+                                        className='my-6 ml-6 mr-0 py-1 px-2 bg-gray-900 text-white rounded-md hover:opacity-95'
+                                    >Logout</button>
+                                    <button
+                                        onClick={handleDelete}
+                                        className='my-6 ml-4 py-1 px-2 bg-red-600 text-white rounded-md hover:opacity-95'
+                                    >Delete Profile</button>
+                                </div>
                             </div>
                         </ClientDetailsCard>
 
@@ -260,7 +278,7 @@ const ClientProfile = () => {
                                 }
                             </div>
                         </ClientDetailsCard>
-                        
+
                         <ClientDetailsCard>
                             <div className='p-6'>
                                 <h2 className='text-2xl font-bold mb-2'>Policies Assigned</h2>
@@ -334,7 +352,7 @@ const ClientProfile = () => {
                                 <div className='p-6'>
                                     {selectedCompanyPolicies.map((companyPolicy, index) => {
                                         return (
-                                            <div className='bg-gray-300 mb-2 p-2 rounded-md'>
+                                            <div className='bg-gray-100 mb-2 p-2 rounded-lg'>
                                                 <p className='ml-4'><strong>Company Name</strong>: {companyPolicy.companyName}</p>
                                                 <p className='ml-4'><strong>Policy Name</strong>: {companyPolicy.policyName}</p>
                                                 <p className='ml-4'><strong>Policy Type</strong>: {companyPolicy.policyType}</p>

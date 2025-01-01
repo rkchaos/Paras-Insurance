@@ -1,16 +1,14 @@
-import React from 'react';
-
-export function Badge({ label, status }) {
+export const Badge = ({ label, status }) => {
     const getStatusColor = (status) => {
         switch (status) {
             case 'good':
-                return 'bg-green-100 text-green-800';
+                return 'bg-green-400 text-green-900';
             case 'bad':
-                return 'bg-red-100 text-red-800';
+                return 'bg-red-400 text-red-900';
             case 'neutral':
-                return 'bg-yellow-100 text-yellow-800';
+                return 'bg-yellow-400 text-yellow-900';
             default:
-                return 'bg-gray-100 text-gray-800';
+                return 'bg-blue-400 text-blue-900';
         }
     };
 

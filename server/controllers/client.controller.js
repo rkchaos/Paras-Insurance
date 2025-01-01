@@ -269,22 +269,22 @@ const fetchAllCustomers = async (req, res) => {
         const clients = await Client.aggregate([
             {
                 $lookup: {
-                    from: "employees", // Collection name for Employee
-                    localField: "_id", // Client `_id`
-                    foreignField: "clientId", // Employee's `clientId`
-                    as: "employeeData", // Store matched employees
+                    from: "employees",
+                    localField: "_id",
+                    foreignField: "clientId",
+                    as: "employeeData",
                 },
             },
             {
                 $match: {
-                    employeeData: { $size: 0 }, // Filter out clients that are in Employee collection
+                    employeeData: { $size: 0 },
                 },
             },
             {
                 $project: {
-                    password: 0, // Exclude sensitive fields
+                    password: 0,
                     refreshToken: 0,
-                    employeeData: 0, // Exclude joined employee data
+                    employeeData: 0,
                 },
             },
         ]);
@@ -395,6 +395,26 @@ const resetPassword = async (req, res) => {
     }
 }
 
+const deleteProfile = async (req, res) => {
+    try {
+        const { clientId } = req.client._id
+        await Client.findByIdAndDelete({ "_id": new ObjectId(clientId) });
+        await Employee.findOneAndDelete({ clientId: clientId });
+        await AssignedPolicy.deleteMany({
+            clientId: new ObjectId(clientId),
+            stage: 1
+        });
+
+        res.status(200)
+            .clearCookie("accessToken", cookiesOptions)
+            .clearCookie("refreshToken", cookiesOptions)
+            .json({ message: "Profile deleted successfully" });
+    } catch (error) {
+        console.log(error);
+        res.status(503).json({ message: "Network error. Try again" });
+    }
+}
+
 export {
     condenseClientInfo,
     generateAccessAndRefreshTokens,
@@ -405,5 +425,6 @@ export {
     login,
     logout,
     forgotPassword,
-    resetPassword
+    resetPassword,
+    deleteProfile
 };

@@ -12,6 +12,7 @@ export const login = (authData) => API.post('/client/login', authData);
 export const logout = () => API.delete('/client/logout');
 export const forgotPassword = (email) => API.get('/client/forgotPassword', { params: email });
 export const resetPassword = (authData) => API.patch('/client/resetPassword', authData);
+export const deleteProfile = () => API.delete('/client/deleteProfile');
 
 // Policy
 export const fetchAllPolicies = () => API.get('/policy/fetchAll');

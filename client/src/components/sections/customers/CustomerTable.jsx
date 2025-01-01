@@ -1,44 +1,25 @@
-import React, { useState, useMemo } from 'react';
+import { useState, useMemo } from 'react';
 import { Edit2, Trash2, Search, Filter, UserPlus } from 'lucide-react';
 
-function CustomerTable({ customers }) {
+const CustomerTable = ({ customers }) => {
     const [searchTerm, setSearchTerm] = useState('');
     const [filterGender, setFilterGender] = useState('ALL');
-    const [filterPolicy, setFilterPolicy] = useState('ALL');
     const [currentPage, setCurrentPage] = useState(1);
     const customersPerPage = 10;
 
     const filteredCustomers = useMemo(() => {
         return customers.filter(customer => {
-            console.log(customer)
             const searchMatch =
                 customer.personalDetails.firstName.toLowerCase().includes(searchTerm.toLowerCase()) ||
                 customer.personalDetails.lastName.toLowerCase().includes(searchTerm.toLowerCase()) ||
                 customer.personalDetails.contact.email.toLowerCase().includes(searchTerm.toLowerCase()) ||
                 customer.personalDetails.contact.phone.includes(searchTerm);
 
-            const genderMatch = filterGender === 'ALL' || customer.Gender === filterGender;
+            const genderMatch = filterGender === 'ALL' || customer.personalDetails.gender?.toLowerCase() === filterGender.toLowerCase();
 
-            // let policyMatch = true;
-            // if (filterPolicy !== 'ALL') {
-            //     const [type, count] = filterPolicy.split(':');
-            //     switch (type) {
-            //         case 'TOTAL':
-            //             policyMatch = customer.policyCount === count;
-            //             break;
-            //         case 'ACTIVE':
-            //             policyMatch = customer.activePolicyCount === count;
-            //             break;
-            //         case 'EXPIRED':
-            //             policyMatch = customer.expiredPolicyCount === count;
-            //             break;
-            //     }
-            // }
-
-            // return searchMatch && genderMatch && policyMatch;
             return searchMatch && genderMatch;
         });
-    }, [searchTerm, filterGender, filterPolicy, customers]);
+    }, [searchTerm, filterGender, customers]);
 
     const totalPages = Math.ceil(filteredCustomers.length / customersPerPage);
     const indexOfLastCustomer = currentPage * customersPerPage;
@@ -78,20 +59,6 @@ function CustomerTable({ customers }) {
                         <option value="MALE">Male</option>
                         <option value="FEMALE">Female</option>
                     </select>
-                    <select
-                        value={filterPolicy}
-                        onChange={(e) => setFilterPolicy(e.target.value)}
-                        className="px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500"
-                    >
-                        <option value="ALL">All Policies</option>
-                        <option value="TOTAL:1">1 Total Policy</option>
-                        <option value="TOTAL:2">2 Total Policies</option>
-                        <option value="TOTAL:3">3 Total Policies</option>
-                        <option value="ACTIVE:1">1 Active Policy</option>
-                        <option value="ACTIVE:2">2 Active Policies</option>
-                        <option value="EXPIRED:1">1 Expired Policy</option>
-                        <option value="EXPIRED:2">2 Expired Policies</option>
-                    </select>
                     <Filter className="h-4 w-4" />
                     <button className="px-3 py-2 bg-blue-600 text-white rounded-md shadow-sm hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 flex items-center space-x-1">
                         <UserPlus className="h-4 w-4" />
@@ -128,7 +95,7 @@ function CustomerTable({ customers }) {
                                     <div className="text-sm text-gray-500">{customer.personalDetails.contact.phone}</div>
                                 </td>
                                 <td className="px-6 py-4 whitespace-nowrap">
-                                    <div className="text-sm text-gray-500">{customer.policyCount}</div>
+                                    <div className="text-sm text-gray-500">{customer.policies?.length}</div>
                                 </td>
                                 <td className="px-6 py-4 whitespace-nowrap">
                                     <div className="text-sm text-gray-500">{customer.activePolicyCount}</div>
@@ -139,7 +106,7 @@ function CustomerTable({ customers }) {
                                 <td className="px-6 py-4 whitespace-nowrap">
                                     <span className={`px-2 inline-flex text-xs leading-5 font-semibold rounded-full ${customer.personalDetails.gender?.toLowerCase() === 'male'
                                         ? 'bg-green-100 text-blue-800'
-                                        : customer.personalDetails.gender?.toLowerCase() === 'female'? 'bg-red-100 text-pink-800': 'bg-yellow-100 text-yellow-800'
+                                        : customer.personalDetails.gender?.toLowerCase() === 'female' ? 'bg-red-100 text-pink-800' : 'bg-yellow-100 text-yellow-800'
                                         }`}>
                                         {customer.personalDetails.gender?.toLowerCase() === 'male' ? 'Male' : customer.personalDetails.gender?.toLowerCase() === 'female' ? 'Female' : '-'}
                                     </span>

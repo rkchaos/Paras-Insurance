@@ -1,13 +1,10 @@
 import React, { useEffect, useState } from 'react';
-import { Users, Upload, FileDown } from 'lucide-react';
+import { Upload, FileDown } from 'lucide-react';
 import CustomerTable from './customers/CustomerTable';
 import CustomerStats from './customers/CustomerStats';
 import { fetchAllCustomers } from '../../api';
-// import CustomerTabs from './customers/CustomerTabs';
 
-function CustomerManagement() {
-    // const [activeTab, setActiveTab] = useState('list');
-
+const CustomerManagement = () => {
     const handleFileUpload = (event) => {
         const file = event.target.files[0];
         if (file) {
@@ -37,7 +34,6 @@ Jane,Smith,jane@example.com,+1234567891,POL002,Active`;
     const getAllCustomers = async () => {
         try {
             const { data } = await fetchAllCustomers();
-            console.log(data);
             setCustomers(data);
         } catch (error) {
             console.error(error);
@@ -74,9 +70,8 @@ Jane,Smith,jane@example.com,+1234567891,POL002,Active`;
             </div>
 
             <div className="bg-white rounded-lg shadow">
-                {/* <CustomerTabs activeTab={activeTab} setActiveTab={setActiveTab} /> */}
                 <div className="p-6">
-                    <CustomerStats />
+                    <CustomerStats customers={customers} />
                     <div className="mt-6">
                         <CustomerTable customers={customers} />
                     </div>
