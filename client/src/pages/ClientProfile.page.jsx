@@ -19,6 +19,16 @@ const ClientProfile = () => {
     const [isLoadingClientData, setIsLoadingClientData] = useState(true);
     const [clientData, setClientData] = useState(true);
 
+    const [isCompanyPolicySelected, setIsCompanyPolicySelected] = useState(false);
+    const [selectedCompanyPolicies, setSelectedCompanyPolicies] = useState([]);
+    const selectCompanyPolicies = (availablePolicies) => {
+        setIsCompanyPolicySelected(true);
+        console.log(selectedCompanyPolicies);
+        setSelectedCompanyPolicies(availablePolicies);
+    }
+
+    const [policies, setPolicies] = useState([]);
+
     const [isPolicySelected, setIsPolicySelected] = useState(false);
     const [selectedPolicy, setSelectedPolicy] = useState({});
     const selectPolicy = (policyData) => {
@@ -29,7 +39,10 @@ const ClientProfile = () => {
     const getClientData = async () => {
         try {
             const { data } = await fetchAllClientData({ clientId: id });
-            setClientData(data);
+            const { clientData, assignedPolicies } = data;
+            setClientData(clientData);
+            setPolicies(assignedPolicies);
+            console.log(assignedPolicies)
             setIsLoadingClientData(false);
         } catch (error) {
             console.error(error);
@@ -80,8 +93,8 @@ const ClientProfile = () => {
         const year = formattedDate.getFullYear();
 
         return `${date} ${month}, ${year}`;
-
     }
+
     const toFormattedTime = (timestamp) => {
         const date = new Date(Date.parse(timestamp))
 
@@ -92,7 +105,6 @@ const ClientProfile = () => {
         const hours12 = hours24 % 12 || 12;
 
         return `${hours12}:${minutes.toString().padStart(2, '0')} ${period}`;
-
     }
 
     tailChase.register();
@@ -175,65 +187,6 @@ const ClientProfile = () => {
 
                         <ClientDetailsCard>
                             <div className='p-6'>
-                                <h2 className='text-2xl font-bold mb-2'>Policies Interested In</h2>
-                                {Object.keys(clientData.assignedPolicies[0]).length === 0
-                                    ?
-                                    <>
-                                        <p className='text-sm text-gray-500 mb-4'>Total policies: 0</p>
-                                        <div className='bg-gray-100 px-4 py-2 rounded-md'>
-                                            No issued policies
-                                        </div>
-                                    </>
-                                    :
-                                    <>
-                                        <p className='text-sm text-gray-500 mb-4'>Total policies: {clientData.assignedPolicies.length}</p>
-                                        <ScrollArea className='h-[300px]'>
-                                            {clientData.assignedPolicies.slice().reverse().map((policy) => (
-                                                <ClientDetailsCard key={policy?._id} className='mb-4'>
-                                                    <div className='pt-4 pb-12 px-4'>
-                                                        <h3 className='text-sm font-semibold'>{policy?.policyDetails?.policyName}</h3>
-                                                        <p className='text-xs text-gray-500 mb-2'>Issued On: {new Date(policy.createdAt).toLocaleDateString()}</p>
-                                                        <button
-                                                            onClick={() => selectPolicy({ data: policy?.data, format: policy?.policyDetails })}
-                                                            className='float-right mr-4 bg-gray-900 text-white py-1 px-2 rounded-sm hover:opacity-95'
-                                                        >Details</button>
-                                                    </div>
-                                                </ClientDetailsCard>
-                                            ))}
-                                        </ScrollArea>
-                                    </>
-                                }
-                            </div>
-                        </ClientDetailsCard>
-                    </div>
-                    {isPolicySelected &&
-                        <ClientDetailsCard className='mt-4'>
-                            <div className='p-6'>
-                                <h2 className='text-2xl font-bold mb-2'>Policy Details</h2>
-                                <h2 className='text-xl font-semibold mb-2'>Applicant Information</h2>
-                                <p className='ml-4'><strong>First Name</strong>: {selectedPolicy.data['firstName']}</p>
-                                <p className='ml-4'><strong>Last Name</strong>: {selectedPolicy.data['lastName']}</p>
-                                <p className='ml-4'><strong>Email</strong>: {selectedPolicy.data['email']}</p>
-                                <p className='ml-4'><strong>Phone</strong>: {selectedPolicy.data['phone']}</p>
-                                {Object.entries(selectedPolicy.format.form.sections).map(([key, section]) => (
-                                    Object.entries(section.fields).map(([key, field]) => (
-                                        field.type === 'repeat' ?
-                                            <>
-                                                <h2 className='text-xl font-semibold my-2'>Dependents Information</h2>
-                                                {repeatedFields(field.maxCount, field)}
-                                            </>
-                                            :
-                                            <p className='ml-4' key={key}>
-                                                <strong>{field.label}</strong>: {selectedPolicy.data[field.name]}
-                                            </p>
-                                    ))
-                                ))}
-                            </div>
-                        </ClientDetailsCard>
-                    }
-                    <div className='mt-4 grid gap-6 md:grid-cols-2'>
-                        <ClientDetailsCard>
-                            <div className='p-6'>
                                 <h2 className='text-2xl font-bold mb-4'>Interaction History</h2>
                                 {clientData?.interactionHistory?.length === 0 &&
                                     <div className='bg-gray-100 px-4 py-2 rounded-md'>
@@ -268,6 +221,139 @@ const ClientProfile = () => {
                             </div>
                         </ClientDetailsCard>
 
+                        <ClientDetailsCard>
+                            <div className='p-6'>
+                                <h2 className='text-2xl font-bold mb-2'>Policies Interested In</h2>
+                                {Object.keys(clientData.assignedPolicies[0]).length === 0
+                                    ?
+                                    <>
+                                        <p className='text-sm text-gray-500 mb-4'>Total policies: 0</p>
+                                        <div className='bg-gray-100 px-4 py-2 rounded-md'>
+                                            No issued policies
+                                        </div>
+                                    </>
+                                    :
+                                    <>
+                                        {/* <p className='text-sm text-gray-500 mb-4'>Total policies: {clientData.assignedPolicies.length}</p> */}
+                                        <ScrollArea className='h-[300px]'>
+                                            {policies.slice().reverse().map((policy) => (
+                                                policy.stage === 1 &&
+                                                <ClientDetailsCard key={policy?._id} className='mb-4'>
+                                                    <div className='pt-4 pb-12 px-4'>
+                                                        <h3 className='text-sm font-semibold'>{policy?.policyDetails?.policyName}</h3>
+                                                        <p className='text-xs text-gray-500 mb-2'>Issued On: {new Date(policy.createdAt).toLocaleDateString()}</p>
+                                                        {policy.availablePolicies?.length > 0 &&
+                                                            <button
+                                                                onClick={() => selectCompanyPolicies(policy?.availablePolicies)}
+                                                                className='float-right mr-4 bg-gray-900 text-white py-1 px-2 rounded-sm hover:opacity-95'
+                                                            >Available Policies</button>
+                                                        }
+                                                        <button
+                                                            onClick={() => selectPolicy({ data: policy?.data, format: policy?.policyDetails })}
+                                                            className='float-right mr-4 bg-gray-900 text-white py-1 px-2 rounded-sm hover:opacity-95'
+                                                        >Details</button>
+                                                    </div>
+                                                </ClientDetailsCard>
+                                            ))}
+                                        </ScrollArea>
+                                    </>
+                                }
+                            </div>
+                        </ClientDetailsCard>
+                        
+                        <ClientDetailsCard>
+                            <div className='p-6'>
+                                <h2 className='text-2xl font-bold mb-2'>Policies Assigned</h2>
+                                {Object.keys(clientData.assignedPolicies[0]).length === 0
+                                    ?
+                                    <>
+                                        <p className='text-sm text-gray-500 mb-4'>Total policies: 0</p>
+                                        <div className='bg-gray-100 px-4 py-2 rounded-md'>
+                                            No policies assigned
+                                        </div>
+                                    </>
+                                    :
+                                    <>
+                                        {/* <p className='text-sm text-gray-500 mb-4'>Total policies: {clientData.assignedPolicies.length}</p> */}
+                                        <ScrollArea className='h-[300px]'>
+                                            {policies.slice().reverse().map((policy) => (
+                                                policy.stage === 2 &&
+                                                <ClientDetailsCard key={policy?._id} className='mb-4'>
+                                                    <div className='pt-4 pb-12 px-4'>
+                                                        <h3 className='text-sm font-semibold'>{policy?.policyDetails?.policyName}</h3>
+                                                        <p className='text-xs text-gray-500 mb-2'>Issued On: {new Date(policy.createdAt).toLocaleDateString()}</p>
+                                                        {policy.availablePolicies?.length > 0 &&
+                                                            <button
+                                                                onClick={() => selectCompanyPolicies(policy?.availablePolicies)}
+                                                                className='float-right mr-4 bg-gray-900 text-white py-1 px-2 rounded-sm hover:opacity-95'
+                                                            >Available Policies</button>
+                                                        }
+                                                        <button
+                                                            onClick={() => selectPolicy({ data: policy?.data, format: policy?.policyDetails })}
+                                                            className='float-right mr-4 bg-gray-900 text-white py-1 px-2 rounded-sm hover:opacity-95'
+                                                        >Details</button>
+                                                    </div>
+                                                </ClientDetailsCard>
+                                            ))}
+                                        </ScrollArea>
+                                    </>
+                                }
+                            </div>
+                        </ClientDetailsCard>
+                    </div>
+                    <div className='grid gap-6 md:grid-cols-2'>
+
+                        {isPolicySelected &&
+                            <ClientDetailsCard className='mt-4'>
+                                <div className='p-6'>
+                                    <h2 className='text-2xl font-bold mb-2'>Policy Details</h2>
+                                    <h2 className='text-xl font-semibold mb-2'>Applicant Information</h2>
+                                    <p className='ml-4'><strong>First Name</strong>: {selectedPolicy.data['firstName']}</p>
+                                    <p className='ml-4'><strong>Last Name</strong>: {selectedPolicy.data['lastName']}</p>
+                                    <p className='ml-4'><strong>Email</strong>: {selectedPolicy.data['email']}</p>
+                                    <p className='ml-4'><strong>Phone</strong>: {selectedPolicy.data['phone']}</p>
+                                    {Object.entries(selectedPolicy.format.policyForm.sections).map(([key, section]) => (
+                                        Object.entries(section.fields).map(([key, field], index) => (
+                                            field.type === 'repeat' ?
+                                                <>
+                                                    <h2 className='text-xl font-semibold my-2'>Dependents Information</h2>
+                                                    {repeatedFields(field.maxCount, field)}
+                                                </>
+                                                :
+                                                <p className='ml-4' key={index}>
+                                                    <strong>{field.label}</strong>: {selectedPolicy.data[field.name]}
+                                                </p>
+                                        ))
+                                    ))}
+                                </div>
+                            </ClientDetailsCard>
+                        }
+
+                        {isCompanyPolicySelected &&
+                            <ClientDetailsCard className='mt-4'>
+                                <div className='p-6'>
+                                    {selectedCompanyPolicies.map((companyPolicy, index) => {
+                                        return (
+                                            <div className='bg-gray-300 mb-2 p-2 rounded-md'>
+                                                <p className='ml-4'><strong>Company Name</strong>: {companyPolicy.companyName}</p>
+                                                <p className='ml-4'><strong>Policy Name</strong>: {companyPolicy.policyName}</p>
+                                                <p className='ml-4'><strong>Policy Type</strong>: {companyPolicy.policyType}</p>
+                                                <p className='ml-4'><strong>Policy Description</strong>: {companyPolicy.policyDescription}</p>
+                                                <p className='ml-4'><strong>Policy Features</strong>: {companyPolicy.policyFeature}</p>
+                                                <p className='ml-4'><strong>Coverage Amount</strong>: {companyPolicy.companyName}</p>
+                                                <p className='ml-4'><strong>Coverage Type</strong>: {companyPolicy.coverageType}</p>
+                                                <p className='ml-4'><strong>Premium Amount</strong>: {companyPolicy.premiumAmount}</p>
+                                                <p className='ml-4'><strong>Premium Type</strong>: {companyPolicy.premiumType}</p>
+                                            </div>
+                                        )
+                                    })}
+                                </div>
+                            </ClientDetailsCard>
+                        }
+                    </div>
+
+
+                    <div className='mt-4 grid gap-6 md:grid-cols-2'>
                         <ClientDetailsCard>
                             <div className='p-6'>
                                 <h2 className='text-2xl font-bold mb-2'>Renew Policy</h2>

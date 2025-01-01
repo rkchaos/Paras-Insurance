@@ -5,7 +5,8 @@ const saltRounds = 10;
 
 const policySchema = new mongoose.Schema({
     policyId: {
-        type: mongoose.Schema.Types.ObjectId, ref: 'Policy'
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'Policy'
     },
     interestedIn: {
         type: Boolean

@@ -1,17 +1,18 @@
 import { useEffect, useState } from 'react';
 import { Plus } from 'lucide-react';
+import { addCompanyPolicy, createCompany, deleteCompany, fetchAllCompanies, removeCompanyPolicy } from '../../api';
 import CompanyTable from './companies/CompanyTable';
 import CompanyForm from './companies/CompanyForm';
-import { fetchAllCompanies } from '../../api';
+import PolicyForm from './companies/PolicyForm';
 
-function CompanyManagement() {
+const CompanyManagement = () => {
     const [showForm, setShowForm] = useState(false);
+    const [showPolicyForm, setShowPolicyForm] = useState(false);
     const [companiesData, setCompaniesData] = useState([]);
 
-  const getAllCompanies = async () => {
+    const getAllCompanies = async () => {
         try {
             const { data } = await fetchAllCompanies();
-            console.log(data);
             setCompaniesData(data);
         } catch (error) {
             console.error(error);
@@ -22,9 +23,49 @@ function CompanyManagement() {
         getAllCompanies();
     }, []);
 
-    const handleAddCompany = (newCompany) => {
-        console.log(newCompany);
-        // setCompanies(prev => [...prev, { ...newCompany, id: prev.length + 1 }]);
+    const handleAddCompany = async (newCompanyData) => {
+        try {
+            const { data } = await createCompany(newCompanyData);
+            setCompaniesData(prevEmployeesData => [...prevEmployeesData, { ...data }]);
+            return false;
+        } catch (error) {
+            console.error(error);
+            const { response } = error;
+            return response?.data?.message;
+        }
+    };
+
+    const handleDeleteCompany = async (companyId) => {
+        try {
+            await deleteCompany({ companyId });
+            setCompaniesData(prevCompaniesData => prevCompaniesData.filter((company) => company._id !== companyId));
+        } catch (error) {
+            console.error(error);
+        }
+    };
+
+    const handleAddCompanyPolicy = async (newCompanyPolicyData) => {
+        try {
+            const { data } = await addCompanyPolicy({ companyId: showPolicyForm, policyData: newCompanyPolicyData });
+            getAllCompanies();
+            return false;
+        } catch (error) {
+            console.error(error);
+            const { response } = error;
+            return response?.data?.message;
+        }
+    };
+
+    const handleRemoveCompanyPolicy = async ({ companyId, policyId }) => {
+        try {
+            const { data } = await removeCompanyPolicy(companyId, policyId);
+            getAllCompanies();
+            return false;
+        } catch (error) {
+            console.error(error);
+            const { response } = error;
+            return response?.data?.message;
+        }
     };
 
     return (
@@ -42,7 +83,12 @@ function CompanyManagement() {
 
             <div className="bg-white rounded-lg shadow">
                 <div className="p-6">
-                    <CompanyTable companiesData={companiesData} />
+                    <CompanyTable
+                        companiesData={companiesData}
+                        onAddPolicy={(companyId) => setShowPolicyForm(companyId)}
+                        onRemovePolicy={handleRemoveCompanyPolicy}
+                        onDelete={handleDeleteCompany}
+                    />
                 </div>
             </div>
 
@@ -52,6 +98,13 @@ function CompanyManagement() {
                     onSubmit={handleAddCompany}
                 />
             )}
+
+            {showPolicyForm &&
+                <PolicyForm
+                    onClose={() => setShowPolicyForm(false)}
+                    onSubmit={handleAddCompanyPolicy}
+                />
+            }
         </div>
     );
 }

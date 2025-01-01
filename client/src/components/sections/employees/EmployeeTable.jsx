@@ -1,8 +1,12 @@
-import React from 'react';
-import { Edit2, Trash2 } from 'lucide-react';
+import { useContext } from 'react';
+import { Tooltip } from '@mui/material';
 import { tailChase } from 'ldrs';
+import { Edit2, Trash2 } from 'lucide-react';
+import { ClientContext } from '../../../contexts/Client.context';
 
-function EmployeeTable({ employeesData }) {
+const EmployeeTable = ({ employeesData, onRemoveAccess }) => {
+    const { condenseClientInfo } = useContext(ClientContext);
+    
     tailChase.register();
 
     return (
@@ -34,8 +38,8 @@ function EmployeeTable({ employeesData }) {
                     </tr>
                 </thead>
                 <tbody className="bg-white divide-y divide-gray-200">
-                    {employeesData.map((employee) => (
-                        <tr key={employee._id}>
+                    {employeesData.map((employee, index) => (
+                        <tr key={index}>
                             <td className="px-6 py-4 whitespace-nowrap">
                                 <div className="text-sm font-medium text-gray-900">
                                     {employee.firstName} {employee.lastName}
@@ -73,10 +77,16 @@ function EmployeeTable({ employeesData }) {
                             <td className="px-6 py-4 whitespace-nowrap text-sm">
                                 <div className="flex space-x-2">
                                     <button className="text-blue-600 hover:text-blue-900">
-                                        <Edit2 size={18} />
+                                        <Tooltip title='Edit details'>
+                                            <Edit2 size={18} />
+                                        </Tooltip>
                                     </button>
                                     <button className="text-red-600 hover:text-red-900">
-                                        <Trash2 size={18} />
+                                        {condenseClientInfo.role === 'superAdmin' &&
+                                            <Tooltip title='Remove access'>
+                                                <Trash2 size={18} onClick={() => onRemoveAccess(employee._id)} />
+                                            </Tooltip>
+                                        }
                                     </button>
                                 </div>
                             </td>

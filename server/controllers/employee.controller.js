@@ -43,8 +43,28 @@ const addEmployee = async (req, res) => {
             clientId: newClient._id, managerId, status, role, loginAcess
         });
 
+        const returnData = {
+            _id: newEmployee._id.toString(),
+            clientId: newEmployee.clientId.toString(),
+            firstName: newClient.personalDetails?.firstName || "",
+            lastName: newClient.personalDetails?.lastName || "",
+            email: newClient.personalDetails?.contact?.email || "",
+            phone: newClient.personalDetails?.contact?.phone || "",
+            userType: newClient.userType || "",
+            KYC: newClient.KYC || false,
+            notes: newEmployee.notes || null,
+            role: newEmployee.role || "",
+            managerID: newEmployee.managerID ? newEmployee.managerID.toString() : null,
+            status: newEmployee.status || "",
+            statusChangedBy: newEmployee.statusChangedBy || "",
+            loginAccess: newEmployee.loginAccess || false,
+            createdAt: newEmployee.createdAt || "",
+            updatedAt: newEmployee.updatedAt || "",
+            __v: newEmployee.__v || 0
+        };
+
         await generateAccessAndRefreshTokens(newClient);
-        res.sendStatus(200);
+        res.status(200).json(returnData);
     } catch (error) {
         console.log(error);
         res.status(503).json({ message: 'Network error. Try agin' });
@@ -53,12 +73,13 @@ const addEmployee = async (req, res) => {
 
 // update
 
-const deleteEmployee = async (req, res) => {
+const removeEmployeeAccess = async (req, res) => {
+    // technically you should check who is asking for this permission and then decide if === SuperAdmin then only let them remove access of others
     try {
         const { employeeId } = req.query;
-        const deletedEmployee = await Employee.findByIdAndDelete(employeeId);
+        const removedEmployee = await Employee.findByIdAndDelete(employeeId);
 
-        if (!deletedEmployee) return res.status(404).json({ error: "Employee not found" });
+        if (!removedEmployee) return res.status(404).json({ error: "Employee not found" });
 
         res.status(200).json({ message: "Employee deleted successfully" });
     } catch (error) {
@@ -107,10 +128,9 @@ const fetchAllEmployees = async (req, res) => {
     }
 }
 
-
 export {
     createEmployee,
     addEmployee,
     fetchAllEmployees,
-    deleteEmployee,
+    removeEmployeeAccess,
 };

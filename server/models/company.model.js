@@ -9,6 +9,10 @@ const companyPolicySchema = new mongoose.Schema({
         type: String,
         required: true
     },
+    policyDescription: {
+        type: String,
+        required: true
+    },
     coverageAmount: {
         type: Number,
         required: true
@@ -18,7 +22,7 @@ const companyPolicySchema = new mongoose.Schema({
         required: true
     },
     policyFeatures: {
-        type: [String],
+        type: String,
         required: true
     },
     premiumType: {
@@ -43,6 +47,9 @@ const companySchema = new mongoose.Schema({
     companyDescription: {
         type: String
     },
+    companyStatus: {
+        type: String
+    },
     contactInfo: {
         contactPerson: {
             type: String,
@@ -58,7 +65,6 @@ const companySchema = new mongoose.Schema({
         },
         website: {
             type: String,
-            required: true
         }
     },
     address: {

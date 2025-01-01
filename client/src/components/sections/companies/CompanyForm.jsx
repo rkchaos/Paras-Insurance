@@ -1,58 +1,53 @@
-import React, { useState } from 'react';
+import { useState } from 'react';
 import { X } from 'lucide-react';
 
-function CompanyForm({ onClose, onSubmit }) {
-    // const [formData, setFormData] = useState({
-    //     name: '',
-    //     type: 'Corporate',
-    //     description: '',
-    //     contactPerson: '',
-    //     email: '',
-    //     phone: '',
-    //     registrationNumber: '',
-    //     taxId: '',
-    //     status: 'Active',
-    //     address: ''
-    // });
+const CompanyForm = ({ onClose, onSubmit }) => {
+    const [error, setError] = useState('');
     const [formData, setFormData] = useState({
-        name: 'Test',
+        name: '',
         type: 'Corporate',
-        description: 'test description',
-        contactPerson: 'test person',
-        email: 'test@test.test',
-        phone: '8178984562',
+        description: '',
+        contactPerson: '',
+        email: '',
+        phone: '',
+        registrationNumber: '',
+        taxId: '',
         status: 'Active',
-        address: 'test address'
+        address: ''
     });
 
-    function transformToCompanySchema(data) {
+    const transformToCompanySchema = (data) => {
         return {
-            companyName: data.name, 
-            companyType: data.type, // Map "type" to "companyType"
-            companyDescription: data.description, // Map "description" to "companyDescription"
+            companyName: data.name,
+            companyType: data.type,
+            companyDescription: data.description,
+            companyStatus: data.status,
             contactInfo: {
-                contactPerson: data.contactPerson, // Map "contactPerson" to "contactInfo.contactPerson"
-                phone: data.phone, // Map "phone" to "contactInfo.phone"
-                email: data.email, // Map "email" to "contactInfo.email"
-                website: data.website || "", // Add "website" with a default empty string if not provided
+                contactPerson: data.contactPerson,
+                phone: data.phone,
+                email: data.email,
+                website: data.website || "",
             },
             address: data.address,
-            policies: [] 
+            policies: []
         };
     }
 
-    const handleSubmit = (event) => {
-        event.preventDefault();
-        onSubmit(transformToCompanySchema(formData));
-        onClose();
-    };
-
     const handleChange = (event) => {
         const { name, value } = event.target;
-        setFormData(prev => ({
-            ...prev,
-            [name]: value
+        setFormData(prevFormData => ({
+            ...prevFormData, [name]: value
         }));
+    };
+
+    const handleSubmit = async (event) => {
+        event.preventDefault();
+        const errorMessage = await onSubmit(transformToCompanySchema(formData));
+        if (!errorMessage) {
+            onClose();
+        } else {
+            setError(errorMessage);
+        }
     };
 
     return (
@@ -65,30 +60,26 @@ function CompanyForm({ onClose, onSubmit }) {
                     </button>
                 </div>
 
-                <form onSubmit={handleSubmit} className="p-6">
+                <form onSubmit={handleSubmit} className="px-6 py-2">
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                         <div>
                             <label className="block text-sm font-medium text-gray-700 mb-2">
-                                Company Name
+                                Company Name<span className='text-red-600'>*</span>
                             </label>
                             <input
-                                type="text"
-                                name="name"
-                                value={formData.name}
-                                onChange={handleChange}
-                                required
+                                type="text" name="name" required
+                                value={formData.name} onChange={handleChange}
                                 className="w-full p-2 border rounded-lg focus:ring-blue-500 focus:border-blue-500"
                             />
                         </div>
 
                         <div>
                             <label className="block text-sm font-medium text-gray-700 mb-2">
-                                Company Type
+                                Company Type<span className='text-red-600'>*</span>
                             </label>
                             <select
                                 name="type"
-                                value={formData.type}
-                                onChange={handleChange}
+                                value={formData.type} onChange={handleChange}
                                 className="w-full p-2 border rounded-lg focus:ring-blue-500 focus:border-blue-500"
                             >
                                 <option value="Corporate">Corporate</option>
@@ -98,95 +89,89 @@ function CompanyForm({ onClose, onSubmit }) {
                         </div>
                     </div>
 
-                    <div className="mt-6">
+                    <div className="mt-2">
                         <label className="block text-sm font-medium text-gray-700 mb-2">
-                            Company Description
+                            Company Description<span className='text-red-600'>*</span>
                         </label>
                         <textarea
-                            name="description"
-                            value={formData.description}
-                            onChange={handleChange}
-                            required
-                            rows="3"
+                            name="description" rows="3" required
+                            value={formData.description} onChange={handleChange}
                             className="w-full p-2 border rounded-lg focus:ring-blue-500 focus:border-blue-500"
                         ></textarea>
                     </div>
 
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-x-6 gap-y-2 mt-2">
                         <div>
                             <label className="block text-sm font-medium text-gray-700 mb-2">
-                                Contact Person
+                                Contact Person<span className='text-red-600'>*</span>
                             </label>
                             <input
-                                type="text"
-                                name="contactPerson"
-                                value={formData.contactPerson}
-                                onChange={handleChange}
-                                required
+                                type="text" name="contactPerson" required
+                                value={formData.contactPerson} onChange={handleChange}
                                 className="w-full p-2 border rounded-lg focus:ring-blue-500 focus:border-blue-500"
                             />
                         </div>
 
                         <div>
                             <label className="block text-sm font-medium text-gray-700 mb-2">
-                                Email
+                                Email<span className='text-red-600'>*</span>
                             </label>
                             <input
-                                type="email"
-                                name="email"
-                                value={formData.email}
-                                onChange={handleChange}
-                                required
+                                type="email" name="email" required
+                                value={formData.email} onChange={handleChange}
                                 className="w-full p-2 border rounded-lg focus:ring-blue-500 focus:border-blue-500"
                             />
                         </div>
 
                         <div>
                             <label className="block text-sm font-medium text-gray-700 mb-2">
-                                Phone
+                                Phone<span className='text-red-600'>*</span>
                             </label>
                             <input
-                                type="tel"
-                                name="phone"
-                                value={formData.phone}
-                                onChange={handleChange}
-                                required
+                                type="tel" name="phone" required
+                                value={formData.phone} onChange={handleChange}
                                 className="w-full p-2 border rounded-lg focus:ring-blue-500 focus:border-blue-500"
                             />
                         </div>
 
                         <div>
                             <label className="block text-sm font-medium text-gray-700 mb-2">
-                                Status
+                                Status<span className='text-red-600'>*</span>
                             </label>
                             <select
                                 name="status"
-                                value={formData.status}
-                                onChange={handleChange}
+                                value={formData.status} onChange={handleChange}
                                 className="w-full p-2 border rounded-lg focus:ring-blue-500 focus:border-blue-500"
                             >
                                 <option value="Active">Active</option>
                                 <option value="Inactive">Inactive</option>
-                                <option value="Pending">Pending</option>
                             </select>
                         </div>
                     </div>
 
-                    <div className="mt-6">
+                    <div className="mt-2">
                         <label className="block text-sm font-medium text-gray-700 mb-2">
-                            Address
+                            Company Website
+                        </label>
+                        <input
+                            name="website"
+                            value={formData.website} onChange={handleChange}
+                            className="w-full p-2 border rounded-lg focus:ring-blue-500 focus:border-blue-500"
+                        />
+                    </div>
+
+                    <div className="mt-2">
+                        <label className="block text-sm font-medium text-gray-700 mb-2">
+                            Address<span className='text-red-600'>*</span>
                         </label>
                         <textarea
-                            name="address"
-                            value={formData.address}
-                            onChange={handleChange}
-                            required
-                            rows="3"
+                            name="address" rows="3" required
+                            value={formData.address} onChange={handleChange}
                             className="w-full p-2 border rounded-lg focus:ring-blue-500 focus:border-blue-500"
                         ></textarea>
                     </div>
 
-                    <div className="mt-6 flex justify-end space-x-3">
+                    <div className="mt-2 flex justify-end space-x-3">
                         <button
                             type="button"
                             onClick={onClose}
@@ -200,6 +185,10 @@ function CompanyForm({ onClose, onSubmit }) {
                         >
                             Add Company
                         </button>
+                    </div>
+
+                    <div className='relative'>
+                        {error && <span className='absolute bottom-0 text-sm text-red-600'>{error}</span>}
                     </div>
                 </form>
             </div>

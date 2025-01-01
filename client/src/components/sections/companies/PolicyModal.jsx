@@ -1,96 +1,97 @@
-import React from 'react';
+import { useState } from 'react';
 import { X } from 'lucide-react';
 
-const policyDetails = {
-  'Health Insurance': {
-    description: 'Comprehensive health coverage for individuals and families',
-    coverage: ['Hospital expenses', 'Medications', 'Preventive care'],
-    minAmount: '₹500,000',
-    maxAmount: '₹5,000,000'
-  },
-  'Life Insurance': {
-    description: 'Financial protection for your loved ones',
-    coverage: ['Death benefit', 'Terminal illness', 'Accidental death'],
-    minAmount: '₹1,000,000',
-    maxAmount: '₹10,000,000'
-  },
-  'Vehicle Insurance': {
-    description: 'Protection for your vehicles against damage and accidents',
-    coverage: ['Third-party liability', 'Own damage', 'Personal accident'],
-    minAmount: '₹100,000',
-    maxAmount: '₹1,000,000'
-  },
-  'Property Insurance': {
-    description: 'Coverage for commercial and residential properties',
-    coverage: ['Natural disasters', 'Fire', 'Theft'],
-    minAmount: '₹2,000,000',
-    maxAmount: '₹20,000,000'
-  },
-  'Business Insurance': {
-    description: 'Comprehensive coverage for business operations',
-    coverage: ['Property damage', 'Liability', 'Business interruption'],
-    minAmount: '₹5,000,000',
-    maxAmount: '₹50,000,000'
-  },
-  'Travel Insurance': {
-    description: 'Protection during domestic and international travel',
-    coverage: ['Medical emergencies', 'Trip cancellation', 'Lost baggage'],
-    minAmount: '₹50,000',
-    maxAmount: '₹500,000'
-  }
-};
+const PolicyModal = ({ policyData, onClose, onRemovePolicy }) => {
+    const [error, setError] = useState('');
+    const { policy, company } = policyData;
 
-function PolicyModal({ policy, onClose }) {
-  const details = policyDetails[policy.name] || {
-    description: 'Policy details not available',
-    coverage: [],
-    minAmount: 'N/A',
-    maxAmount: 'N/A'
-  };
+    const handleRemovePolicy = async () => {
+        const errorMessage = await onRemovePolicy({ companyId: company._id, policyId: policy._id });
+        if (!errorMessage) {
+            onClose();
+        } else {
+            setError(errorMessage);
+        }
+    }
 
-  return (
-    <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4">
-      <div className="bg-white rounded-lg w-full max-w-md">
-        <div className="flex justify-between items-center p-6 border-b">
-          <h2 className="text-xl font-semibold">{policy.name}</h2>
-          <button onClick={onClose} className="text-gray-500 hover:text-gray-700">
-            <X size={24} />
-          </button>
-        </div>
+    return (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4">
+            <div className="bg-white rounded-lg w-full max-w-md">
+                <div className="flex justify-between items-center p-6 border-b">
+                    <h2 className="text-xl font-semibold">{policy.policyName}</h2>
+                    <button onClick={onClose} className="text-gray-500 hover:text-gray-700">
+                        <X size={24} />
+                    </button>
+                </div>
 
-        <div className="p-6">
-          <div className="mb-4">
-            <p className="text-sm text-gray-600">Offered by: {policy.company}</p>
-          </div>
+                <div className="p-6">
+                    <div className="mb-3">
+                        <p className="text-sm text-gray-600">Offered by: <strong>{company.companyName}</strong></p>
+                    </div>
 
-          <div className="mb-4">
-            <h3 className="font-medium mb-2">Description</h3>
-            <p className="text-gray-600">{details.description}</p>
-          </div>
+                    <div className="mb-3">
+                        <h3 className="font-medium">Policy Features</h3>
+                        {policy.policyFeatures.split(',').map((feature, index) => (
+                            <p key={index} className="text-gray-600">{feature.trim()}</p>
+                        ))}
+                    </div>
 
-          <div className="mb-4">
-            <h3 className="font-medium mb-2">Coverage</h3>
-            <ul className="list-disc list-inside text-gray-600">
-              {details.coverage.map((item, index) => (
-                <li key={index}>{item}</li>
-              ))}
-            </ul>
-          </div>
+                    <div className="mb-3">
+                        <h3 className="font-medium">Policy Type</h3>
+                        <p className="text-gray-600">{policy.policyType}</p>
+                    </div>
+                    
+                    <div className="mb-3">
+                        <h3 className="font-medium">Policy Description</h3>
+                        <p className="text-gray-600">{policy.policyDescription}</p>
+                    </div>
 
-          <div className="grid grid-cols-2 gap-4">
-            <div>
-              <h3 className="font-medium mb-2">Min Coverage</h3>
-              <p className="text-gray-600">{details.minAmount}</p>
+                    <div className='grid grid-cols-1 md:grid-cols-2 gap-6'>
+                        <div className="mb-3">
+                            <h3 className="font-medium">Coverage Type</h3>
+                            <p className="text-gray-600">{policy.coverageType}</p>
+                        </div>
+                        <div className="mb-3">
+                            <h3 className="font-medium">Coverage Amount</h3>
+                            <p className="text-gray-600">{policy.coverageAmount}</p>
+                        </div>
+                    </div>
+
+                    <div className='grid grid-cols-1 md:grid-cols-2 gap-6'>
+                        <div className="mb-3">
+                            <h3 className="font-medium">Premium Type</h3>
+                            <p className="text-gray-600">{policy.premiumType}</p>
+                        </div>
+                        <div className="mb-3">
+                            <h3 className="font-medium">Premium Amount</h3>
+                            <p className="text-gray-600">{policy.premiumAmount}</p>
+                        </div>
+                    </div>
+
+                    <div className="mt-2 flex justify-end space-x-3">
+                        <button
+                            type="button"
+                            onClick={onClose}
+                            className="px-4 py-2 border rounded-lg text-gray-700 hover:bg-gray-50"
+                        >
+                            Cancel
+                        </button>
+                        <button
+                            type="button"
+                            onClick={handleRemovePolicy}
+                            className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700"
+                        >
+                            Remove Policy
+                        </button>
+                    </div>
+
+                    <div className='relative'>
+                        {error && <span className='absolute bottom-0 text-sm text-red-600'>{error}</span>}
+                    </div>
+                </div>
             </div>
-            <div>
-              <h3 className="font-medium mb-2">Max Coverage</h3>
-              <p className="text-gray-600">{details.maxAmount}</p>
-            </div>
-          </div>
         </div>
-      </div>
-    </div>
-  );
+    );
 }
 
 export default PolicyModal;

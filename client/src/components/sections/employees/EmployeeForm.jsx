@@ -1,7 +1,9 @@
-import React, { useState } from 'react';
+import { useState } from 'react';
 import { X } from 'lucide-react';
+import { Switch } from '@mui/material';
 
-function EmployeeForm({ onClose, onSubmit }) {
+const EmployeeForm = ({ onClose, onSubmit }) => {
+    const [error, setError] = useState('');
     const [formData, setFormData] = useState({
         firstName: '',
         lastName: '',
@@ -13,18 +15,27 @@ function EmployeeForm({ onClose, onSubmit }) {
         status: 'active',
     });
 
-    const handleSubmit = (event) => {
+    const handleSubmit = async (event) => {
         event.preventDefault();
-        onSubmit(formData);
-        onClose();
+        const errorMessage = await onSubmit(formData);
+        if (!errorMessage) {
+            onClose();
+        } else {
+            setError(errorMessage);
+        }
     };
 
-    const handleChange = (e) => {
-        const { name, value } = e.target;
-        setFormData(prev => ({
-            ...prev,
-            [name]: value
-        }));
+    const handleChange = (event) => {
+        const { name, value } = event.target;
+        if (name === 'loginAccess') {
+            setFormData(prevFormData => ({
+                ...prevFormData, 'loginAccess': event.target.checked
+            }));
+        } else {
+            setFormData(prevFormData => ({
+                ...prevFormData, [name]: value
+            }));
+        }
     };
 
     return (
@@ -41,14 +52,11 @@ function EmployeeForm({ onClose, onSubmit }) {
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                         <div>
                             <label className="block text-sm font-medium text-gray-700 mb-2">
-                                First Name
+                                First Name<span className='text-red-600'>*</span>
                             </label>
                             <input
-                                type="text"
-                                name="firstName"
-                                value={formData.firstName}
-                                onChange={handleChange}
-                                required
+                                type="text" name="firstName" required
+                                value={formData.firstName} onChange={handleChange}
                                 className="w-full p-2 border rounded-lg focus:ring-blue-500 focus:border-blue-500"
                             />
                         </div>
@@ -58,51 +66,43 @@ function EmployeeForm({ onClose, onSubmit }) {
                                 Last Name
                             </label>
                             <input
-                                type="text"
-                                name="lastName"
-                                value={formData.lastName}
-                                onChange={handleChange}
-                                required
+                                type="text" name="lastName"
+                                value={formData.lastName} onChange={handleChange}
                                 className="w-full p-2 border rounded-lg focus:ring-blue-500 focus:border-blue-500"
                             />
                         </div>
 
                         <div>
                             <label className="block text-sm font-medium text-gray-700 mb-2">
-                                Email
+                                Email<span className='text-red-600'>*</span>
                             </label>
                             <input
-                                type="email"
-                                name="email"
-                                value={formData.email}
-                                onChange={handleChange}
-                                required
+                                type="email" name="email" required
+                                value={formData.email} onChange={handleChange}
                                 className="w-full p-2 border rounded-lg focus:ring-blue-500 focus:border-blue-500"
                             />
                         </div>
 
                         <div>
                             <label className="block text-sm font-medium text-gray-700 mb-2">
-                                Phone
+                                Phone<span className='text-red-600'>*</span>
                             </label>
                             <input
-                                type="tel"
-                                name="phone"
-                                value={formData.phone}
-                                onChange={handleChange}
-                                required
+                                type="tel" name="phone" required
+                                value={formData.phone} onChange={handleChange}
                                 className="w-full p-2 border rounded-lg focus:ring-blue-500 focus:border-blue-500"
                             />
                         </div>
+                    </div>
 
+                    <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mt-6">
                         <div>
                             <label className="block text-sm font-medium text-gray-700 mb-2">
-                                Role
+                                Role<span className='text-red-600'>*</span>
                             </label>
                             <select
                                 name="role"
-                                value={formData.role}
-                                onChange={handleChange}
+                                value={formData.role} onChange={handleChange}
                                 className="w-full p-2 border rounded-lg focus:ring-blue-500 focus:border-blue-500"
                             >
                                 <option value="admin">Admin</option>
@@ -112,18 +112,25 @@ function EmployeeForm({ onClose, onSubmit }) {
 
                         <div>
                             <label className="block text-sm font-medium text-gray-700 mb-2">
-                                Status
+                                Status<span className='text-red-600'>*</span>
                             </label>
                             <select
                                 name="status"
-                                value={formData.status}
-                                onChange={handleChange}
+                                value={formData.status} onChange={handleChange}
                                 className="w-full p-2 border rounded-lg focus:ring-blue-500 focus:border-blue-500"
                             >
                                 <option value="active">Active</option>
                                 <option value="inactive">Inactive</option>
                             </select>
                         </div>
+
+                        <div className='flex justify-between items-center'>
+                            <label className="block text-sm font-medium text-gray-700 mb-2">
+                                Login Access<span className='text-red-600'>*</span>
+                            </label>
+                            <Switch name="loginAccess" checked={formData.loginAccess} onChange={handleChange} />
+                        </div>
+                        {/* Manager ID */}
                     </div>
 
                     <div className="mt-6 flex justify-end space-x-3">
@@ -140,8 +147,13 @@ function EmployeeForm({ onClose, onSubmit }) {
                         >
                             Add Employee
                         </button>
-                        {/* Manager ID and loginAccess fields */}
                     </div>
+
+                    <div className='relative'>
+                        {error && <span className='absolute bottom-0 text-sm text-red-600'>{error}</span>}
+                    </div>
+                    
+                    <p className='text-gray-600'>The employee password will be [firstName]@[lastName]</p>
                 </form>
             </div>
         </div>

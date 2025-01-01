@@ -1,9 +1,9 @@
-import React, { useContext, useEffect, useState } from 'react';
+import { useContext, useEffect, useState } from 'react';
 import { Plus } from 'lucide-react';
+import { ClientContext } from '../../contexts/Client.context';
+import { addEmployee, fetchAllEmployees, removeEmployeeAccess } from '../../api';
 import EmployeeTable from './employees/EmployeeTable';
 import EmployeeForm from './employees/EmployeeForm';
-import { addEmployee, fetchAllEmployees } from '../../api';
-import { ClientContext } from '../../contexts/Client.context';
 
 function EmployeeManagement() {
     const [showForm, setShowForm] = useState(false);
@@ -24,13 +24,22 @@ function EmployeeManagement() {
     }, []);
 
     const handleAddEmployee = async (newEmployeeData) => {
-        // setEmployees(prev => [...prev, { ...newEmployee, id: prev.length + 1 }]);
         try {
-            const copyNewEmployeeData = structuredClone(newEmployeeData);
             newEmployeeData.employeeId = condenseClientInfo._id;
             const { data } = await addEmployee(newEmployeeData);
-            console.log(data);
-            setEmployeesData(prevEmployeesData => [...prevEmployeesData, { ...copyNewEmployeeData }]);
+            setEmployeesData(prevEmployeesData => [...prevEmployeesData, { ...data }]);
+            return false;
+        } catch (error) {
+            console.log(error);
+            const { response } = error;
+            return response?.data?.message;
+        }
+    };
+
+    const handleRemoveAccess = async (employeeId) => {
+        try {
+            await removeEmployeeAccess({ employeeId });
+            setEmployeesData(prevEmployeesData => prevEmployeesData.filter((employee) => employee._id !== employeeId));
         } catch (error) {
             console.log(error);
         }
@@ -40,18 +49,24 @@ function EmployeeManagement() {
         <div>
             <div className="flex justify-between items-center mb-6">
                 <h1 className="text-2xl font-bold text-gray-800">Employee Management</h1>
-                <button
-                    onClick={() => setShowForm(true)}
-                    className="bg-blue-600 text-white px-4 py-2 rounded-lg flex items-center gap-2 hover:bg-blue-700"
-                >
-                    <Plus size={20} />
-                    Add New Employee
-                </button>
+                {condenseClientInfo.role === 'superAdmin'
+                    &&
+                    <button
+                        onClick={() => setShowForm(true)}
+                        className="bg-blue-600 text-white px-4 py-2 rounded-lg flex items-center gap-2 hover:bg-blue-700"
+                    >
+                        <Plus size={20} />
+                        Add New Employee
+                    </button>
+                }
             </div>
 
             <div className="bg-white rounded-lg shadow">
                 <div className="p-6 ">
-                    <EmployeeTable employeesData={employeesData} />
+                    <EmployeeTable
+                        employeesData={employeesData}
+                        onRemoveAccess={handleRemoveAccess}
+                    />
                 </div>
             </div>
 

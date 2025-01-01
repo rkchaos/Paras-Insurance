@@ -1,13 +1,14 @@
 import { useContext, useState } from 'react';
 import { User } from 'lucide-react';
+import { Link } from 'react-router-dom';
 import { ClientContext } from '../contexts/Client.context';
 import Sidebar from './Sidebar';
 import CustomerManagement from './sections/CustomerManagement';
 import CompanyManagement from './sections/CompanyManagement';
 import EmployeeManagement from './sections/EmployeeManagement';
-import { Link } from 'react-router-dom';
+import Dashboard from './sections/Dashboard';
 
-function Dashboard() {
+function AdminPanel() {
     const [isCollapsed, setIsCollapsed] = useState(false);
     const [activeSection, setActiveSection] = useState('dashboard');
     const { condenseClientInfo } = useContext(ClientContext)
@@ -25,9 +26,9 @@ function Dashboard() {
             case 'employee':
                 return <EmployeeManagement />;
             case 'dashbord':
-                return <div>On it's way</div>;
+                return <Dashboard />;
             default:
-                return <div>On it's way</div>;
+                return <Dashboard />;
         }
     };
 
@@ -64,4 +65,4 @@ function Dashboard() {
     );
 }
 
-export default Dashboard;
+export default AdminPanel;

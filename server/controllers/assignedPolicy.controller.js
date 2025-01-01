@@ -2,6 +2,7 @@ import Client from "../models/client.model.js";
 import AssignedPolicy from "../models/assignedPolicy.model.js";
 import { ObjectId } from "mongodb";
 import { condenseClientInfo, generateAccessAndRefreshTokens } from "./client.controller.js";
+import Policy from "../models/policy.model.js";
 
 const cookiesOptions = {
     httpOnly: true,
@@ -106,7 +107,8 @@ const assignedPolicyWithClientId = async (res, { policyId, clientId, data, clien
     const newAssignedPolicy = await AssignedPolicy.create({
         policyId: policyId,
         clientId: clientId,
-        data: data
+        data: data,
+        stage: 1
     });
 
     // check for these fields: dob, gender, street, city, state, PINCODE, country, panCard, accountNo,
@@ -181,6 +183,92 @@ const assignPolicy = async (req, res) => {
     }
 }
 
+const fecthAllUnassignedPolicies = async (req, res) => {
+    try {
+        const unassignedPolicies = await AssignedPolicy.aggregate([
+            { $match: { stage: 1, } },
+            {
+                $lookup: {
+                    from: "clients",
+                    localField: "clientId",
+                    foreignField: "_id",
+                    as: "clientData"
+                }
+            },
+            {
+                $unwind: "$clientData"
+            },
+            {
+                $lookup: {
+                    from: "policies",
+                    localField: "policyId",
+                    foreignField: "_id",
+                    as: "policyData"
+                }
+            },
+            {
+                $unwind: "$policyData"
+            },
+            {
+                $project: {
+                    _id: 1,
+                    clientId: 1,
+                    policyId: 1,
+                    data: 1,
+                    stage: 1,
+                    createdAt: 1,
+                    updatedAt: 1,
+                    clientDetails: {
+                        firstName: "$clientData.personalDetails.firstName",
+                        lastName: "$clientData.personalDetails.lastName",
+                        dob: "$clientData.personalDetails.dob",
+                        gender: "$clientData.personalDetails.gender",
+                        city: "$clientData.personalDetails.address.city",
+                        email: "$clientData.personalDetails.contact.email",
+                        phone: "$clientData.personalDetails.contact.phone"
+                    },
+                    policyDetails: {
+                        policyName: "$policyData.policyName",
+                        policyType: "$policyData.policyType",
+                        policyDescription: "$policyData.policyDescription",
+                        policyForm: "$policyData.form"
+                    }
+                }
+            }
+        ]);
+
+        res.status(200).json(unassignedPolicies);
+    } catch (error) {
+        console.log(error);
+        res.status(503).json({ message: 'Network error. Try agin' });
+    }
+}
+
+const addAssignPolicy = async (req, res) => {
+    try {
+        const { assignedPolicyId } = req.query;
+        const assignedPolicy = await AssignedPolicy.findByIdAndUpdate(assignedPolicyId, { $set: { stage: 2 } }, { new: true });
+        const policy = await Policy.findById(assignedPolicy.policyId);
+        await Client.findByIdAndUpdate(
+            assignedPolicy.clientId,
+            {
+                $push: {
+                    interactionHistory: {
+                        type: 'Assigned Policy',
+                        description: `A ${policy.policyName} (${policy.policyType}) policy was assigned to the client`
+                    }
+                }
+            }
+        )
+        res.sendStatus(200);
+    } catch (error) {
+        console.log(error);
+        res.status(503).json({ message: 'Network error. Try agin' });
+    }
+}
+
 export {
-    assignPolicy
+    assignPolicy,
+    fecthAllUnassignedPolicies,
+    addAssignPolicy
 };

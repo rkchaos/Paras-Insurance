@@ -16,6 +16,13 @@ const assignedPolicySchema = new mongoose.Schema({
     data: {
         type: mongoose.Schema.Types.Mixed,
         required: true,
+    },
+    stage: {
+        type: Number,
+        required: true,
+    },
+    availablePolicies: {
+        type: mongoose.Schema.Types.Mixed,
     }
 }, { timestamps: true });
 
@@ -25,8 +32,8 @@ assignedPolicySchema.post('save', async function (document, next) {
         await Client.findByIdAndUpdate(document.clientId, {
             $push: {
                 interactionHistory: {
-                    type: 'Assigned Policy',
-                    description: `A ${policy.policyName} policy was assigned to the client.`,
+                    type: 'Interested in Policy',
+                    description: `Client is interested in ${policy.policyName} policy.`,
                 },
             },
         });

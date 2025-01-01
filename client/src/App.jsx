@@ -11,7 +11,7 @@ import ClientProfile from './pages/ClientProfile.page';
 import ResetPassword from './pages/ResetPassword.page';
 import { tailChase } from 'ldrs';
 import useFetchClient from './utils/useFetchClient';
-import Dashboard from './components/Dashboard';
+import AdminPanel from './components/AdminPanel';
 
 const App = () => {
     const { loading, isLoggedIn, condenseClientInfo } = useFetchClient();
@@ -29,7 +29,7 @@ const App = () => {
         return (
             <Router>
                 <Routes>
-                    <Route exact path='/' element={<Dashboard />} />
+                    <Route exact path='/' element={<AdminPanel />} />
                     <Route path='/auth' element={<Authentication />} />
                     <Route path='/insurance-form' element={<InsuranceForm />}></Route>
                     <Route path='/profile/:id' element={<ClientProfile />}></Route>

@@ -3,6 +3,7 @@ import { ObjectId } from "mongodb";
 import jwt from "jsonwebtoken";
 import nodemailer from "nodemailer";
 import Employee from '../models/employee.model.js';
+import AssignedPolicy from '../models/assignedPolicy.model.js';
 
 const cookiesOptions = {
     httpOnly: true,
@@ -199,11 +200,96 @@ const fetchAllData = async (req, res) => {
                 },
             },
         ]);
+
+        const assignedPolicies = await AssignedPolicy.aggregate([
+            { $match: { clientId: new ObjectId(clientId) } },
+            {
+                $lookup: {
+                    from: "clients",
+                    localField: "clientId",
+                    foreignField: "_id",
+                    as: "clientData"
+                }
+            },
+            {
+                $unwind: "$clientData"
+            },
+            {
+                $lookup: {
+                    from: "policies",
+                    localField: "policyId",
+                    foreignField: "_id",
+                    as: "policyData"
+                }
+            },
+            {
+                $unwind: "$policyData"
+            },
+            {
+                $project: {
+                    _id: 1,
+                    clientId: 1,
+                    policyId: 1,
+                    data: 1,
+                    stage: 1,
+                    createdAt: 1,
+                    updatedAt: 1,
+                    availablePolicies: 1,
+                    clientDetails: {
+                        firstName: "$clientData.personalDetails.firstName",
+                        lastName: "$clientData.personalDetails.lastName",
+                        dob: "$clientData.personalDetails.dob",
+                        gender: "$clientData.personalDetails.gender",
+                        city: "$clientData.personalDetails.address.city",
+                        email: "$clientData.personalDetails.contact.email",
+                        phone: "$clientData.personalDetails.contact.phone"
+                    },
+                    policyDetails: {
+                        policyName: "$policyData.policyName",
+                        policyType: "$policyData.policyType",
+                        policyDescription: "$policyData.policyDescription",
+                        policyForm: "$policyData.form"
+                    }
+                }
+            }
+        ]);
         if (clientData.length > 0) {
-            return res.status(200).json(clientData[0]);
+            return res.status(200).json({ clientData: clientData[0], assignedPolicies: assignedPolicies });
         } else {
-            return res.status(200).json(null);
+            return res.status(200).json({ clientData: null, assignedPolicies: null });
         }
+    } catch (error) {
+        console.error(error);
+        res.status(503).json({ message: 'Network error. Try again' })
+    }
+}
+
+const fetchAllCustomers = async (req, res) => {
+    try {
+        const clients = await Client.aggregate([
+            {
+                $lookup: {
+                    from: "employees", // Collection name for Employee
+                    localField: "_id", // Client `_id`
+                    foreignField: "clientId", // Employee's `clientId`
+                    as: "employeeData", // Store matched employees
+                },
+            },
+            {
+                $match: {
+                    employeeData: { $size: 0 }, // Filter out clients that are in Employee collection
+                },
+            },
+            {
+                $project: {
+                    password: 0, // Exclude sensitive fields
+                    refreshToken: 0,
+                    employeeData: 0, // Exclude joined employee data
+                },
+            },
+        ]);
+
+        res.status(200).json(clients);
     } catch (error) {
         console.error(error);
         res.status(503).json({ message: 'Network error. Try again' })
@@ -314,6 +400,7 @@ export {
     generateAccessAndRefreshTokens,
     fetchCondenseInfo,
     fetchAllData,
+    fetchAllCustomers,
     register,
     login,
     logout,

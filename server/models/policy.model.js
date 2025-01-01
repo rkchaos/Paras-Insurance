@@ -38,10 +38,6 @@ const policySchema = new mongoose.Schema({
     form: {
         type: formSchema,
         required: true,
-    },
-    dataFormat: {
-        type: mongoose.Schema.Types.Mixed,
-        required: true,
     }
 }, { timestamps: true });
 
