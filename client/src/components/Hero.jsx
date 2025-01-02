@@ -18,7 +18,7 @@ const Hero = () => {
                             Comprehensive Coverage
                         </div>
                         <h1 className='text-4xl font-thin tracking-tighter'>
-                            Protecting your future with <span className='font-semibold'>Paras</span>
+                            Protecting your future with <span className='font-semibold'>Paaras</span>
                         </h1>
                         <p className='max-w-[600px] text-gray-500 md:text-lg'>
                             Secure your tomorrow with tailored insurance solutions for every aspect of your life.

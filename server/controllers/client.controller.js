@@ -62,7 +62,7 @@ const sendMail = async ({ res, to, client, resetToken }) => {
             <br><br>
             Thank you,
             <br>
-            Paras Insurance 
+            Paaras Financials 
             <br>
             Support Team
         `;
@@ -397,8 +397,8 @@ const resetPassword = async (req, res) => {
 
 const deleteProfile = async (req, res) => {
     try {
-        const { clientId } = req.client._id
-        await Client.findByIdAndDelete({ "_id": new ObjectId(clientId) });
+        const clientId = req.client._id
+        await Client.findByIdAndDelete(clientId);
         await Employee.findOneAndDelete({ clientId: clientId });
         await AssignedPolicy.deleteMany({
             clientId: new ObjectId(clientId),

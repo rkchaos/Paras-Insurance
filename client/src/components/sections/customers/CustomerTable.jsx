@@ -2,6 +2,7 @@ import { useState, useMemo } from 'react';
 import { Edit2, Trash2, Search, Filter, UserPlus } from 'lucide-react';
 
 const CustomerTable = ({ customers }) => {
+    console.log(customers);
     const [searchTerm, setSearchTerm] = useState('');
     const [filterGender, setFilterGender] = useState('ALL');
     const [currentPage, setCurrentPage] = useState(1);
@@ -33,6 +34,31 @@ const CustomerTable = ({ customers }) => {
     const prevPage = () => {
         setCurrentPage(prev => Math.max(prev - 1, 1));
     };
+
+    function calculateAge(dobString) {
+        if (!dobString) {
+            return '-';
+        }
+        // Parse the input date string to a Date object
+        const dob = new Date(dobString);
+
+        // Get the current date
+        const today = new Date();
+
+        // Calculate the age
+        let age = today.getFullYear() - dob.getFullYear();
+
+        // Adjust for cases where the birthday hasn't occurred yet this year
+        const isBirthdayPassed =
+            today.getMonth() > dob.getMonth() ||
+            (today.getMonth() === dob.getMonth() && today.getDate() >= dob.getDate());
+
+        if (!isBirthdayPassed) {
+            age--;
+        }
+
+        return age;
+    }
 
     return (
         <div className="space-y-4">
@@ -73,9 +99,8 @@ const CustomerTable = ({ customers }) => {
                             <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Name</th>
                             <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Email</th>
                             <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Phone</th>
-                            <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Policy Count</th>
-                            <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Active Policy Count</th>
-                            <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Expired Policy Count</th>
+                            <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">UserType</th>
+                            <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Age</th>
                             <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Gender</th>
                             <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Actions</th>
                         </tr>
@@ -95,13 +120,10 @@ const CustomerTable = ({ customers }) => {
                                     <div className="text-sm text-gray-500">{customer.personalDetails.contact.phone}</div>
                                 </td>
                                 <td className="px-6 py-4 whitespace-nowrap">
-                                    <div className="text-sm text-gray-500">{customer.policies?.length}</div>
+                                    <div className="text-sm text-gray-500">{customer.userType}</div>
                                 </td>
                                 <td className="px-6 py-4 whitespace-nowrap">
-                                    <div className="text-sm text-gray-500">{customer.activePolicyCount}</div>
-                                </td>
-                                <td className="px-6 py-4 whitespace-nowrap">
-                                    <div className="text-sm text-gray-500">{customer.expiredPolicyCount}</div>
+                                    <div className="text-sm text-gray-500">{calculateAge(customer.personalDetails.dob)}</div>
                                 </td>
                                 <td className="px-6 py-4 whitespace-nowrap">
                                     <span className={`px-2 inline-flex text-xs leading-5 font-semibold rounded-full ${customer.personalDetails.gender?.toLowerCase() === 'male'

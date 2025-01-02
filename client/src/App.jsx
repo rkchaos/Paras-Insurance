@@ -30,10 +30,10 @@ const App = () => {
             <Router>
                 <Routes>
                     <Route exact path='/' element={<AdminPanel />} />
-                    <Route path='/auth' element={<Authentication />} />
-                    <Route path='/insurance-form' element={<InsuranceForm />}></Route>
-                    <Route path='/profile/:id' element={<ClientProfile />}></Route>
-                    <Route path='/resetPassword/:resetToken' element={<ResetPassword />}></Route>
+                    <Route path='/auth' element={<><Header /><Authentication /><Footer /></>} />
+                    <Route path='/insurance-form' element={<><Header /><InsuranceForm /><Footer /></>}></Route>
+                    <Route path='/profile/:id' element={<><Header /><ClientProfile /><Footer /></>}></Route>
+                    <Route path='/resetPassword/:resetToken' element={<><Header /><ResetPassword /><Footer /></>}></Route>
                 </Routes>
             </Router>
         );

@@ -2,9 +2,9 @@ import { Star } from 'lucide-react'
 
 const Testimonials = () => {
     const reviews = [
-        { customerName: 'Karan Bisht', review: 'Excellent service from Paras! The staff was friendly and ensured my home was spotless in no time.' },
-        { customerName: 'Ayush Kumar', review: 'Had a great experience with Paras. They quickly diagnosed and repaired my laptop, making it run like new.' },
-        { customerName: 'Raj Kumar', review: 'Impressed by Paras! The team handled my relocation smoothly and took great care of my belongings.' }
+        { customerName: 'Karan Bisht', review: 'Excellent service from Paaras! The staff was friendly and ensured my home was spotless in no time.' },
+        { customerName: 'Ayush Kumar', review: 'Had a great experience with Paaras. They quickly helped me find the right insurance.' },
+        { customerName: 'Raj Kumar', review: 'Impressed by Paaras! The team handled my relocation smoothly and took great care of my belongings.' }
     ]
 
     return (

@@ -99,9 +99,11 @@ const EmployeeTable = ({ employeesData, onRemoveAccess }) => {
                             <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                                 Status
                             </th>
-                            <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                                Actions
-                            </th>
+                            {condenseClientInfo.role.toLowerCase() === 'superadmin' &&
+                                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                    Actions
+                                </th>
+                            }
                         </tr>
                     </thead>
                     <tbody className="bg-white divide-y divide-gray-200">
@@ -141,22 +143,22 @@ const EmployeeTable = ({ employeesData, onRemoveAccess }) => {
                                         {employee.status.charAt(0).toUpperCase() + employee.status.slice(1)}
                                     </span>
                                 </td>
-                                <td className="px-6 py-4 whitespace-nowrap text-sm">
-                                    <div className="flex space-x-2">
-                                        <button className="text-blue-600 hover:text-blue-900">
-                                            <Tooltip title='Edit details'>
-                                                <Edit2 size={18} />
-                                            </Tooltip>
-                                        </button>
-                                        <button className="text-red-600 hover:text-red-900">
-                                            {condenseClientInfo.role?.toLowerCase() === 'superadmin' &&
+                                {condenseClientInfo.role.toLowerCase() === 'superadmin' &&
+                                    <td className="px-6 py-4 whitespace-nowrap text-sm">
+                                        <div className="flex space-x-2">
+                                            <button className="text-blue-600 hover:text-blue-900">
+                                                <Tooltip title='Edit details'>
+                                                    <Edit2 size={18} />
+                                                </Tooltip>
+                                            </button>
+                                            <button className="text-red-600 hover:text-red-900">
                                                 <Tooltip title='Remove access'>
                                                     <Trash2 size={18} onClick={() => onRemoveAccess(employee._id)} />
                                                 </Tooltip>
-                                            }
-                                        </button>
-                                    </div>
-                                </td>
+                                            </button>
+                                        </div>
+                                    </td>
+                                }
                             </tr>
                         ))}
                     </tbody>

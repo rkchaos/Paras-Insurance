@@ -27,7 +27,7 @@ const addEmployee = async (req, res) => {
         if (isClientPhoneUnique) return res.status(400).json({ message: 'Phone already registered. Assign role from Dashboard' });
 
         const newClient = await Client.create({
-            userType: 'employee',
+            userType: 'Employee',
             password: `${firstName}@${lastName}`,
             personalDetails: {
                 firstName: firstName,
@@ -80,6 +80,8 @@ const removeEmployeeAccess = async (req, res) => {
         const removedEmployee = await Employee.findByIdAndDelete(employeeId);
 
         if (!removedEmployee) return res.status(404).json({ error: "Employee not found" });
+
+        await Client.findByIdAndUpdate(removedEmployee.clientId, { $set: { userType: 'Lead' } });
 
         res.status(200).json({ message: "Employee deleted successfully" });
     } catch (error) {

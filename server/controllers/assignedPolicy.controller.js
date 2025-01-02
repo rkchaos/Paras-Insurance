@@ -196,7 +196,7 @@ const fecthAllUnassignedPolicies = async (req, res) => {
                 }
             },
             {
-                $unwind: "$clientData"
+                $unwind: "$clientData",
             },
             {
                 $lookup: {
@@ -207,7 +207,7 @@ const fecthAllUnassignedPolicies = async (req, res) => {
                 }
             },
             {
-                $unwind: "$policyData"
+                $unwind: "$policyData",
             },
             {
                 $project: {
@@ -216,6 +216,7 @@ const fecthAllUnassignedPolicies = async (req, res) => {
                     policyId: 1,
                     data: 1,
                     stage: 1,
+                    availablePolicies: 1,
                     createdAt: 1,
                     updatedAt: 1,
                     clientDetails: {
@@ -257,6 +258,38 @@ const addAssignPolicy = async (req, res) => {
                         type: 'Assigned Policy',
                         description: `A ${policy.policyName} (${policy.policyType}) policy was assigned to the client`
                     }
+                },
+                $set: {
+                    userType: 'Client',
+                    // "policies.$[elem].interestedIn": false,
+                }
+            }
+        )
+        res.sendStatus(200);
+    } catch (error) {
+        console.log(error);
+        res.status(503).json({ message: 'Network error. Try agin' });
+    }
+}
+
+const addAvailableCompanyPolicies = async (req, res) => {
+    try {
+        console.log(req.body);
+        const { policyIdForExcel, excelData } = req.body;
+        const assignedPolicy = await AssignedPolicy.findByIdAndUpdate(policyIdForExcel,
+            { $set: { availablePolicies: excelData } },
+            { new: true }
+        );
+        console.log(assignedPolicy);
+        const policy = await Policy.findById(assignedPolicy.policyId);
+        await Client.findByIdAndUpdate(
+            assignedPolicy.clientId,
+            {
+                $push: {
+                    interactionHistory: {
+                        type: 'Quotation Recieved',
+                        description: `Excel with quotation for ${policy.policyName} (${policy.policyType}) recieved.`
+                    }
                 }
             }
         )
@@ -270,5 +303,6 @@ const addAssignPolicy = async (req, res) => {
 export {
     assignPolicy,
     fecthAllUnassignedPolicies,
-    addAssignPolicy
+    addAssignPolicy,
+    addAvailableCompanyPolicies
 };

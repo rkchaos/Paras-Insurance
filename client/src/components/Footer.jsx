@@ -4,17 +4,18 @@ const Footer = () => {
     return (
         <footer className="bg-gray-900 text-white pt-12 pb-8 px-4 md:px-40">
             <div className="container mx-auto">
-                <div className="grid grid-cols-2 sm:grid-cols-1 md:grid-cols-4 gap-4 sm:gap-8">
+                <div className="grid grid-cols-2 sm:grid-cols-1 md:grid-cols-2 gap-4 sm:gap-8">
                     <div>
-                        <h5 className="font-bold text-md sm:text-xl mb-4">Paras Insurance</h5>
+                        <h5 className="font-bold text-md sm:text-xl mb-4">Paaras Financials</h5>
                         <ul className="sm:space-y-2">
-                            <li><Link to="/" className="text-xs sm:text-md hover:text-gray-400">Home</Link></li>
-                            <li><Link to="/" className="text-xs sm:text-md hover:text-gray-400">Insurance Products</Link></li>
-                            <li><Link to="/" className="text-xs sm:text-md hover:text-gray-400">Renew your policy</Link></li>
+                            <li><a href="#" className="text-xs sm:text-md hover:text-gray-400">Home</a></li>
+                            <li><a href="#insurace-products" className="text-xs sm:text-md hover:text-gray-400">Insurance Products</a></li>
+                            {/* <li><Link to="/" className="text-xs sm:text-md hover:text-gray-400">Renew your policy</Link></li>
                             <li><Link to="/" className="text-xs sm:text-md hover:text-gray-400">Start a SIP</Link></li>
-                            <li><Link to="/" className="text-xs sm:text-md hover:text-gray-400">Support</Link></li>
+                            <li><Link to="/" className="text-xs sm:text-md hover:text-gray-400">Support</Link></li> */}
                         </ul>
                     </div>
+                    {/* 
                     <div>
                         <h5 className="font-bold text-md sm:text-xl mb-4">Guides</h5>
                         <ul className="sm:space-y-2">
@@ -41,6 +42,14 @@ const Footer = () => {
                             <li><Link to="/" className="text-xs sm:text-md hover:text-gray-400">Discussions</Link></li>
                             <li><Link to="/" className="text-xs sm:text-md hover:text-gray-400">Corporate sponsors</Link></li>
                             <li><Link to="/" className="text-xs sm:text-md hover:text-gray-400">Open Collective</Link></li>
+                        </ul>
+                    </div> 
+                    */}
+                    <div>
+                        <h5 className="font-bold text-md sm:text-xl mb-4">Support</h5>
+                        <ul className="sm:space-y-2">
+                            <li className="text-xs sm:text-md py-1">+91 9876543210</li>
+                            <li className="text-xs sm:text-md py-1">support@paarasinsurance.com</li>
                         </ul>
                     </div>
                 </div>

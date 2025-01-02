@@ -23,6 +23,7 @@ export const fetchEveryPolicyId = () => API.get('/policy/fetchEveryPolicyId');
 export const assignPolicy = (assignedPolicyData) => API.post('/assignedPolicy/assign', assignedPolicyData);
 export const fetchAllUnassignedPolicies = () => API.get('/assignedPolicy/fecthAllUnassigned');
 export const addAssignPolicy = (assignedPolicyId) => API.get('/assignedPolicy/addAssign', { params: assignedPolicyId });
+export const addAvailableCompanyPolicies = (formData) => API.post('/assignedPolicy/addAvailableCompany', formData);
 
 // Employee
 export const fetchAllEmployees = () => API.get('/employee/fetchAll');

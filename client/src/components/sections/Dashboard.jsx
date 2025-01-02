@@ -76,6 +76,7 @@ const Dashboard = () => {
                         unassignedPolicies={unassignedPolicies}
                         onSendCompanyPolicies={handleSendCompanyPolicies}
                         onAssignPolicy={handleAssignPolicy}
+                        reload={getAllUnassignedPolicies}
                     />
                 </div>
             </div>

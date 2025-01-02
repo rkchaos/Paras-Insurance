@@ -14,7 +14,7 @@ const Header = () => {
         <header className='relative top-0 left-0 right-0 z-50 bg-gray-900 text-white border-b border-gray-800'>
             <div className='container flex h-16 px-8 items-center justify-between'>
                 <Link to='/' className='font-semibold text-xl'>
-                    Paras Insurance
+                    Paaras Financials
                 </Link>
                 <nav className='hidden md:flex gap-8'>
                     {/* <Link to='/' className='text-sm hover:opacity-95'>

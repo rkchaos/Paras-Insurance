@@ -1,4 +1,5 @@
 import { useContext, useEffect, useState } from 'react';
+import * as XLSX from "xlsx";
 import { tailChase } from 'ldrs';
 import { useNavigate, useParams } from 'react-router-dom';
 import { Timeline, TimelineDot, TimelineItem, TimelineConnector, TimelineContent, TimelineOppositeContent, timelineOppositeContentClasses, TimelineSeparator } from '@mui/lab';
@@ -10,6 +11,8 @@ import { ClientContext } from '../contexts/Client.context';
 import { Badge } from '../components/subcomponents/Badge';
 import { ScrollArea } from '../components/subcomponents/ScrollArea';
 import { ClientDetailsCard } from '../components/subcomponents/ClientDetailsCard';
+import Spreadsheet from 'react-spreadsheet';
+import { Download } from 'lucide-react';
 
 const ClientProfile = () => {
     const { id } = useParams();
@@ -75,6 +78,23 @@ const ClientProfile = () => {
         }
 
     }
+
+    const handleDownloadExcel = () => {
+        // Prepare the data
+        const worksheetData = selectedCompanyPolicies.map((row) =>
+            Array.isArray(row) ? row.map((cell) => (cell.value ? cell.value : cell)) : row
+        );
+
+        // Create a worksheet
+        const worksheet = XLSX.utils.aoa_to_sheet(worksheetData);
+
+        // Create a workbook and append the worksheet
+        const workbook = XLSX.utils.book_new();
+        XLSX.utils.book_append_sheet(workbook, worksheet, "Sheet1");
+
+        // Download the Excel file
+        XLSX.writeFile(workbook, "Quotation.xlsx");
+    };
 
     const repeatedFields = (n, field) => {
         // need to add default values in policies
@@ -264,7 +284,7 @@ const ClientProfile = () => {
                                                             <button
                                                                 onClick={() => selectCompanyPolicies(policy?.availablePolicies)}
                                                                 className='float-right mr-4 bg-gray-900 text-white py-1 px-2 rounded-sm hover:opacity-95'
-                                                            >Available Policies</button>
+                                                            >Quotations</button>
                                                         }
                                                         <button
                                                             onClick={() => selectPolicy({ data: policy?.data, format: policy?.policyDetails })}
@@ -304,7 +324,7 @@ const ClientProfile = () => {
                                                             <button
                                                                 onClick={() => selectCompanyPolicies(policy?.availablePolicies)}
                                                                 className='float-right mr-4 bg-gray-900 text-white py-1 px-2 rounded-sm hover:opacity-95'
-                                                            >Available Policies</button>
+                                                            >Quotations</button>
                                                         }
                                                         <button
                                                             onClick={() => selectPolicy({ data: policy?.data, format: policy?.policyDetails })}
@@ -350,9 +370,23 @@ const ClientProfile = () => {
                         {isCompanyPolicySelected &&
                             <ClientDetailsCard className='mt-4'>
                                 <div className='p-6'>
-                                    {selectedCompanyPolicies.map((companyPolicy, index) => {
-                                        return (
-                                            <div className='bg-gray-100 mb-2 p-2 rounded-lg'>
+                                    <h2 className='text-2xl font-bold mb-2'>Quotation(s)</h2>
+                                    <button
+                                        type='button'
+                                        onClick={handleDownloadExcel}
+                                        className='mb-4 flex items-center gap-2 border-2 border-gray-900 float-right rounded-md py-0.5 px-2'
+                                    >Download Excel <Download size={18} />
+                                    </button>
+                                    <br />
+                                    <ScrollArea className='max-h-[300px] w-full'>
+                                        <div>
+                                            <Spreadsheet data={selectedCompanyPolicies} />
+                                        </div>
+                                    </ScrollArea>
+                                    {/* 
+                                        {selectedCompanyPolicies.map((companyPolicy, index) => {
+                                            return (
+                                                <div className='bg-gray-100 mb-2 p-2 rounded-lg'>
                                                 <p className='ml-4'><strong>Company Name</strong>: {companyPolicy.companyName}</p>
                                                 <p className='ml-4'><strong>Policy Name</strong>: {companyPolicy.policyName}</p>
                                                 <p className='ml-4'><strong>Policy Type</strong>: {companyPolicy.policyType}</p>
@@ -362,14 +396,13 @@ const ClientProfile = () => {
                                                 <p className='ml-4'><strong>Coverage Type</strong>: {companyPolicy.coverageType}</p>
                                                 <p className='ml-4'><strong>Premium Amount</strong>: {companyPolicy.premiumAmount}</p>
                                                 <p className='ml-4'><strong>Premium Type</strong>: {companyPolicy.premiumType}</p>
-                                            </div>
-                                        )
-                                    })}
+                                                </div>
+                                                )
+                                            })} */}
                                 </div>
                             </ClientDetailsCard>
                         }
                     </div>
-
 
                     <div className='mt-4 grid gap-6 md:grid-cols-2'>
                         <ClientDetailsCard>
@@ -380,7 +413,7 @@ const ClientProfile = () => {
                                 </p>
                                 <ul>
                                     <li className='ml-2'>• <strong>Phone</strong>: +91 9876543210</li>
-                                    <li className='ml-2'>• <strong>Email</strong>: support@parasinsurance.com</li>
+                                    <li className='ml-2'>• <strong>Email</strong>: support@paarasinsurance.com</li>
                                 </ul>
                                 <p className='mt-2'>
                                     Our team will guide you through the process of renewing your policy and provide you with the necessary information and requirements.

@@ -1,8 +1,16 @@
 import { useMemo, useState } from 'react';
 import { Checkbox, Tooltip } from '@mui/material';
-import { Eye, Search, Send, UserPlus } from 'lucide-react';
+import { CheckCheck, Dot, Eye, RefreshCcw, Search, Send, Sheet, Upload, UserPlus } from 'lucide-react';
+import Button from '@mui/material/Button';
+import Menu from '@mui/material/Menu';
+import Spreadsheet from "react-spreadsheet";
+import MenuItem from '@mui/material/MenuItem';
+import * as XLSX from 'xlsx';
+import { ScrollArea } from '../../subcomponents/ScrollArea';
+import { addAvailableCompanyPolicies } from '../../../api';
 
-const DashboardTable = ({ unassignedPolicies, onSendCompanyPolicies, onAssignPolicy }) => {
+const DashboardTable = ({ unassignedPolicies, onSendCompanyPolicies, onAssignPolicy, reload }) => {
+    console.log(unassignedPolicies);
     const [searchTerm, setSearchTerm] = useState('');
     const [filterGender, setFilterGender] = useState('ALL');
     const [currentPage, setCurrentPage] = useState(1);
@@ -16,6 +24,75 @@ const DashboardTable = ({ unassignedPolicies, onSendCompanyPolicies, onAssignPol
     const prevPage = () => {
         setCurrentPage(prev => Math.max(prev - 1, 1));
     };
+
+    const [anchorEl, setAnchorEl] = useState(null);
+    const open = Boolean(anchorEl);
+    const handleClick = (event) => {
+        setAnchorEl(event.currentTarget);
+    };
+    const handleClose = () => {
+        setAnchorEl(null);
+    };
+
+    const handleUploadExcel = () => {
+        // console.log(document.getElementById(`${policyId}FileInput`));
+        document.getElementById(`excelUpload`)?.click();
+        handleClose();
+    }
+
+    const [excelData, setData] = useState([]);
+    const handleFileUpload = (event) => {
+        console.log('yay');
+
+        const file = event.target.files[0];
+        console.log(file);
+        const reader = new FileReader();
+
+        reader.onload = (event) => {
+            const workbook = XLSX.read(event.target.result, { type: 'binary' });
+            const sheetName = workbook.SheetNames[0];
+            const sheet = workbook.Sheets[sheetName];
+
+            const sheetData = XLSX.utils.sheet_to_json(sheet, { header: 1, defval: '' });
+
+        // Transform the sheetData into the desired structure
+        const formattedData = sheetData.map((row) =>
+            row.map((cell) => ({
+                value: cell || '', // Ensure empty cells are explicitly '<empty>'
+                readOnly: true
+            }))
+        );
+
+            setData(formattedData); // Set the transformed excelData
+        };
+        reader.readAsBinaryString(file);
+        document.getElementById(`excelUploadFileName`).textContent = file.name
+    }
+
+    const [excelModal, setExcelModal] = useState(false);
+    const [policyIdForExcel, setPolicyIdForExcel] = useState('');
+    const handleExcelModalOpen = (policyId) => {
+        setPolicyIdForExcel(policyId);
+        setExcelModal(true);
+    }
+    const handleExcelModalClose = () => {
+        setExcelModal(false);
+        setData([]);
+    }
+    const handleSendExcel = async () => {
+        console.log(policyIdForExcel)
+        // excelData
+        console.log(excelData);
+        try {
+            const { data, status } = await addAvailableCompanyPolicies({ policyIdForExcel, excelData });
+            if (status === 200) {
+                handleExcelModalClose();
+                reload();
+            }
+        } catch (error) {
+            console.log(error);
+        }
+    }
 
     const filteredUnassignedPolicies = useMemo(() => {
         return unassignedPolicies.filter(unassignedPolicy => {
@@ -91,6 +168,9 @@ const DashboardTable = ({ unassignedPolicies, onSendCompanyPolicies, onAssignPol
                         <option value="MALE">Male</option>
                         <option value="FEMALE">Female</option>
                     </select>
+                    <div className='cursor-pointer !ml-4' onClick={reload}>
+                        <RefreshCcw size={18} />
+                    </div>
                 </div>
             </div>
             <div className="overflow-x-auto">
@@ -116,7 +196,13 @@ const DashboardTable = ({ unassignedPolicies, onSendCompanyPolicies, onAssignPol
                                 Gender
                             </th>
                             <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                                Actions
+                                Details
+                            </th>
+                            <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                Resolve
+                            </th>
+                            <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                Assigned
                             </th>
                         </tr>
                     </thead>
@@ -146,24 +232,78 @@ const DashboardTable = ({ unassignedPolicies, onSendCompanyPolicies, onAssignPol
                                         {policy.clientDetails.gender?.toLowerCase() === 'male' ? 'Male' : policy.clientDetails.gender?.toLowerCase() === 'female' ? 'Female' : '-'}
                                     </span>
                                 </td>
-                                <td className="px-6 py-4 whitespace-nowrap text-sm">
-                                    <div className="flex space-x-2">
-                                        <button className="text-green-600 hover:text-green-900">
-                                            <Tooltip title='View policy details'>
-                                                <Eye size={18} onClick={() => handleViewDetails(policy)} />
+                                <td className="px-6 py-4 whitespace-nowrap text-sm text-center">
+                                    <button className="text-blue-600 hover:text-blue-900">
+                                        <Tooltip title='View policy details'>
+                                            <Eye size={18} onClick={() => handleViewDetails(policy)} />
+                                        </Tooltip>
+                                    </button>
+                                </td>
+                                <td className="px-6 py-4 whitespace-nowrap text-sm text-center">
+                                    {/* <button className="text-green-600 hover:text-green-900 !ml-4">
+                                            <Tooltip title='Enter quotation'>
+                                            <Sheet size={18} onClick={() => onSendCompanyPolicies(policy)} />
                                             </Tooltip>
+                                            </button> */}
+                                    <div className='flex items-center justify-start'>
+                                        {/* <Button
+                                                id="basic-button"
+                                                aria-controls={open ? 'basic-menu' : undefined}
+                                                aria-haspopup="true"
+                                                aria-expanded={open ? 'true' : undefined}
+                                                onClick={handleClick}
+                                                >
+                                                Dashboard
+                                                </Button> */}
+                                        <p id={`${policy._id}UploadedFile`}></p>
+                                        <button className="flex relative text-green-600 hover:text-green-900">
+                                            <Tooltip title='Enter quotation' >
+                                                <Sheet size={18} onClick={() => handleExcelModalOpen(policy._id)} />
+                                            </Tooltip>
+                                            {
+                                                policy.availablePolicies !== undefined && policy.availablePolicies?.length !== 0 &&
+                                                <div className='absolute left-6'>
+                                                    <Tooltip title='Policies Sent'>
+                                                        {console.log(policy.availablePolicies)}
+                                                        <CheckCheck size={20} />
+                                                    </Tooltip>
+                                                </div>
+                                            }
                                         </button>
-                                        <button className="text-green-600 hover:text-green-900">
+                                        {/* <Menu
+                                            id="basic-menu"
+                                            anchorEl={anchorEl}
+                                            open={open}
+                                            onClose={handleClose}
+                                            anchorOrigin={{
+                                                vertical: 'bottom',
+                                                horizontal: 'right',
+                                            }}
+                                            transformOrigin={{
+                                                vertical: 'top',
+                                                horizontal: 'right',
+                                            }}
+                                            MenuListProps={{
+                                                'aria-labelledby': 'basic-button',
+                                            }}
+                                        >
+                                            <MenuItem onClick={handleClose}>Enter details</MenuItem>
+                                            <MenuItem onClick={() => handleUploadExcel(policy._id)}>Upload Excel</MenuItem>
+                                        </Menu>
+                                        <input id={`${policy._id}FileInput`} type="file" accept='.xlsx,.xls,.csv' multiple={false} onChange={() => handleFileUpload(event, policy._id)} className='opacity-0 absolute left-0 pointer-events-none' /> */}
+                                    </div>
+                                    {/* <button className="text-green-600 hover:text-green-900">
                                             <Tooltip title='Send company policies to user'>
                                                 <Send size={18} onClick={() => onSendCompanyPolicies(policy)} />
                                             </Tooltip>
-                                        </button>
-                                        <button className="text-green-600 hover:text-green-900">
-                                            <Tooltip title='Policy assigned'>
-                                                <Checkbox onChange={() => onAssignPolicy(policy._id)} checked={false} />
-                                            </Tooltip>
-                                        </button>
-                                    </div>
+                                        </button> */}
+                                </td>
+                                <td className="px-6 py-4 whitespace-nowrap text-sm text-center">
+                                    <button className="text-green-600 hover:text-green-900">
+                                        <Tooltip title='Policy assigned'>
+                                            <Checkbox onChange={() => onAssignPolicy(policy._id)} checked={false} />
+                                        </Tooltip>
+                                    </button>
                                 </td>
                             </tr>
                         ))}
@@ -201,7 +341,7 @@ const DashboardTable = ({ unassignedPolicies, onSendCompanyPolicies, onAssignPol
                                     <p><strong>Policy Name:</strong> {selectedPolicy.policyDetails.policyName}</p>
                                     <p><strong>Policy Type:</strong> {selectedPolicy.policyDetails.policyType}</p>
                                     <h2 className='text-xl font-semibold my-2'>Applicant Information</h2>
-                                    <p className='ml-4'><strong>Client Name</strong>:{selectedPolicy.clientDetails['firstName']} {selectedPolicy.clientDetails['lastName']}</p>
+                                    <p className='ml-4'><strong>Client Name</strong>: {selectedPolicy.clientDetails['firstName']} {selectedPolicy.clientDetails['lastName']}</p>
                                     <p className='ml-4'><strong>Email</strong>: {selectedPolicy.clientDetails['email']}</p>
                                     <p className='ml-4'><strong>Phone</strong>: {selectedPolicy.clientDetails['phone']}</p>
                                     {Object.entries(selectedPolicy.policyDetails.policyForm.sections).map(([key, section]) => (
@@ -226,6 +366,41 @@ const DashboardTable = ({ unassignedPolicies, onSendCompanyPolicies, onAssignPol
                                         Close
                                     </button>
                                 </div>
+                            </div>
+                        </div>
+                    </div>
+                )}
+                {excelModal && (
+                    <div className="fixed inset-0 bg-gray-600 bg-opacity-50 overflow-y-auto h-full w-full">
+                        <div className="relative top-10 mx-auto p-5 border w-full lg:w-[50vw] shadow-lg rounded-md bg-white">
+                            <input id='excelUpload' type='file' multiple={false} accept='.xlsx,.xls,.csv' onChange={handleFileUpload} className='opacity-0 absolute pointer-events-none' />
+                            <div className='bg-gray-100 rounded-md p-4'>
+                                <div className="mt-3 flex flex-col gap-2 items-center cursor-pointer" onClick={handleUploadExcel}>
+                                    <Upload size={100} />
+                                    Upload Excel (.xlsx, .xls, .csv)
+                                </div>
+                            </div>
+                            <p id='excelUploadFileName'></p>
+                            <ScrollArea className='max-h-[50vh]'>
+                                {excelData.length !== 0 && (
+                                    <div>
+                                        <h2>Imported Excel:</h2>
+                                        <Spreadsheet data={excelData} setData={setData} />
+                                        {/* <pre>{JSON.stringify(excelData, null, 2)}</pre> */}
+                                    </div>
+                                )}
+                            </ScrollArea>
+                            <div className='w-full flex justify-end mt-2'>
+                                <button
+                                    type='button'
+                                    onClick={handleExcelModalClose}
+                                    className='px-4 py-2 rounded-md text-gray-900 bg-white mr-2 border-2 border-gray-900 mt-2 hover:opacity-95'
+                                >Cancel</button>
+                                <button
+                                    disabled={excelData.length === 0}
+                                    onClick={handleSendExcel}
+                                    className='px-4 py-2 rounded-md bg-gray-900 text-white mr-2 mt-2 hover:opacity-95'
+                                >Send</button>
                             </div>
                         </div>
                     </div>

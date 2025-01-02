@@ -34,7 +34,8 @@ const ServicesGrid = () => {
                     {services.length == 0 ?
                         <l-tail-chase size='40' speed='1.75' color='#111827' />
                         :
-                        <div className='flex-col gap-6 md:grid md:grid-flow-col md:grid-cols-4'>
+                        // <div className='flex-col gap-6 md:grid md:grid-flow-col md:grid-cols-4'>
+                        <div className='flex-col gap-6 md:flex md:flex-row'>
                             {
                                 services.map((service, index) => (
                                     <div onClick={() => handleNavigate(service._id)} key={index}
