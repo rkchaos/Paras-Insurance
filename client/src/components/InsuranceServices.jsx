@@ -1,8 +1,8 @@
-import { Heart, Building2, Shield } from 'lucide-react'
+import { BusinessRounded, FavoriteBorder, ShieldOutlined } from '@mui/icons-material';
 
 const InsuranceServices = () => {
     return (
-        <section className='py-8 md:py-24'>
+        <section className='py-8 md:py-16'>
             <div className='container px-4 md:px-40'>
                 <div className='grid gap-16 lg:grid-cols-[1fr_1fr]'>
                     <img
@@ -22,7 +22,7 @@ const InsuranceServices = () => {
                         <div className='space-y-4'>
                             <div className='flex gap-4'>
                                 <div className='w-12 h-12 rounded-full bg-blue-100 flex items-center justify-center'>
-                                    <Heart className='w-6 h-6 text-primary' />
+                                    <FavoriteBorder className='w-6 h-6 text-primary' />
                                 </div>
                                 <div>
                                     <h3 className='font-semibold mb-1'>Life/Health Coverage</h3>
@@ -31,16 +31,16 @@ const InsuranceServices = () => {
                             </div>
                             <div className='flex gap-4'>
                                 <div className='w-12 h-12 rounded-full bg-green-100 flex items-center justify-center'>
-                                    <Building2 className='w-6 h-6 text-green-600' />
+                                    <BusinessRounded className='w-6 h-6 text-green-600' />
                                 </div>
                                 <div>
-                                    <h3 className='font-semibold mb-1'>Business Coverage</h3>
+                                    <h3 className='font-semibold mb-1'>BusinessRounded Coverage</h3>
                                     <p className='text-sm text-gray-500'>Secure your business assets and operations with tailored insurance solutions.</p>
                                 </div>
                             </div>
                             <div className='flex gap-4'>
                                 <div className='w-12 h-12 rounded-full bg-orange-100 flex items-center justify-center'>
-                                    <Shield className='w-6 h-6 text-orange-600' />
+                                    <ShieldOutlined className='w-6 h-6 text-orange-600' />
                                 </div>
                                 <div>
                                     <h3 className='font-semibold mb-1'>Comprehensive Coverage</h3>

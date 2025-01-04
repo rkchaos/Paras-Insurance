@@ -1,17 +1,15 @@
-import { useContext, useState } from 'react';
-import { User } from 'lucide-react';
-import { Link } from 'react-router-dom';
-import { ClientContext } from '../contexts/Client.context';
+import { useState } from 'react';
+// importing components
 import Sidebar from './Sidebar';
+import Dashboard from './sections/Dashboard';
 import CustomerManagement from './sections/CustomerManagement';
+import PolicyManagement from './sections/PolicyManagement';
 import CompanyManagement from './sections/CompanyManagement';
 import EmployeeManagement from './sections/EmployeeManagement';
-import Dashboard from './sections/Dashboard';
 
-function AdminPanel() {
+const AdminPanel = () => {
     const [isCollapsed, setIsCollapsed] = useState(false);
     const [activeSection, setActiveSection] = useState('dashboard');
-    const { condenseClientInfo } = useContext(ClientContext)
 
     const toggleSidebar = () => {
         setIsCollapsed(!isCollapsed);
@@ -19,45 +17,30 @@ function AdminPanel() {
 
     const renderSection = () => {
         switch (activeSection) {
-            case 'companies':
-                return <CompanyManagement />;
-            case 'customers':
-                return <CustomerManagement />;
-            case 'employee':
-                return <EmployeeManagement />;
             case 'dashbord':
                 return <Dashboard />;
+            case 'customers':
+                return <CustomerManagement />;
+            case 'policies':
+                return <PolicyManagement />;
+            case 'companies':
+                return <CompanyManagement />;
+            case 'employee':
+                return <EmployeeManagement />;
             default:
                 return <Dashboard />;
         }
     };
 
     return (
-        <div className="flex h-screen bg-gray-100">
+        <div className='flex h-screen bg-gray-100'>
             <Sidebar
                 isCollapsed={isCollapsed} toggleSidebar={toggleSidebar}
                 activeSection={activeSection} setActiveSection={setActiveSection}
             />
 
-            <div className={`flex-1 ${isCollapsed ? 'ml-16' : 'ml-64'} transition-none`}>
-                <header className="bg-white shadow-sm px-6 py-4">
-                    <div className="flex items-center justify-between">
-                        <div className="flex items-center flex-1" />
-                        <div className="flex items-center space-x-4">
-                            <div className="flex items-center space-x-2">
-                                <Link to={`/profile/${condenseClientInfo._id}`}
-                                    className='flex gap-2 items-center justify-center hover:opacity-95'
-                                >
-                                    <div className="w-8 h-8 bg-gray-200 rounded-full flex items-center justify-center">
-                                        <User size={20} className="text-gray-600" />
-                                    </div>
-                                    <p>{condenseClientInfo.firstName}</p>
-                                </Link>
-                            </div>
-                        </div>
-                    </div>
-                </header>
-                <main className="p-6">
+            <div className={`flex-1 ${isCollapsed ? 'ml-14 max-w-[calc(100vw-5.5rem)]' : 'ml-64 max-w-[calc(100vw-18rem)]'} transition-none`}>
+                <main className='p-6'>
                     {renderSection()}
                 </main>
             </div>

@@ -1,6 +1,6 @@
 import FormField from './FormField';
 
-function FormSection({ fields, data, handleFormDataChange }) {
+const FormSection = ({ fields, data, handleFormDataChange }) => {
     return (
         <div className='form-section space-y-2'>
             {fields.map((field, index) => (

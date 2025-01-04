@@ -1,4 +1,4 @@
-function TextField({ label, id, name, placeholder, required, max, min, data, handleFormDataChange, type = 'text', repeat, repeatIndex }) {
+const TextField = ({ label, id, name, placeholder, required, max, min, data, handleFormDataChange, type = 'text', repeat, repeatIndex }) => {
     const handleEnter = (event) => {
         if (event.keyCode === 13) {
             event.preventDefault();

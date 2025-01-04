@@ -3,6 +3,7 @@ import AssignedPolicy from "../models/assignedPolicy.model.js";
 import { ObjectId } from "mongodb";
 import { condenseClientInfo, generateAccessAndRefreshTokens } from "./client.controller.js";
 import Policy from "../models/policy.model.js";
+import Company from "../models/company.model.js";
 
 const cookiesOptions = {
     httpOnly: true,
@@ -116,6 +117,8 @@ const assignedPolicyWithClientId = async (res, { policyId, clientId, data, clien
     addAdditionalClientData(clientId, data);
 
     // send mail to all companies
+    // Company.find()
+    
 
     const { accessToken, refreshToken } = await generateAccessAndRefreshTokens(clientData);
     const clientInfo = await condenseClientInfo(clientData);

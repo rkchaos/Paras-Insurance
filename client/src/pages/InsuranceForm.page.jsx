@@ -1,7 +1,7 @@
 import { useContext, useEffect, useState } from 'react';
-import { tailChase } from 'ldrs';
-import { ChevronDown } from 'lucide-react';
 import { useLocation, useNavigate } from 'react-router-dom';
+import { ExpandMore } from '@mui/icons-material';
+import { tailChase } from 'ldrs';
 // importing api end-points
 import { assignPolicy, fetchAllPolicyFields, fetchEveryPolicyId } from '../api';
 // importing contexts
@@ -187,7 +187,7 @@ const InsuranceForm = () => {
                                     <option key={index} value={_id}>{policyName}</option>
                                 ))}
                             </select>
-                            <ChevronDown className='absolute right-7 pointer-events-none' />
+                            <ExpandMore className='absolute right-7 pointer-events-none' />
                         </div>
                         <form id='insuranceForm' onSubmit={handleFormSubmit} className='bg-white shadow-md rounded-lg py-6 px-8 transition duration-300 ease-in-out hover:shadow-xl'>
                             <h1 className='text-2xl font-bold text-center mb-4'>{formFields.sections[currentSection].heading}</h1>

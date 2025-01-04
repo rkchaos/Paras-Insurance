@@ -1,7 +1,7 @@
-import React, { useState } from 'react';
-import { FileText, Plus } from 'lucide-react';
+import { useState } from 'react';
+import { Add, Description } from '@mui/icons-material';
 
-function PolicyManagement() {
+const PolicyManagement = () => {
     const [activeTab, setActiveTab] = useState('overview');
 
     return (
@@ -9,7 +9,7 @@ function PolicyManagement() {
             <div className="flex justify-between items-center mb-6">
                 <h1 className="text-2xl font-bold text-gray-800">Policy Management</h1>
                 <button className="bg-blue-600 text-white px-4 py-2 rounded-lg flex items-center gap-2 hover:bg-blue-700">
-                    <Plus size={20} />
+                    <Add size={20} />
                     Create New Policy
                 </button>
             </div>
@@ -22,8 +22,8 @@ function PolicyManagement() {
                                 key={tab}
                                 onClick={() => setActiveTab(tab.toLowerCase().replace(' ', '-'))}
                                 className={`px-3 py-4 text-sm font-medium border-b-2 ${activeTab === tab.toLowerCase().replace(' ', '-')
-                                        ? 'border-blue-500 text-blue-600'
-                                        : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
+                                    ? 'border-blue-500 text-blue-600'
+                                    : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
                                     }`}
                             >
                                 {tab}
@@ -40,7 +40,7 @@ function PolicyManagement() {
                                     <p className="text-sm text-blue-600 font-medium">Active Policies</p>
                                     <p className="text-2xl font-bold text-blue-900">567</p>
                                 </div>
-                                <FileText className="text-blue-600" size={24} />
+                                <Description className="text-blue-600" size={24} />
                             </div>
                         </div>
                     </div>

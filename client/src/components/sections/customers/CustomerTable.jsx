@@ -1,8 +1,8 @@
 import { useState, useMemo } from 'react';
-import { Edit2, Trash2, Search, Filter, UserPlus } from 'lucide-react';
+import { Tooltip } from '@mui/material';
+import { Edit, Delete, FilterAltOutlined, PersonAddAlt1, SearchOutlined } from '@mui/icons-material';
 
 const CustomerTable = ({ customers }) => {
-    console.log(customers);
     const [searchTerm, setSearchTerm] = useState('');
     const [filterGender, setFilterGender] = useState('ALL');
     const [currentPage, setCurrentPage] = useState(1);
@@ -35,27 +35,19 @@ const CustomerTable = ({ customers }) => {
         setCurrentPage(prev => Math.max(prev - 1, 1));
     };
 
-    function calculateAge(dobString) {
+    const calculateAge = (dobString) => {
         if (!dobString) {
             return '-';
         }
-        // Parse the input date string to a Date object
         const dob = new Date(dobString);
-
-        // Get the current date
         const today = new Date();
-
-        // Calculate the age
         let age = today.getFullYear() - dob.getFullYear();
 
-        // Adjust for cases where the birthday hasn't occurred yet this year
         const isBirthdayPassed =
             today.getMonth() > dob.getMonth() ||
             (today.getMonth() === dob.getMonth() && today.getDate() >= dob.getDate());
 
-        if (!isBirthdayPassed) {
-            age--;
-        }
+        if (!isBirthdayPassed) { age-- }
 
         return age;
     }
@@ -71,8 +63,8 @@ const CustomerTable = ({ customers }) => {
                         onChange={(e) => setSearchTerm(e.target.value)}
                         className="px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500"
                     />
-                    <button className="p-2 border border-gray-300 rounded-md shadow-sm hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">
-                        <Search className="h-4 w-4" />
+                    <button className="p-2 border border-gray-300 rounded-md shadow-sm hover:bg-gray-50 focus:outline-none ">
+                        <SearchOutlined className="h-4 w-4" />
                     </button>
                 </div>
                 <div className="flex items-center space-x-2">
@@ -85,9 +77,9 @@ const CustomerTable = ({ customers }) => {
                         <option value="MALE">Male</option>
                         <option value="FEMALE">Female</option>
                     </select>
-                    <Filter className="h-4 w-4" />
+                    <FilterAltOutlined className="h-4 w-4" />
                     <button className="px-3 py-2 bg-blue-600 text-white rounded-md shadow-sm hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 flex items-center space-x-1">
-                        <UserPlus className="h-4 w-4" />
+                        <PersonAddAlt1 className="h-4 w-4" />
                         <span>Add Customer</span>
                     </button>
                 </div>
@@ -135,11 +127,15 @@ const CustomerTable = ({ customers }) => {
                                 </td>
                                 <td className="px-6 py-4 whitespace-nowrap text-sm">
                                     <div className="flex space-x-2">
-                                        <button className="p-1 border border-gray-300 rounded-md shadow-sm text-blue-600 hover:text-blue-900 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">
-                                            <Edit2 size={18} />
+                                        <button className="p-1 border border-gray-300 rounded-md shadow-sm text-blue-600 hover:text-blue-900 hover:bg-gray-50 focus:outline-none ">
+                                            <Tooltip title='Edit details'>
+                                                <Edit />
+                                            </Tooltip>
                                         </button>
-                                        <button className="p-1 border border-gray-300 rounded-md shadow-sm text-red-600 hover:text-red-900 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">
-                                            <Trash2 size={18} />
+                                        <button className="p-1 border border-gray-300 rounded-md shadow-sm text-red-600 hover:text-red-900 hover:bg-gray-50 focus:outline-none ">
+                                            <Tooltip title='Delete record'>
+                                                <Delete />
+                                            </Tooltip>
                                         </button>
                                     </div>
                                 </td>
@@ -156,14 +152,14 @@ const CustomerTable = ({ customers }) => {
                     <button
                         onClick={prevPage}
                         disabled={currentPage === 1}
-                        className="px-3 py-2 border border-gray-300 rounded-md shadow-sm text-sm font-medium text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 disabled:opacity-50"
+                        className="px-3 py-2 border border-gray-300 rounded-md shadow-sm text-sm font-medium text-gray-700 bg-white hover:bg-gray-50 focus:outline-none disabled:opacity-50"
                     >
                         Previous
                     </button>
                     <button
                         onClick={nextPage}
                         disabled={currentPage === totalPages}
-                        className="px-3 py-2 border border-gray-300 rounded-md shadow-sm text-sm font-medium text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 disabled:opacity-50"
+                        className="px-3 py-2 border border-gray-300 rounded-md shadow-sm text-sm font-medium text-gray-700 bg-white hover:bg-gray-50 focus:outline-none disabled:opacity-50"
                     >
                         Next
                     </button>

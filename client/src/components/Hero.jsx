@@ -2,8 +2,6 @@ import { useContext } from 'react';
 import { useNavigate } from 'react-router-dom';
 // importing contexts
 import { ClientContext } from '../contexts/Client.context';
-// importing components
-import { Button } from './subcomponents/Button';
 
 const Hero = () => {
     const navigate = useNavigate();
@@ -11,10 +9,10 @@ const Hero = () => {
 
     return (
         <section className='pb-8 md:pb-12'>
-            <div className='container px-4 md:px-40'>
+            <div className='px-4 md:px-40'>
                 <div className='grid gap-6 lg:grid-cols-[1fr_1fr] lg:gap-12 items-center'>
                     <div className='flex flex-col justify-center space-y-4'>
-                        <div className='inline-block rounded-lg bg-primary/10 px-3 py-1 text-sm text-primary'>
+                        <div className='inline-block rounded-lg bg-primary/10 pr-3 py-1 text-sm text-primary'>
                             Comprehensive Coverage
                         </div>
                         <h1 className='text-4xl font-thin tracking-tighter'>
@@ -26,11 +24,16 @@ const Hero = () => {
                         <div className='flex flex-col gap-2 min-[400px]:flex-row'>
                             {isLoggedIn
                                 ?
-                                <a href='#insurace-products'
+                                <a
+                                    href='#productsAndServices'
                                     className='px-4 py-1 font-semibold text-lg rounded-md text-white bg-gray-900 border-white hover:opacity-95'
                                 >Get Started</a>
                                 :
-                                <Button label='Get Started' onClickFunction={() => navigate('/auth')} />
+                                <button
+                                    onClick={() => navigate('/auth')}
+                                    className='px-4 py-1 font-semibold text-lg rounded-md text-white bg-gray-900 border-white hover:opacity-95'
+                                >Get Started</button>
+
                             }
                         </div>
                     </div>

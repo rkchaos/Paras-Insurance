@@ -1,0 +1,16 @@
+{
+    "reviews": [
+        {
+            "customerName": "Karan Bisht",
+            "review": "Excellent service from Paaras! The staff was friendly and ensuring."
+        },
+        {
+            "customerName": "Ayush Kumar",
+            "review": "Had a great experience with Paaras. They quickly helped me find the right insurance."
+        },
+        {
+            "customerName": "Raj Kumar",
+            "review": "Impressed by Paaras! The team handled my expectations like a champ!"
+        }
+    ]
+}

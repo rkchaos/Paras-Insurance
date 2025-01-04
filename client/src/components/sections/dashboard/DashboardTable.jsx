@@ -1,13 +1,10 @@
 import { useMemo, useState } from 'react';
 import { Checkbox, Tooltip } from '@mui/material';
-import { CheckCheck, Dot, Eye, RefreshCcw, Search, Send, Sheet, Upload, UserPlus } from 'lucide-react';
-import Button from '@mui/material/Button';
-import Menu from '@mui/material/Menu';
+import { DoneAllOutlined, FilterAltOutlined, PostAddOutlined, SearchOutlined, Upload, Visibility } from '@mui/icons-material';
 import Spreadsheet from "react-spreadsheet";
-import MenuItem from '@mui/material/MenuItem';
 import * as XLSX from 'xlsx';
-import { ScrollArea } from '../../subcomponents/ScrollArea';
 import { addAvailableCompanyPolicies } from '../../../api';
+import { ScrollArea } from '../../subcomponents/ScrollArea';
 
 const DashboardTable = ({ unassignedPolicies, onSendCompanyPolicies, onAssignPolicy, reload }) => {
     console.log(unassignedPolicies);
@@ -55,13 +52,13 @@ const DashboardTable = ({ unassignedPolicies, onSendCompanyPolicies, onAssignPol
 
             const sheetData = XLSX.utils.sheet_to_json(sheet, { header: 1, defval: '' });
 
-        // Transform the sheetData into the desired structure
-        const formattedData = sheetData.map((row) =>
-            row.map((cell) => ({
-                value: cell || '', // Ensure empty cells are explicitly '<empty>'
-                readOnly: true
-            }))
-        );
+            // Transform the sheetData into the desired structure
+            const formattedData = sheetData.map((row) =>
+                row.map((cell) => ({
+                    value: cell || '', // Ensure empty cells are explicitly '<empty>'
+                    readOnly: true
+                }))
+            );
 
             setData(formattedData); // Set the transformed excelData
         };
@@ -148,29 +145,24 @@ const DashboardTable = ({ unassignedPolicies, onSendCompanyPolicies, onAssignPol
             <div className="flex justify-between mb-4">
                 <div className="flex items-center space-x-2">
                     <input
-                        type="text"
-                        placeholder="Search by name, email, or phone..."
-                        value={searchTerm}
-                        onChange={(e) => setSearchTerm(e.target.value)}
+                        type="text" placeholder="Search by name, email, or phone..."
+                        value={searchTerm} onChange={(e) => setSearchTerm(e.target.value)}
                         className="px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500"
                     />
-                    <button className="p-2 border border-gray-300 rounded-md shadow-sm hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">
-                        <Search className="h-4 w-4" />
+                    <button className="p-2 border border-gray-300 rounded-md shadow-sm hover:bg-gray-50 focus:outline-none ">
+                        <SearchOutlined className="h-4 w-4" />
                     </button>
                 </div>
                 <div className="flex items-center space-x-2">
                     <select
-                        value={filterGender}
-                        onChange={(e) => setFilterGender(e.target.value)}
+                        value={filterGender} onChange={(e) => setFilterGender(e.target.value)}
                         className="px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500"
                     >
                         <option value="ALL">All Genders</option>
                         <option value="MALE">Male</option>
                         <option value="FEMALE">Female</option>
                     </select>
-                    <div className='cursor-pointer !ml-4' onClick={reload}>
-                        <RefreshCcw size={18} />
-                    </div>
+                    <FilterAltOutlined className="h-4 w-4" />
                 </div>
             </div>
             <div className="overflow-x-auto">
@@ -235,14 +227,14 @@ const DashboardTable = ({ unassignedPolicies, onSendCompanyPolicies, onAssignPol
                                 <td className="px-6 py-4 whitespace-nowrap text-sm text-center">
                                     <button className="text-blue-600 hover:text-blue-900">
                                         <Tooltip title='View policy details'>
-                                            <Eye size={18} onClick={() => handleViewDetails(policy)} />
+                                            <Visibility onClick={() => handleViewDetails(policy)} />
                                         </Tooltip>
                                     </button>
                                 </td>
                                 <td className="px-6 py-4 whitespace-nowrap text-sm text-center">
                                     {/* <button className="text-green-600 hover:text-green-900 !ml-4">
                                             <Tooltip title='Enter quotation'>
-                                            <Sheet size={18} onClick={() => onSendCompanyPolicies(policy)} />
+                                            <PostAddOutlined  onClick={() => onSendCompanyPolicies(policy)} />
                                             </Tooltip>
                                             </button> */}
                                     <div className='flex items-center justify-start'>
@@ -258,14 +250,14 @@ const DashboardTable = ({ unassignedPolicies, onSendCompanyPolicies, onAssignPol
                                         <p id={`${policy._id}UploadedFile`}></p>
                                         <button className="flex relative text-green-600 hover:text-green-900">
                                             <Tooltip title='Enter quotation' >
-                                                <Sheet size={18} onClick={() => handleExcelModalOpen(policy._id)} />
+                                                <PostAddOutlined onClick={() => handleExcelModalOpen(policy._id)} />
                                             </Tooltip>
                                             {
                                                 policy.availablePolicies !== undefined && policy.availablePolicies?.length !== 0 &&
                                                 <div className='absolute left-6'>
                                                     <Tooltip title='Policies Sent'>
                                                         {console.log(policy.availablePolicies)}
-                                                        <CheckCheck size={20} />
+                                                        <DoneAllOutlined size={20} />
                                                     </Tooltip>
                                                 </div>
                                             }
@@ -294,7 +286,7 @@ const DashboardTable = ({ unassignedPolicies, onSendCompanyPolicies, onAssignPol
                                     </div>
                                     {/* <button className="text-green-600 hover:text-green-900">
                                             <Tooltip title='Send company policies to user'>
-                                                <Send size={18} onClick={() => onSendCompanyPolicies(policy)} />
+                                                <Send onClick={() => onSendCompanyPolicies(policy)} />
                                             </Tooltip>
                                         </button> */}
                                 </td>

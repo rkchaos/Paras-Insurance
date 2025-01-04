@@ -1,4 +1,3 @@
-import React from 'react';
 import TextField from './fields/TextField';
 import DateField from './fields/DateField';
 import TelField from './fields/TelField';
@@ -7,7 +6,7 @@ import CheckboxField from './fields/CheckboxField';
 import RepeatField from './fields/RepeatField';
 import SelectField from './fields/SelectField';
 
-function FormField(props) {
+const FormField = (props) => {
     switch (props.type) {
         case 'text':
         case 'number':

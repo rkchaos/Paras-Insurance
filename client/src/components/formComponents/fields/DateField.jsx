@@ -1,4 +1,4 @@
-function DateField({ label, id, name, required, data, handleFormDataChange, repeat, repeatIndex }) {
+const DateField = ({ label, id, name, required, data, handleFormDataChange, repeat, repeatIndex }) => {
     return (
         <div className="form-field">
             <label htmlFor={id} className="block text-sm font-medium text-gray-700 mb-1">

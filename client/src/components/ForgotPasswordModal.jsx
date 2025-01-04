@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import { useState } from 'react';
 
 const ForgotPasswordModal = ({ isOpen, onClose, modalText, modalFieldIsDisabled, setModalFieldIsDisabled, onSubmit }) => {
     const [email, setEmail] = useState('');

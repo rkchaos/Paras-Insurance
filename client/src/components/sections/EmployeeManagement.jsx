@@ -1,11 +1,11 @@
 import { useContext, useEffect, useState } from 'react';
-import { Plus } from 'lucide-react';
+import { Add } from '@mui/icons-material';
 import { ClientContext } from '../../contexts/Client.context';
 import { addEmployee, fetchAllEmployees, removeEmployeeAccess } from '../../api';
 import EmployeeTable from './employees/EmployeeTable';
 import EmployeeForm from './employees/EmployeeForm';
 
-function EmployeeManagement() {
+const EmployeeManagement = () => {
     const [showForm, setShowForm] = useState(false);
 
     const [employeesData, setEmployeesData] = useState([]);
@@ -55,7 +55,7 @@ function EmployeeManagement() {
                         onClick={() => setShowForm(true)}
                         className="bg-blue-600 text-white px-4 py-2 rounded-lg flex items-center gap-2 hover:bg-blue-700"
                     >
-                        <Plus size={20} />
+                        <Add size={20} />
                         Add New Employee
                     </button>
                 }

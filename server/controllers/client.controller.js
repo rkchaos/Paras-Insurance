@@ -4,6 +4,8 @@ import jwt from "jsonwebtoken";
 import nodemailer from "nodemailer";
 import Employee from '../models/employee.model.js';
 import AssignedPolicy from '../models/assignedPolicy.model.js';
+import ejs from "ejs";
+import fs from "fs";
 
 const cookiesOptions = {
     httpOnly: true,
@@ -48,24 +50,30 @@ const generateAccessAndRefreshTokens = async (client) => {
     } catch (error) { return null }
 }
 
-const sendMail = async ({ res, to, client, resetToken }) => {
-    let emailContent =
-        `   
-        Dear ${client.personalDetails.firstName},<br>
-            We received a request to reset the password for your account. 
-            If you made this request, please click the link below to reset your password:
-            <br><br>
-            <a href=${process.env.FRONT_END_URL}/resetPassword/${resetToken}>Reset your password</a>
-            <br><br>
-            After resetting your password, navigate to ${process.env.FRONT_END_URL} and log in with your new password to access your account.
-            This link will expire in ${process.env.RESET_TOKEN_EXPIRY} for security reasons. If you did not request a password reset, please ignore this email or contact our support team if you have concerns.
-            <br><br>
-            Thank you,
-            <br>
-            Paaras Financials 
-            <br>
-            Support Team
-        `;
+const sendResetPasswordMail = async ({ res, to, client, resetToken }) => {
+    const emailTemplate = fs.readFileSync("./assets/resetPasswordEmailTemplate.ejs", "utf-8");
+    const emailContent = ejs.render(emailTemplate, {
+        firstName: client.personalDetails.firstName,
+        resetToken: resetToken,
+        year: new Date().getFullYear()
+    });
+    // let emailContent =
+    //     `   
+    //     Dear ${client.personalDetails.firstName},<br>
+    //         We received a request to reset the password for your account. 
+    //         If you made this request, please click the link below to reset your password:
+    //         <br><br>
+    //         <a href=${process.env.FRONT_END_URL}/resetPassword/${resetToken}>Reset your password</a>
+    //         <br><br>
+    //         After resetting your password, navigate to ${process.env.FRONT_END_URL} and log in with your new password to access your account.
+    //         This link will expire in ${process.env.RESET_TOKEN_EXPIRY} for security reasons. If you did not request a password reset, please ignore this email or contact our support team if you have concerns.
+    //         <br><br>
+    //         Thank you,
+    //         <br>
+    //         Paaras Financials 
+    //         <br>
+    //         Support Team
+    //     `;
 
     const mailOptions = {
         from: process.env.SMTP_EMAIL,
@@ -74,7 +82,7 @@ const sendMail = async ({ res, to, client, resetToken }) => {
         html: emailContent
     };
 
-    await transporter.sendMail(mailOptions, function (error, info) {
+    await transporter.sendMail(mailOptions, (error, info) => {
         if (error) {
             console.error("Error on Nodemailer side: ", error);
         } else {
@@ -353,7 +361,7 @@ const forgotPassword = async (req, res) => {
             { expiresIn: process.env.RESET_TOKEN_EXPIRY }
         );
 
-        sendMail({ res, to: [email], client: clientCorrespondingToEmail, resetToken });
+        sendResetPasswordMail({ res, to: [email], client: clientCorrespondingToEmail, resetToken });
     } catch (error) {
         console.error(error);
         res.status(503).json({ message: 'Network error. Try again' })

@@ -1,7 +1,6 @@
-// import { Briefcase, Home, Bike, Landmark, Baby, Building2 } from 'lucide-react';
 import { useEffect, useState } from 'react';
-import { tailChase } from 'ldrs';
 import { useNavigate } from 'react-router-dom';
+import { tailChase } from 'ldrs';
 // importing api end-points
 import { fetchAllPolicies } from '../api';
 // importing components
@@ -21,21 +20,20 @@ const ServicesGrid = () => {
     }, []);
 
     const handleNavigate = (policyId) => {
-        navigate('insurance-form', { state: { policyId: policyId } });
+        navigate('/insuranceForm', { state: { policyId: policyId } });
     }
 
     tailChase.register();
 
     return (
-        <section id='insurace-products' className='py-8 md:py-12 px-8 bg-gray-50'>
+        <section id='productsAndServices' className='py-8 md:py-12 px-8 bg-gray-100'>
             <div className='px-4 md:px-6'>
-                <h2 className='text-3xl font-bold text-center mb-8'>Our Insurance Products</h2>
+                <h2 className='text-3xl font-bold text-center mb-8'>Our Products & Services</h2>
                 <div className='flex justify-center'>
                     {services.length == 0 ?
                         <l-tail-chase size='40' speed='1.75' color='#111827' />
                         :
-                        // <div className='flex-col gap-6 md:grid md:grid-flow-col md:grid-cols-4'>
-                        <div className='flex-col gap-6 md:flex md:flex-row'>
+                        <div className='flex-col gap-6 md:flex md:flex-row md:flex-wrap md:justify-center'>
                             {
                                 services.map((service, index) => (
                                     <div onClick={() => handleNavigate(service._id)} key={index}

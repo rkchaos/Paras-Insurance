@@ -1,7 +1,7 @@
 import { useContext, useMemo, useState } from 'react';
 import { Tooltip } from '@mui/material';
 import { tailChase } from 'ldrs';
-import { Edit2, Filter, Search, Trash2 } from 'lucide-react';
+import { Edit, Delete, FilterAltOutlined, SearchOutlined } from '@mui/icons-material';
 import { ClientContext } from '../../../contexts/Client.context';
 
 const EmployeeTable = ({ employeesData, onRemoveAccess }) => {
@@ -53,8 +53,8 @@ const EmployeeTable = ({ employeesData, onRemoveAccess }) => {
                         onChange={(e) => setSearchTerm(e.target.value)}
                         className="px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500"
                     />
-                    <button className="p-2 border border-gray-300 rounded-md shadow-sm hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">
-                        <Search className="h-4 w-4" />
+                    <button className="p-2 border border-gray-300 rounded-md shadow-sm hover:bg-gray-50 focus:outline-none ">
+                        <SearchOutlined className="h-4 w-4" />
                     </button>
                 </div>
                 <div className="flex items-center space-x-2">
@@ -74,7 +74,7 @@ const EmployeeTable = ({ employeesData, onRemoveAccess }) => {
                         <option value="ACTIVE">Active</option>
                         <option value="INACTIVE">Inactive</option>
                     </select>
-                    <Filter className="h-4 w-4" />
+                    <FilterAltOutlined className="h-4 w-4" />
                 </div>
             </div>
             <div className="overflow-x-auto">
@@ -146,14 +146,14 @@ const EmployeeTable = ({ employeesData, onRemoveAccess }) => {
                                 {condenseClientInfo.role.toLowerCase() === 'superadmin' &&
                                     <td className="px-6 py-4 whitespace-nowrap text-sm">
                                         <div className="flex space-x-2">
-                                            <button className="text-blue-600 hover:text-blue-900">
+                                            <button className="p-1 border border-gray-300 rounded-md shadow-sm text-blue-600 hover:text-blue-900 hover:bg-gray-50 focus:outline-none">
                                                 <Tooltip title='Edit details'>
-                                                    <Edit2 size={18} />
+                                                    <Edit />
                                                 </Tooltip>
                                             </button>
-                                            <button className="text-red-600 hover:text-red-900">
+                                            <button className="p-1 border border-gray-300 rounded-md shadow-sm text-red-600 hover:text-red-900 hover:bg-gray-50 focus:outline-none ">
                                                 <Tooltip title='Remove access'>
-                                                    <Trash2 size={18} onClick={() => onRemoveAccess(employee._id)} />
+                                                    <Delete onClick={() => onRemoveAccess(employee._id)} />
                                                 </Tooltip>
                                             </button>
                                         </div>
@@ -172,14 +172,14 @@ const EmployeeTable = ({ employeesData, onRemoveAccess }) => {
                     <button
                         onClick={prevPage}
                         disabled={currentPage === 1}
-                        className="px-3 py-2 border border-gray-300 rounded-md shadow-sm text-sm font-medium text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 disabled:opacity-50"
+                        className="px-3 py-2 border border-gray-300 rounded-md shadow-sm text-sm font-medium text-gray-700 bg-white hover:bg-gray-50 focus:outline-none  disabled:opacity-50"
                     >
                         Previous
                     </button>
                     <button
                         onClick={nextPage}
                         disabled={currentPage === totalPages}
-                        className="px-3 py-2 border border-gray-300 rounded-md shadow-sm text-sm font-medium text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 disabled:opacity-50"
+                        className="px-3 py-2 border border-gray-300 rounded-md shadow-sm text-sm font-medium text-gray-700 bg-white hover:bg-gray-50 focus:outline-none  disabled:opacity-50"
                     >
                         Next
                     </button>

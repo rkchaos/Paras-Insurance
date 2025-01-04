@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { X } from 'lucide-react';
+import { Close } from '@mui/icons-material';
 
 const PolicyModal = ({ policyData, onClose, onRemovePolicy }) => {
     const [error, setError] = useState('');
@@ -20,7 +20,7 @@ const PolicyModal = ({ policyData, onClose, onRemovePolicy }) => {
                 <div className="flex justify-between items-center p-6 border-b">
                     <h2 className="text-xl font-semibold">{policy.policyName}</h2>
                     <button onClick={onClose} className="text-gray-500 hover:text-gray-700">
-                        <X size={24} />
+                        <Close size={24} />
                     </button>
                 </div>
 
@@ -40,7 +40,7 @@ const PolicyModal = ({ policyData, onClose, onRemovePolicy }) => {
                         <h3 className="font-medium">Policy Type</h3>
                         <p className="text-gray-600">{policy.policyType}</p>
                     </div>
-                    
+
                     <div className="mb-3">
                         <h3 className="font-medium">Policy Description</h3>
                         <p className="text-gray-600">{policy.policyDescription}</p>

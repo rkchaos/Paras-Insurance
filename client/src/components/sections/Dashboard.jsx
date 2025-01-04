@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react';
-import { Plus } from 'lucide-react';
+import { Tooltip } from '@mui/material';
+// import { Add } from '@mui/icons-material';
 import { addAssignPolicy, fetchAllUnassignedPolicies, fetchCompanyPoliciesByType, sendCompanyPolicies } from '../../api';
 import DashboardTable from './dashboard/DashboardTable';
 import PolicyModal from './dashboard/PoliciesModal';
@@ -49,7 +50,7 @@ const Dashboard = () => {
 
     const handleAssignPolicy = async (assignedPolicyId) => {
         try {
-            const { data } = await addAssignPolicy({assignedPolicyId});
+            const { data } = await addAssignPolicy({ assignedPolicyId });
             getAllUnassignedPolicies();
         } catch (error) {
             console.log(error);
@@ -60,11 +61,20 @@ const Dashboard = () => {
         <div>
             <div className="flex justify-between items-center mb-6">
                 <h1 className="text-2xl font-bold text-gray-800">Unassigned Policies ({unassignedPolicies?.length})</h1>
+                <Tooltip title='Refresh Data'>
+                    <lord-icon
+                        src="https://cdn.lordicon.com/jxhgzthg.json"
+                        trigger="click" stroke="bold" state="loop-cycle"
+                        colors="primary:#111827,secondary:#111827"
+                        style={{ width: '25px', height: '25px', cursor: 'pointer' }}
+                        onClick={getAllUnassignedPolicies}
+                    />
+                </Tooltip>
                 {/* 
                 <button
                     className="bg-blue-600 text-white px-4 py-2 rounded-lg flex items-center gap-2 hover:bg-blue-700"
                 >
-                    <Plus size={20} />
+                    <Add size={20} />
                     Assign New Policy
                 </button> 
                 */}

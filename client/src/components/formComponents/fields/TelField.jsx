@@ -1,4 +1,4 @@
-function TelField({ label, id, name, placeholder, required, pattern, data, handleFormDataChange, repeat, repeatIndex }) {
+const TelField = ({ label, id, name, placeholder, required, pattern, data, handleFormDataChange, repeat, repeatIndex }) => {
     const handleEnter = (event) => {
         if (event.keyCode === 13) {
             event.preventDefault();

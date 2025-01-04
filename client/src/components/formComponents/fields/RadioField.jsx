@@ -1,4 +1,4 @@
-function RadioField({ label, id, name, required, children, handleFormDataChange, repeat, repeatIndex }) {
+const RadioField = ({ label, id, name, required, children, handleFormDataChange, repeat, repeatIndex }) => {
     return (
         <div className="form-field">
             <fieldset>

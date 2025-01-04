@@ -1,7 +1,7 @@
-import React, { useState } from 'react';
+import { useState } from 'react';
 import FormField from '../FormField';
 
-function RepeatField({ minCount, maxCount, children, addButtonLabel, removeButtonLabel, data, handleFormDataChange }) {
+const RepeatField = ({ minCount, maxCount, children, addButtonLabel, removeButtonLabel, data, handleFormDataChange }) => {
     const [repeats, setRepeats] = useState(minCount);
 
     const handleAddRepeat = async (event) => {

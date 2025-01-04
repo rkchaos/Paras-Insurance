@@ -1,13 +1,15 @@
-import React, { useState, useRef, useContext } from 'react';
+import { useState, useRef, useContext } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
-import { FaEye, FaEyeSlash } from 'react-icons/fa';
+import { Visibility, VisibilityOff } from '@mui/icons-material';
+// importing api end-points
 import { resetPassword } from '../api';
+// importing contexts
 import { ClientContext } from '../contexts/Client.context';
 
 const ResetPassword = () => {
     const { resetToken } = useParams();
 
-    const navigate = useNavigate('/');
+    const navigate = useNavigate();
 
     const { setIsLoggedIn, setCondenseClientInfo } = useContext(ClientContext);
     const [showPassword, setShowPassword] = useState(false);
@@ -18,9 +20,9 @@ const ResetPassword = () => {
 
     const [authData, setAuthData] = useState({
         password: '',
-        confirmPassword: "",
+        confirmPassword: '',
     });
-    function handleAuthDataChange(event) {
+    const handleAuthDataChange = (event) => {
         const { name, value } = event.target;
         setAuthData(prevAuthData => {
             return { ...prevAuthData, [name]: value };
@@ -36,10 +38,10 @@ const ResetPassword = () => {
             setError(error?.response?.data?.message);
         }
     }
-    async function handleSubmit(event) {
+    const handleSubmit = async (event) => {
         event.preventDefault();
         setError('');
-        if (authData.confirmPassword.trim() === "") {
+        if (authData.confirmPassword.trim() === '') {
             confirmPasswordField.current.focus();
             return false;
         } else if (authData.confirmPassword.trim() !== authData.password.trim()) {
@@ -61,17 +63,17 @@ const ResetPassword = () => {
     }
 
     return (
-        <div className="bg-gray-100 flex flex-col justify-center py-4 sm:px-6 lg:px-8">
+        <div className='bg-gray-100 flex flex-col justify-center py-4 sm:px-6 lg:px-8'>
             <h1 className='font-bold text-3xl text-center'>Reset your password</h1>
-            <div className="mt-4 sm:mx-auto sm:w-full sm:max-w-md">
-                <div className="bg-white py-8 px-4 mb-16 lg:mb-60 shadow sm:rounded-lg sm:px-10">
+            <div className='mt-4 sm:mx-auto sm:w-full sm:max-w-md'>
+                <div className='bg-white py-8 px-4 mb-16 lg:mb-60 shadow sm:rounded-lg sm:px-10'>
                     {success ? (
-                        <div className="text-green-600 text-bold text-center">
+                        <div className='text-green-600 text-bold text-center'>
                             Your password has been reset successfully!<br />
                             Navigating to home page
                         </div>
                     ) : (
-                        <form className="space-y-6" onSubmit={handleSubmit}>
+                        <form className='space-y-6' onSubmit={handleSubmit}>
                             <div>
                                 <label htmlFor='password' className='block text-sm font-medium text-gray-700'>
                                     Create Password*
@@ -87,9 +89,9 @@ const ResetPassword = () => {
                                         className='absolute inset-y-0 right-0 pr-3 flex items-center'
                                     >
                                         {showPassword ? (
-                                            <FaEyeSlash className='h-5 w-5 text-gray-400' />
+                                            <VisibilityOff className='h-5 w-5 text-gray-400' />
                                         ) : (
-                                            <FaEye className='h-5 w-5 text-gray-400' />
+                                            <Visibility className='h-5 w-5 text-gray-400' />
                                         )}
                                     </button>
                                 </div>
@@ -109,9 +111,9 @@ const ResetPassword = () => {
                                         className='absolute inset-y-0 right-0 pr-3 flex items-center'
                                     >
                                         {showPassword ? (
-                                            <FaEyeSlash className='h-5 w-5 text-gray-400' />
+                                            <VisibilityOff className='h-5 w-5 text-gray-400' />
                                         ) : (
-                                            <FaEye className='h-5 w-5 text-gray-400' />
+                                            <Visibility className='h-5 w-5 text-gray-400' />
                                         )}
                                     </button>
                                 </div>

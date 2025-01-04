@@ -1,8 +1,10 @@
 import { useContext, useEffect, useState } from 'react';
-import * as XLSX from "xlsx";
-import { tailChase } from 'ldrs';
 import { useNavigate, useParams } from 'react-router-dom';
 import { Timeline, TimelineDot, TimelineItem, TimelineConnector, TimelineContent, TimelineOppositeContent, timelineOppositeContentClasses, TimelineSeparator } from '@mui/lab';
+import { Download } from '@mui/icons-material';
+import * as XLSX from "xlsx";
+import Spreadsheet from 'react-spreadsheet';
+import { tailChase } from 'ldrs';
 // importing api end-points
 import { deleteProfile, fetchAllClientData, logout } from '../api';
 // importing contexts
@@ -11,8 +13,6 @@ import { ClientContext } from '../contexts/Client.context';
 import { Badge } from '../components/subcomponents/Badge';
 import { ScrollArea } from '../components/subcomponents/ScrollArea';
 import { ClientDetailsCard } from '../components/subcomponents/ClientDetailsCard';
-import Spreadsheet from 'react-spreadsheet';
-import { Download } from 'lucide-react';
 
 const ClientProfile = () => {
     const { id } = useParams();
@@ -43,6 +43,7 @@ const ClientProfile = () => {
         try {
             const { data } = await fetchAllClientData({ clientId: id });
             const { clientData, assignedPolicies } = data;
+            console.log(clientData);
             setClientData(clientData);
             setPolicies(assignedPolicies);
             console.log(assignedPolicies)
@@ -55,17 +56,6 @@ const ClientProfile = () => {
         window.scrollTo(0, 0);
         getClientData();
     }, [id]);
-
-    const handleLogout = async () => {
-        try {
-            await logout();
-            setIsLoggedIn(false);
-            setCondenseClientInfo(null);
-            navigate('/');
-        } catch (error) {
-            console.error(error);
-        }
-    }
 
     const handleDelete = async () => {
         try {
@@ -211,10 +201,6 @@ const ClientProfile = () => {
 
                                 </div>
                                 <div className='flex '>
-                                    <button
-                                        onClick={handleLogout}
-                                        className='my-6 ml-6 mr-0 py-1 px-2 bg-gray-900 text-white rounded-md hover:opacity-95'
-                                    >Logout</button>
                                     <button
                                         onClick={handleDelete}
                                         className='my-6 ml-4 py-1 px-2 bg-red-600 text-white rounded-md hover:opacity-95'
@@ -375,7 +361,7 @@ const ClientProfile = () => {
                                         type='button'
                                         onClick={handleDownloadExcel}
                                         className='mb-4 flex items-center gap-2 border-2 border-gray-900 float-right rounded-md py-0.5 px-2'
-                                    >Download Excel <Download size={18} />
+                                    >Download Excel <Download />
                                     </button>
                                     <br />
                                     <ScrollArea className='max-h-[300px] w-full'>

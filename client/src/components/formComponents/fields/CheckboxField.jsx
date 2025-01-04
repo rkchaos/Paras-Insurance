@@ -1,7 +1,7 @@
-import React, { useState } from 'react';
+import { useState } from 'react';
 
-function CheckboxField({ label, id, name, required, children, data, handleFormDataChange, repeat, repeatIndex }) {
-    // js for required
+const CheckboxField = ({ label, id, name, required, children, data, handleFormDataChange, repeat, repeatIndex }) => {
+    // TODO: js for required
     const [checkboxValues, setCheckboxValues] = useState([]);
     const handleCheckboxValues = async (event) => {
         const { value } = event.target;

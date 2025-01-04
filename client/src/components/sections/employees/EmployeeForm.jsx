@@ -1,6 +1,6 @@
 import { useState } from 'react';
-import { X } from 'lucide-react';
 import { Switch } from '@mui/material';
+import { Close } from '@mui/icons-material';
 
 const EmployeeForm = ({ onClose, onSubmit }) => {
     const [error, setError] = useState('');
@@ -44,7 +44,7 @@ const EmployeeForm = ({ onClose, onSubmit }) => {
                 <div className="flex justify-between items-center p-6 border-b">
                     <h2 className="text-xl font-semibold">Add New Employee</h2>
                     <button onClick={onClose} className="text-gray-500 hover:text-gray-700">
-                        <X size={24} />
+                        <Close size={24} />
                     </button>
                 </div>
 
@@ -152,7 +152,7 @@ const EmployeeForm = ({ onClose, onSubmit }) => {
                     <div className='relative'>
                         {error && <span className='absolute bottom-0 text-sm text-red-600'>{error}</span>}
                     </div>
-                    
+
                     <p className='text-gray-600'>The employee password will be [firstName]@[lastName]</p>
                 </form>
             </div>

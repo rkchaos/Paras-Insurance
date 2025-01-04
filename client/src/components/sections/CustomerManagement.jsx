@@ -1,9 +1,9 @@
-import React, { useEffect, useState } from 'react';
-import { Upload, FileDown } from 'lucide-react';
+import { useEffect, useState } from 'react';
+import Papa from "papaparse";
+import { Upload, Download } from '@mui/icons-material';
+import { fetchAllCustomers } from '../../api';
 import CustomerTable from './customers/CustomerTable';
 import CustomerStats from './customers/CustomerStats';
-import { fetchAllCustomers } from '../../api';
-import Papa from "papaparse";
 
 const CustomerManagement = () => {
     const [countError, setCountError] = useState(0);
@@ -12,23 +12,23 @@ const CustomerManagement = () => {
         setCountError(0); // Reset error count
         if (file) {
             console.log('File uploaded:', file.name);
-    
+
             // Parse CSV file using PapaParse
             Papa.parse(file, {
                 complete: (result) => {
                     const csvData = result.data;
                     let errorCount = 0; // Local error count for the current file
-    
+
                     // Validation and mapping
                     const validData = csvData.map((row) => {
                         const { firstName, lastName, email, phone, userType, age, gender } = row;
-    
+
                         // Basic validation for missing or incorrect fields
                         if (!phone || !email || !firstName || !lastName || !userType || !age || !gender) {
                             errorCount += 1; // Increment error count for invalid rows
                             return null; // Skip invalid row
                         }
-    
+
                         // Map the CSV fields to the customer structure
                         const newCustomer = {
                             userType: userType || 'Lead',  // Default userType if missing
@@ -51,10 +51,10 @@ const CustomerManagement = () => {
                             updatedAt: new Date().toISOString(),  // Assign current date as updatedAt
                             __v: 0  // MongoDB version field, assuming no versioning needed
                         };
-    
+
                         return newCustomer;
                     }).filter(Boolean); // Remove null values from invalid rows
-    
+
                     // Append valid rows to the existing customers list
                     setCustomers((prevCustomers) => {
                         // Use phone as the unique identifier for deduplication
@@ -62,7 +62,7 @@ const CustomerManagement = () => {
                         const newCustomers = validData.filter((customer) => !existingPhones.has(customer.personalDetails.contact.phone));
                         return [...prevCustomers, ...newCustomers];
                     });
-    
+
                     // Show the alert after the file is processed
                     if (errorCount > 0) {
                         alert(`Missing required field for ${errorCount} row(s)`);
@@ -124,7 +124,7 @@ const CustomerManagement = () => {
                         onClick={downloadSampleCSV}
                         className="bg-blue-600 text-white px-4 py-2 rounded-lg flex items-center gap-2 hover:bg-blue-700"
                     >
-                        <FileDown size={20} />
+                        <Download size={20} />
                         Sample CSV
                     </button>
                 </div>

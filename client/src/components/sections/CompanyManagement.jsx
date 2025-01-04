@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { Plus } from 'lucide-react';
+import { Add } from '@mui/icons-material';
 import { addCompanyPolicy, createCompany, deleteCompany, fetchAllCompanies, removeCompanyPolicy } from '../../api';
 import CompanyTable from './companies/CompanyTable';
 import CompanyForm from './companies/CompanyForm';
@@ -76,7 +76,7 @@ const CompanyManagement = () => {
                     onClick={() => setShowForm(true)}
                     className="bg-blue-600 text-white px-4 py-2 rounded-lg flex items-center gap-2 hover:bg-blue-700"
                 >
-                    <Plus size={20} />
+                    <Add size={20} />
                     Add New Company
                 </button>
             </div>

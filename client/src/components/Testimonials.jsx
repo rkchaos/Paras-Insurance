@@ -1,17 +1,14 @@
-import { Star } from 'lucide-react'
+import { Star } from '@mui/icons-material';
+// importing content
+import content from "../content.json";
 
 const Testimonials = () => {
-    const reviews = [
-        { customerName: 'Karan Bisht', review: 'Excellent service from Paaras! The staff was friendly and ensured my home was spotless in no time.' },
-        { customerName: 'Ayush Kumar', review: 'Had a great experience with Paaras. They quickly helped me find the right insurance.' },
-        { customerName: 'Raj Kumar', review: 'Impressed by Paaras! The team handled my relocation smoothly and took great care of my belongings.' }
-    ]
+    const reviews = content['reviews'];
 
     return (
-        <section className='py-12 md:py-24 bg-gray-50'>
+        <section className='py-12 md:py-16 bg-gray-100'>
             <div className='px-4 md:px-20 lg:px-40'>
-                <h2 className='text-3xl text-left'>What Our Customers</h2>
-                <h2 className='text-3xl text-left mb-12'>Are Saying</h2>
+                <h2 className='text-3xl font-bold text-left mb-8'>What Our Customers Are Saying</h2>
                 <div className='grid gap-8 md:grid-cols-3'>
                     {reviews.map(({ customerName, review }, index) => (
                         <div key={index} className='bg-white p-6 rounded-lg shadow-sm'>

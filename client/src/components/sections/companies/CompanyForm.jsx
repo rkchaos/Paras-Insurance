@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { X } from 'lucide-react';
+import { Close } from '@mui/icons-material';
 
 const CompanyForm = ({ onClose, onSubmit }) => {
     const [error, setError] = useState('');
@@ -56,7 +56,7 @@ const CompanyForm = ({ onClose, onSubmit }) => {
                 <div className="flex justify-between items-center p-6 border-b">
                     <h2 className="text-xl font-semibold">Add New Company</h2>
                     <button onClick={onClose} className="text-gray-500 hover:text-gray-700">
-                        <X size={24} />
+                        <Close size={24} />
                     </button>
                 </div>
 
