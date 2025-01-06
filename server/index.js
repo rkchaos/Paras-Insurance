@@ -47,7 +47,7 @@ import Newsletter from './models/newsletter.model.js';
 app.get('/subscribe/:email', async (req, res) => {
     const { email } = req.query;
     await Newsletter.create({ email: email });
-    res.sendStatus(200);
+    res.send('Subscribed!');
 });
 
 app.listen(PORT, () => {
