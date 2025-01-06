@@ -41,7 +41,7 @@ const ServicesGrid = () => {
         <section id='productsAndServices' className='py-8 md:py-12 px-8 bg-gray-100'>
             <div className='px-4 md:px-6'>
                 <h2 className='text-3xl font-bold text-center mb-8'>Our Products & Services</h2>
-                <div>
+                <div className='flex justify-center'>
                     {services.length == 0 ?
                         <l-tail-chase size='40' speed='1.75' color='#111827' />
                         :
