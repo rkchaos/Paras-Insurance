@@ -339,10 +339,10 @@ const DashboardTable = ({ unassignedPolicies, onSendCompanyPolicies, onAssignPol
                                     {Object.entries(selectedPolicy.policyDetails.policyForm.sections).map(([key, section]) => (
                                         Object.entries(section.fields).map(([key, field]) => (
                                             field.type === 'repeat' ?
-                                                <>
+                                                <div>
                                                     <h2 className='text-xl font-semibold my-2'>Dependents Information</h2>
                                                     {repeatedFields(field.maxCount, field)}
-                                                </>
+                                                </div>
                                                 :
                                                 <p className='ml-4' key={key}>
                                                     <strong>{field.label}</strong>: {selectedPolicy.data[field.name]}

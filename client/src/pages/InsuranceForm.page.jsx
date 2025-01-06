@@ -8,7 +8,9 @@ import { assignPolicy, fetchAllPolicyFields, fetchEveryPolicyId } from '../api';
 import { ClientContext } from '../contexts/Client.context';
 // importing components
 import FormSection from '../components/formComponents/FormSection';
-import RegisterModal from '../components/RegisterModal';
+import RegisterModal from '../components/subcomponents/RegisterModal';
+import Footer from '../components/Footer';
+import Background from '../components/Background';
 
 const InsuranceForm = () => {
     const location = useLocation();
@@ -138,7 +140,6 @@ const InsuranceForm = () => {
 
         try {
             if (isLoggedIn) {
-                // merge default client data with form data
                 const copyCondenseClientInfo = structuredClone(condenseClientInfo);
                 delete copyCondenseClientInfo._id;
                 const { data } = await assignPolicy({ formData: { ...copyCondenseClientInfo, ...formData }, policyId: currentPolicyId, clientId: condenseClientInfo._id });
@@ -178,7 +179,7 @@ const InsuranceForm = () => {
                 </div>
                 :
                 <div className='min-h-screen bg-gray-200 flex items-center justify-center py-8 px-4 sm:px-6 lg:px-8'>
-                    <div className='max-w-lg w-full space-y-8'>
+                    <div className='max-w-lg w-full space-y-8 relative z-10'>
                         <div className='flex relative items-center'>
                             <select onChange={handleChangeForm} value={currentPolicyId}
                                 className='w-full py-2 px-8 cursor-pointer appearance-none outline-none rounded-md'
@@ -264,6 +265,8 @@ const InsuranceForm = () => {
                 onClose={() => setShowRegisterModal(false)}
                 onSubmit={handleLogin}
             />
+            <Footer />
+            {/* <Background /> */}
         </div>
     );
 }

@@ -43,13 +43,6 @@ app.get('/', (req, res) => {
     res.send('Working!');
 });
 
-import Newsletter from './models/newsletter.model.js';
-app.get('/subscribe/:email', async (req, res) => {
-    const { email } = req.query;
-    await Newsletter.create({ email: email });
-    res.send('Subscribed!');
-});
-
 app.listen(PORT, () => {
     console.log(`Server working on PORT ${PORT}.`);
 });

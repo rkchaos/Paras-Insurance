@@ -6,7 +6,7 @@ import { register, login, forgotPassword } from '../api';
 // importing contexts
 import { ClientContext } from '../contexts/Client.context';
 // importing components
-import ForgotPasswordModal from '../components/ForgotPasswordModal';
+import ForgotPasswordModal from '../components/subcomponents/ForgotPasswordModal';
 import Footer from '../components/Footer';
 
 const Authentication = () => {
@@ -127,7 +127,7 @@ const Authentication = () => {
     }
 
     return (
-        <>
+        <div>
             <div className={`bg-gray-100 flex flex-col justify-center py-4 sm:px-6 lg:px-8 ${!isRegister && 'md:py-24'}`}>
                 <h1 className='font-bold text-3xl text-center'>{isRegister ? 'Register' : 'Login'}</h1>
                 <div className='mt-4 sm:mx-auto sm:w-full sm:max-w-md'>
@@ -235,7 +235,7 @@ const Authentication = () => {
                             </form>
                         )}
                         {!isRegister &&
-                            <>
+                            <div>
                                 <form className='space-y-6' onSubmit={handleSubmit}>
                                     <div>
                                         <label htmlFor='emailOrPhone' className='block text-sm font-medium text-gray-700'>
@@ -292,12 +292,12 @@ const Authentication = () => {
                                         </div>
                                     </div>
                                 </div>
-                            </>
+                            </div>
                         }
                         <p className='text-center mt-2'>
                             {isRegister ?
-                                <>Already have an account? <span className='text-blue-600 cursor-pointer' onClick={handleIsRegister}> Login</span></>
-                                : <>Don't have an account? <span className='text-blue-600 cursor-pointer' onClick={handleIsRegister}> Register</span></>
+                                <div>Already have an account? <span className='text-blue-600 cursor-pointer' onClick={handleIsRegister}> Login</span></div>
+                                : <div>Don't have an account? <span className='text-blue-600 cursor-pointer' onClick={handleIsRegister}> Register</span></div>
                             }
                         </p>
                         <div className='relative'>
@@ -316,7 +316,7 @@ const Authentication = () => {
                 ></ForgotPasswordModal>
             </div>
             <Footer />
-        </>
+        </div>
     );
 }
 

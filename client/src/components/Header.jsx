@@ -70,11 +70,11 @@ const Header = () => {
                         Paaras Financials
                     </Link>
                 }
-                <nav className='hidden md:flex gap-8 pr-28'>
+                <nav className='hidden md:flex !gap-8 pr-28'>
                     {(!isLoggedIn || !(condenseClientInfo.role?.toLowerCase() === 'admin' || condenseClientInfo.role?.toLowerCase() === 'superadmin'))
                         &&
                         <>
-                            <Link to='/SIP' className='text-sm hover:opacity-95'>
+                            <Link to={isLoggedIn ? `/SIP/${condenseClientInfo._id}` : '/auth'} className='text-sm hover:opacity-95'>
                                 Start a SIP
                             </Link>
                             <Link to='/aboutUs' className='text-sm hover:opacity-95'>
@@ -87,7 +87,7 @@ const Header = () => {
                     }
                 </nav>
                 {isLoggedIn ?
-                    <>
+                    <div>
                         <div className='flex gap-2 items-center justify-center hover:opacity-95'>
                             <Tooltip title='Account settings'>
                                 <IconButton
@@ -150,7 +150,7 @@ const Header = () => {
                                 Logout
                             </MenuItem>
                         </Menu>
-                    </>
+                    </div>
                     :
                     <Button onClick={handleAuthNavigate} className='!text-gray-900 !bg-white !font-semibold'>Login</Button>
                 }

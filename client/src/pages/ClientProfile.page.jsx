@@ -1,22 +1,18 @@
 import { useContext, useEffect, useState } from 'react';
 import { Link, useNavigate, useParams } from 'react-router-dom';
-import { Edit } from '@mui/icons-material';
+import { Accordion, AccordionDetails, AccordionSummary, Avatar, Button, Divider } from '@mui/material';
 import { Timeline, TimelineDot, TimelineItem, TimelineConnector, TimelineContent, TimelineOppositeContent, timelineOppositeContentClasses, TimelineSeparator } from '@mui/lab';
-// import { Download } from '@mui/icons-material';
-// import * as XLSX from 'xlsx';
-// import Spreadsheet from 'react-spreadsheet';
+import { Delete, Edit, ExpandMore, Female, Male, OpenInNew } from '@mui/icons-material';
 import { tailChase } from 'ldrs';
 // importing api end-points
-import { deleteProfile, fetchProfileData } from '../api';
+import { deleteProfile, fetchProfileData, updateProfile, uploadProfileMedia } from '../api';
 // importing contexts
 import { ClientContext } from '../contexts/Client.context';
 // importing components
 import Footer from '../components/Footer';
+import UpdateProfileForm from '../components/UpdateProfileForm';
 import { Badge } from '../components/subcomponents/Badge';
 import { ScrollArea } from '../components/subcomponents/ScrollArea';
-import { ClientDetailsCard } from '../components/subcomponents/ClientDetailsCard';
-import { IconButton } from '@mui/material';
-import UpdateProfileForm from '../components/UpdateProfileForm';
 
 const ClientProfile = () => {
     const { id } = useParams();
@@ -26,36 +22,12 @@ const ClientProfile = () => {
     const [isLoadingClientData, setIsLoadingClientData] = useState(true);
     const [isUnauthorisedAction, setIsUnauthorisedAction] = useState(false);
     const [isClientDataFound, setIsClientDataFound] = useState(true);
-    const [clientData, setClientData] = useState(true);
-    const [clientName, setClientName] = useState('');
-
-    // const [isCompanyPolicySelected, setIsCompanyPolicySelected] = useState(false);
-    // const [selectedCompanyPolicies, setSelectedCompanyPolicies] = useState([]);
-    // const selectCompanyPolicies = (availablePolicies) => {
-    //     setIsCompanyPolicySelected(true);
-    //     console.log(selectedCompanyPolicies);
-    //     setSelectedCompanyPolicies(availablePolicies);
-    // }
-
-    // const [policies, setPolicies] = useState([]);
-
-    // const [isPolicySelected, setIsPolicySelected] = useState(false);
-    // const [selectedPolicy, setSelectedPolicy] = useState({});
-    // const selectPolicy = (policyData) => {
-    //     setIsPolicySelected(true);
-    //     setSelectedPolicy(policyData);
-    // }
+    const [clientData, setClientData] = useState({});
 
     const getClientData = async () => {
         try {
             const { data } = await fetchProfileData({ clientId: id });
-            const { client, clientFirstName, clientLastName } = data;
-            setClientData(client);
-            if (clientLastName) {
-                setClientName(`${clientFirstName} ${clientLastName}`);
-            } else {
-                setClientName(`${clientFirstName}`);
-            }
+            setClientData(data);
             setIsLoadingClientData(false);
         } catch (error) {
             const { status } = error;
@@ -87,49 +59,32 @@ const ClientProfile = () => {
         }
 
     }
-    const [updateProfile, setUpdateProfile] = useState(false);
+
+    const [isUpdateProfileOpen, setIsUpdateProfileOpen] = useState(false);
     const openUpdateProfile = () => {
-        setUpdateProfile(true);
+        setIsUpdateProfileOpen(true);
     }
     const closeUpdateProfile = () => {
-        setUpdateProfile(false);
+        setIsUpdateProfileOpen(false);
     }
-    const handleUpdate = async () => {
-
+    const handleUpdate = async (formData, removedFiles, files) => {
+        try {
+            const { status, data } = await updateProfile({ formData, removedFiles });
+            const updatedClientData = data;
+            if (status === 200) {
+                setClientData(updatedClientData);
+                const { status, data } = await uploadProfileMedia({ ...files, clientId: clientData._id });
+                setClientData(data);
+                if (status === 200) {
+                    closeUpdateProfile();
+                }
+            }
+        } catch (error) {
+            const errorMessage = error?.response?.data?.message;
+            setError(errorMessage);
+            console.log(error);
+        }
     }
-
-    // const handleDownloadExcel = () => {
-    //     const worksheetData = selectedCompanyPolicies.map((row) =>
-    //         Array.isArray(row) ? row.map((cell) => (cell.value ? cell.value : cell)) : row
-    //     );
-
-    //     const worksheet = XLSX.utils.aoa_to_sheet(worksheetData);
-
-    //     const workbook = XLSX.utils.book_new();
-    //     XLSX.utils.book_append_sheet(workbook, worksheet, 'Sheet1');
-
-    //     XLSX.writeFile(workbook, 'Quotation.xlsx');
-    // };
-
-    // const repeatedFields = (n, field) => {
-    //     const elements = [];
-    //     for (let index = 0; index < n; index++) {
-    //         elements.push(
-    //             ...Object.entries(field.children).map(([key, childField]) => {
-    //                 if (selectedPolicy.data[`${index + 1}${childField.name}`] == null || selectedPolicy.data[`${index + 1}${childField.name}`] == '' || selectedPolicy.data[`${index + 1}${childField.name}`] == 'Self') {
-    //                     return null;
-    //                 } else {
-    //                     return (
-    //                         <p className='ml-4' key={`${index}-${key}`}>
-    //                             <strong>{childField.label}</strong>: {selectedPolicy.data[`${index + 1}${childField.name}`]}
-    //                         </p>
-    //                     );
-    //                 }
-    //             })
-    //         );
-    //     }
-    //     return elements;
-    // };
 
     const toFormattedDate = (timestamp) => {
         const formattedDate = new Date(Date.parse(timestamp))
@@ -154,6 +109,52 @@ const ClientProfile = () => {
     }
 
     tailChase.register();
+
+    // import { Download } from '@mui/icons-material';
+    // import * as XLSX from 'xlsx';
+    // import Spreadsheet from 'react-spreadsheet';
+    // const handleDownloadExcel = () => {
+    //     const worksheetData = selectedCompanyPolicies.map((row) =>
+    //         Array.isArray(row) ? row.map((cell) => (cell.value ? cell.value : cell)) : row
+    //     );
+    //     const worksheet = XLSX.utils.aoa_to_sheet(worksheetData);
+    //     const workbook = XLSX.utils.book_new();
+    //     XLSX.utils.book_append_sheet(workbook, worksheet, 'Sheet1');
+    //     XLSX.writeFile(workbook, 'Quotation.xlsx');
+    // };
+    // const repeatedFields = (n, field) => {
+    //     const elements = [];
+    //     for (let index = 0; index < n; index++) {
+    //         elements.push(
+    //             ...Object.entries(field.children).map(([key, childField]) => {
+    //                 if (selectedPolicy.data[`${index + 1}${childField.name}`] == null || selectedPolicy.data[`${index + 1}${childField.name}`] == '' || selectedPolicy.data[`${index + 1}${childField.name}`] == 'Self') {
+    //                     return null;
+    //                 } else {
+    //                     return (
+    //                         <p className='ml-4' key={`${index}-${key}`}>
+    //                             <strong>{childField.label}</strong>: {selectedPolicy.data[`${index + 1}${childField.name}`]}
+    //                         </p>
+    //                     );
+    //                 }
+    //             })
+    //         );
+    //     }
+    //     return elements;
+    // };
+    // const [isCompanyPolicySelected, setIsCompanyPolicySelected] = useState(false);
+    // const [selectedCompanyPolicies, setSelectedCompanyPolicies] = useState([]);
+    // const selectCompanyPolicies = (availablePolicies) => {
+    //     setIsCompanyPolicySelected(true);
+    //     console.log(selectedCompanyPolicies);
+    //     setSelectedCompanyPolicies(availablePolicies);
+    // }
+    // const [policies, setPolicies] = useState([]);
+    // const [isPolicySelected, setIsPolicySelected] = useState(false);
+    // const [selectedPolicy, setSelectedPolicy] = useState({});
+    // const selectPolicy = (policyData) => {
+    //     setIsPolicySelected(true);
+    //     setSelectedPolicy(policyData);
+    // }
 
     return (
         <div>
@@ -185,147 +186,280 @@ const ClientProfile = () => {
                             <p className='text-3xl font-semibold text-gray-900'>No client found</p>
                         </div>
                         :
-                        <div className='py-4 sm:px-16 bg-gray-200'>
-                            <h1 className='text-3xl text-center font-bold mb-6'>
-                                {id !== condenseClientInfo._id && (
-                                    condenseClientInfo.role?.toLowerCase() === 'superadmin' ||
-                                    condenseClientInfo.role?.toLowerCase() === 'admin'
-                                ) ? `${clientName}'s Profile` : 'My Profile'}
-                            </h1>
-                            <div className='grid gap-6 md:grid-cols-2'>
-                                <ClientDetailsCard>
-                                    <div className='h-full flex flex-col justify-between items-start'>
-                                        <div className='p-6 w-full'>
-                                            <div className='flex justify-between'>
-                                                <h2 className='text-2xl font-bold'>Profile</h2>
-                                                <IconButton onClick={openUpdateProfile}>
-                                                    <Edit />
-                                                </IconButton>
-                                            </div>
-                                            <p className='font-bold'>Personal Details</p>
-                                            <p className='ml-4'><strong>Name:</strong> {clientData?.personalDetails?.firstName} {clientData?.personalDetails?.lastName}</p>
-                                            <p className='ml-4'><strong>User Type:</strong> {clientData?.userType}</p>
-                                            {clientData?.personalDetails?.dob && <p className='ml-4'><strong>DOB:</strong> {toFormattedDate(clientData?.personalDetails?.dob)}</p>}
-                                            {clientData?.personalDetails?.gender && <p className='ml-4'><strong>Gender:</strong> {clientData?.personalDetails?.gender}</p>}
-                                            <p className='ml-4'><strong>Email:</strong> {clientData?.personalDetails?.contact?.email} </p>
-                                            <p className='ml-4'><strong>Phone:</strong> +91-{clientData?.personalDetails?.contact?.phone}</p>
-                                            <p className='ml-4'><strong>KYC:</strong> {clientData?.KYC ? <Badge label='Uploaded' status='good' /> : <Badge label='NA' status='bad' />}</p>
-
-                                            {clientData?.personalDetails?.address &&
-                                                <div>
-                                                    <p className='ml-4'><strong>Address:</strong></p>
-                                                    {clientData?.personalDetails?.address?.street && <p className='ml-8'><strong>Street:</strong> {clientData?.personalDetails?.address?.street}</p>}
-                                                    {clientData?.personalDetails?.address?.city && <p className='ml-8'><strong>City:</strong> {clientData?.personalDetails?.address?.city}</p>}
-                                                    {clientData?.personalDetails?.address?.state && <p className='ml-8'><strong>State:</strong> {clientData?.personalDetails?.address?.state}</p>}
-                                                    {clientData?.personalDetails?.address?.pincode && <p className='ml-8'><strong>pincode:</strong> {clientData?.personalDetails?.address?.pincode}</p>}
-                                                    {clientData?.personalDetails?.address?.country && <p className='ml-8'><strong>Country:</strong> {clientData?.personalDetails?.address?.country}</p>}
-                                                </div>
-                                            }
-                                            {clientData?.personalDetails?.nominee && (
-                                                <div>
-                                                    <p className='font-bold'>Nominee Details</p>
-                                                    <p className='ml-4'><strong>Name:</strong> {clientData?.personalDetails?.nominee?.name}</p>
-                                                    <p className='ml-4'><strong>DOB:</strong> {clientData?.personalDetails?.nominee?.dob}</p>
-                                                    <p className='ml-4'><strong>Relationship:</strong> {clientData?.personalDetails?.nominee?.relationship}</p>
-                                                    <p className='ml-4'><strong>Phone:</strong> {clientData?.personalDetails?.nominee?.phone}</p>
-                                                </div>
-                                            )}
-
-                                            {clientData?.financialDetails && (
-                                                <div>
-                                                    <p className='font-bold'>Financial Details</p>
-                                                    <p className='ml-4'><strong>PAN Card Number:</strong> {clientData?.financialDetails?.panCardNo}</p>
-                                                    <Link to={`/uploads/${clientData?.financialDetails?.panCardURL}`} target="_blank" rel="noopener noreferrer">PAN Card</Link>
-                                                    <p className='ml-4'><strong>Aadhaar Number:</strong> {clientData?.financialDetails?.aadhaarNo}</p>
-                                                    <Link to={`/uploads/${clientData?.financialDetails?.aadhaarURL}`} target="_blank" rel="noopener noreferrer">Aadhar</Link>
-                                                    {clientData?.financialDetails?.accountDetails && (
-                                                        <div>
-                                                            <p className='ml-4'><strong>Account Details:</strong></p>
-                                                            <p className='ml-8'><strong>Account Number:</strong> {clientData?.financialDetails?.accountDetails?.accountNo}</p>
-                                                            <p className='ml-8'><strong>IFSC Code:</strong> {clientData?.financialDetails?.accountDetails?.ifscCode}</p>
-                                                            <p className='ml-8'><strong>Bank Name:</strong> {clientData?.financialDetails?.accountDetails?.bankName}</p>
-                                                        </div>
-                                                    )}
-                                                </div>
-                                            )}
-
-                                            {clientData?.employmentDetails && (
-                                                <div>
-                                                    <p className='font-bold'>Employment Details</p>
-                                                    <p className='ml-4'><strong>Company Name:</strong> {clientData?.employmentDetails?.companyName}</p>
-                                                    <p className='ml-4'><strong>Designation:</strong> {clientData?.employmentDetails?.designation}</p>
-                                                    <p className='ml-4'><strong>Annual Income:</strong> ₹{clientData?.employmentDetails?.annualIncome}</p>
-                                                </div>
-                                            )}
-
-                                        </div>
-                                        <div className='flex '>
-                                            <button
-                                                onClick={handleDelete}
-                                                className='my-6 ml-4 py-1 px-2 bg-red-600 text-white rounded-md hover:opacity-95'
-                                            >Delete Profile</button>
-                                        </div>
-                                    </div>
-                                </ClientDetailsCard>
-
-                                <ClientDetailsCard>
-                                    <div className='p-6'>
-                                        <h2 className='text-2xl font-bold mb-4'>Interaction History</h2>
-                                        {clientData?.interactionHistory?.length === 0 &&
-                                            <div className='bg-gray-100 px-4 py-2 rounded-md'>
-                                                No prior interaction history
-                                            </div>
-                                        }
-                                        <ScrollArea className='h-[300px]'>
-                                            <Timeline sx={{ [`& .${timelineOppositeContentClasses.root}`]: { flex: 0.2, }, }}>
-                                                {clientData?.interactionHistory?.map(({ timestamp, type, description }, index) => (
-                                                    <TimelineItem key={index} className='!p-0' sx={{ p: 0 }} >
-                                                        <TimelineOppositeContent color='textSecondary'
-                                                            className='!text-xs !flex !items-center !pl-0'
-                                                        >
-                                                            {toFormattedDate(timestamp)}
-                                                            <br />
-                                                            {toFormattedTime(timestamp)}
-                                                        </TimelineOppositeContent>
-                                                        <TimelineSeparator>
-                                                            <TimelineDot />
-                                                            <TimelineConnector />
-                                                        </TimelineSeparator>
-                                                        <TimelineContent>
-                                                            <div className='bg-gray-100 px-4 py-2 rounded-md'>
-                                                                <p><strong>Type:</strong>&nbsp;{type}</p>
-                                                                <p><strong>Description:</strong>&nbsp;{description}</p>
-                                                            </div>
-                                                        </TimelineContent>
-                                                    </TimelineItem>
-                                                ))}
-                                            </Timeline>
-                                        </ScrollArea>
-                                    </div>
-                                </ClientDetailsCard>
+                        <div className='py-12 sm:px-16 bg-white'>
+                            <div className="absolute inset-0">
+                                <div className="absolute inset-0 bg-[#111827]"></div>
+                                <div
+                                    className="absolute inset-0 bg-white"
+                                    style={{ clipPath: 'polygon(0 65%, 100% 35%, 100% 100%, 0% 100%)' }}
+                                />
                             </div>
-
-                            <div className='mt-4 grid gap-6 md:grid-cols-2'>
-                                <ClientDetailsCard>
-                                    <div className='p-6'>
-                                        <h2 className='text-2xl font-bold mb-2'>Renew Policy</h2>
-                                        <p className='mb-2'>
-                                            To renew any lapsed policy, contact our client support:
-                                        </p>
-                                        <ul>
-                                            <li className='ml-2'>• <strong>Phone</strong>: +91 9876543210</li>
-                                            <li className='ml-2'>• <strong>Email</strong>: support@paarasfinancials.com</li>
-                                        </ul>
-                                        <p className='mt-2'>
-                                            Our team will guide you through the process of renewing your policy and provide you with the necessary information and requirements.
-                                        </p>
+                            <div className='flex items-center justify-between relative bg-white/95 py-4 px-6 rounded-xl shadow-[rgba(50,_50,_105,_0.15)_0px_2px_5px_0px,_rgba(0,_0,_0,_0.05)_0px_1px_1px_0px]'>
+                                <div className='flex items-center gap-8'>
+                                    <Avatar className='!w-32 !h-32 border-4 border-gray-900' />
+                                    <div>
+                                        <h1 className='text-3xl text-left font-semibold'>
+                                            {clientData?.personalDetails?.firstName} {clientData?.personalDetails?.lastName}
+                                        </h1>
+                                        <h3 className='text-lg text-gray-600'>
+                                            {clientData?.personalDetails?.contact?.email}<br />
+                                            +91-{clientData?.personalDetails?.contact?.phone}
+                                        </h3>
                                     </div>
-                                </ClientDetailsCard>
+                                </div>
+                                <Button
+                                    variant='contained'
+                                    onClick={openUpdateProfile}
+                                    className='flex items-center gap-2.5 !bg-gray-900 hover:opacity-95'
+                                >
+                                    Update
+                                    <Edit className='!size-4' />
+                                </Button>
+                            </div>
+                            <div className='relative mt-4 rounded-3xl '>
+                                <Accordion defaultExpanded className='!bg-white/95 !mb-0 !border-b-2 !border-gray-600 !rounded-t-xl !shadow-[rgba(50,_50,_105,_0.15)_0px_2px_5px_0px,_rgba(0,_0,_0,_0.05)_0px_1px_1px_0px]'>
+                                    <AccordionSummary expandIcon={<ExpandMore />} >
+                                        <p className='text-2xl font-semibold px-2 pt-1'>Personal Details</p>
+                                    </AccordionSummary>
+                                    <Divider />
+                                    <AccordionDetails className='!px-8 !py-4'>
+                                        <div className='flex justify-between gap-4 mb-2'>
+                                            <div className='w-full'>
+                                                <h3 className="block text-sm font-medium text-gray-700 mb-1">First Name</h3>
+                                                <p className='border-2 rounded-lg px-2 py-1'>{clientData?.personalDetails?.firstName}&nbsp;</p>
+                                            </div>
+                                            <div className='w-full'>
+                                                <h3 className="block text-sm font-medium text-gray-700 mb-1">Last Name</h3>
+                                                <p className='border-2 rounded-lg px-2 py-1'>{clientData?.personalDetails?.lastName}&nbsp;</p>
+                                            </div>
+                                        </div>
+                                        <div className='flex justify-between gap-4 mb-2'>
+                                            <div className='w-full'>
+                                                <h3 className="block text-sm font-medium text-gray-700 mb-1">Email</h3>
+                                                <p className='border-2 rounded-lg px-2 py-1'>{clientData?.personalDetails?.contact?.email}&nbsp;</p>
+                                            </div>
+                                            <div className='w-full'>
+                                                <h3 className="block text-sm font-medium text-gray-700 mb-1">Phone</h3>
+                                                <p className='border-2 rounded-lg px-2 py-1'>+91-{clientData?.personalDetails?.contact?.phone}&nbsp;</p>
+                                            </div>
+                                        </div>
+                                        <div className='flex justify-between gap-4 mb-2'>
+                                            <div className='w-full'>
+                                                <h3 className="block text-sm font-medium text-gray-700 mb-1">Date of Birth</h3>
+                                                <p className='border-2 rounded-lg px-2 py-1'>{toFormattedDate(clientData?.personalDetails?.dob)}&nbsp;</p>
+                                            </div>
+                                            <div className='w-full'>
+                                                <h3 className="block text-sm font-medium text-gray-700 mb-1">Gender</h3>
+                                                <p className='border-2 rounded-lg px-2 py-1 flex items-center gap-2'>
+                                                    {clientData?.personalDetails?.gender}
+                                                    {clientData?.personalDetails?.gender === 'Male' ? <Male /> : <Female />}
+                                                    &nbsp;
+                                                </p>
+                                            </div>
+                                            <div className='w-full mt-6 flex items-center gap-2'>
+                                                <h3 className="block text-sm font-medium text-gray-700 mb-1">KYC</h3>
+                                                <p className='px-2 py-1 flex items-center'>
+                                                    {clientData?.KYC ? <Badge label='Uploaded' status='good' /> : <Badge label='NA' status='bad' />}
+                                                </p>
+                                            </div>
+                                        </div>
+                                    </AccordionDetails>
+                                </Accordion>
+                                <Accordion defaultExpanded className='!bg-white/95 !mt-0 !mb-0 !border-b-2 !border-gray-600 !shadow-[rgba(50,_50,_105,_0.15)_0px_2px_5px_0px,_rgba(0,_0,_0,_0.05)_0px_1px_1px_0px]'>
+                                    <AccordionSummary expandIcon={<ExpandMore />} >
+                                        <p className='text-2xl font-semibold px-2 pt-1'>Residence Details</p>
+                                    </AccordionSummary>
+                                    <Divider />
+                                    <AccordionDetails className='!px-8 !py-4'>
+                                        <div className='flex justify-between gap-4 mb-2'>
+                                            <div className='w-full'>
+                                                <h3 className="block text-sm font-medium text-gray-700 mb-1">Street</h3>
+                                                <p className='border-2 rounded-lg px-2 py-1'>{clientData?.personalDetails?.address?.street}&nbsp;</p>
+                                            </div>
+                                            <div className='w-full'>
+                                                <h3 className="block text-sm font-medium text-gray-700 mb-1">City</h3>
+                                                <p className='border-2 rounded-lg px-2 py-1'>{clientData?.personalDetails?.address?.city}&nbsp;</p>
+                                            </div>
+                                            <div className='w-full'>
+                                                <h3 className="block text-sm font-medium text-gray-700 mb-1">State</h3>
+                                                <p className='border-2 rounded-lg px-2 py-1'>{clientData?.personalDetails?.address?.state}&nbsp;</p>
+                                            </div>
+                                            <div className='w-full'>
+                                                <h3 className="block text-sm font-medium text-gray-700 mb-1">Country</h3>
+                                                <p className='border-2 rounded-lg px-2 py-1'>{clientData?.personalDetails?.address?.country}&nbsp;</p>
+                                            </div>
+                                            <div className='w-full'>
+                                                <h3 className="block text-sm font-medium text-gray-700 mb-1">PINCODE</h3>
+                                                <p className='border-2 rounded-lg px-2 py-1'>{clientData?.personalDetails?.address?.pincode}&nbsp;</p>
+                                            </div>
+                                        </div>
+                                    </AccordionDetails>
+                                </Accordion>
+                                <Accordion defaultExpanded className='!bg-white/95 !mt-0 !mb-0 !border-b-2 !border-gray-600 !shadow-[rgba(50,_50,_105,_0.15)_0px_2px_5px_0px,_rgba(0,_0,_0,_0.05)_0px_1px_1px_0px]'>
+                                    <AccordionSummary expandIcon={<ExpandMore />} >
+                                        <p className='text-2xl font-semibold px-2 pt-1'>Nominee Details</p>
+                                    </AccordionSummary>
+                                    <Divider />
+                                    <AccordionDetails className='!px-8 !py-4'>
+                                        <div className='flex justify-between gap-4 mb-2'>
+                                            <div className='w-full'>
+                                                <h3 className="block text-sm font-medium text-gray-700 mb-1">Nominee Name</h3>
+                                                <p className='border-2 rounded-lg px-2 py-1'>{clientData?.personalDetails?.nominee?.name}&nbsp;</p>
+                                            </div>
+                                            <div className='w-full'>
+                                                <h3 className="block text-sm font-medium text-gray-700 mb-1">City</h3>
+                                                <p className='border-2 rounded-lg px-2 py-1'>{clientData?.personalDetails?.nominee?.dob}&nbsp;</p>
+                                            </div>
+                                            <div className='w-full'>
+                                                <h3 className="block text-sm font-medium text-gray-700 mb-1">State</h3>
+                                                <p className='border-2 rounded-lg px-2 py-1'>{clientData?.personalDetails?.nominee?.relationship}&nbsp;</p>
+                                            </div>
+                                            <div className='w-full'>
+                                                <h3 className="block text-sm font-medium text-gray-700 mb-1">Country</h3>
+                                                <p className='border-2 rounded-lg px-2 py-1'>{clientData?.personalDetails?.nominee?.phone}&nbsp;</p>
+                                            </div>
+                                        </div>
+                                    </AccordionDetails>
+                                </Accordion>
+                                <Accordion defaultExpanded className='!bg-white/95 !mt-0 !mb-0 !border-b-2 !border-gray-600 !shadow-[rgba(50,_50,_105,_0.15)_0px_2px_5px_0px,_rgba(0,_0,_0,_0.05)_0px_1px_1px_0px]'>
+                                    <AccordionSummary expandIcon={<ExpandMore />} >
+                                        <p className='text-2xl font-semibold px-2 pt-1'>Financial Details</p>
+                                    </AccordionSummary>
+                                    <Divider />
+                                    <AccordionDetails className='!px-8 !py-4'>
+                                        <div className='flex justify-between gap-4 mb-2'>
+                                            <div className='w-full'>
+                                                <h3 className="block text-sm font-medium text-gray-700 mb-1">PAN Card Number</h3>
+                                                <div className='flex gap-2'>
+                                                    <p className='w-full border-2 rounded-lg px-2 py-1'>{clientData?.financialDetails?.panCardNo}&nbsp;</p>
+                                                    {clientData?.financialDetails?.panCardURL ?
+                                                        <Link
+                                                            to={`/uploads/${clientData?.financialDetails?.panCardURL}`}
+                                                            target="_blank" rel="noopener noreferrer"
+                                                            className='w-72 py-1 px-2 rounded-md text-white bg-gray-900 hover:opacity-95'
+                                                        >
+                                                            <div className='flex gap-2 items-center justify-center'>
+                                                                Uploaded PAN Card
+                                                                <OpenInNew className='!size-4' />
+                                                            </div>
+                                                        </Link>
+                                                        :
+                                                        <p className='w-72 py-1 px-2 rounded-md text-center text-white bg-red-600 hover:opacity-95'>No PAN Card Uploaded</p>
+                                                    }
+                                                </div>
+                                            </div>
+                                            <div className='w-full'>
+                                                <h3 className="block text-sm font-medium text-gray-700 mb-1">Aadhaar</h3>
+                                                <div className='flex gap-2'>
+                                                    <p className='w-full border-2 rounded-lg px-2 py-1'>{clientData?.financialDetails?.aadhaarNo}&nbsp;</p>
+                                                    {clientData?.financialDetails?.aadhaarURL ?
+                                                        <Link
+                                                            to={`/uploads/${clientData?.financialDetails?.aadhaarURL}`}
+                                                            target="_blank" rel="noopener noreferrer"
+                                                            className='w-72 py-1 px-2 rounded-md text-white bg-gray-900 hover:opacity-95'
+                                                        >
+                                                            <div className='flex gap-2 items-center justify-center'>
+                                                                Uploaded Aadhaar
+                                                                <OpenInNew className='!size-4' />
+                                                            </div>
+                                                        </Link>
+                                                        :
+                                                        <p className='w-72 py-1 px-2 rounded-md text-center text-white bg-red-600 hover:opacity-95'>No Aadhaar Uploaded</p>
+                                                    }
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div className='flex justify-between gap-4 mb-2'>
+                                            <div className='w-full'>
+                                                <h3 className="block text-sm font-medium text-gray-700 mb-1">Bank Account Number</h3>
+                                                <p className='border-2 rounded-lg px-2 py-1'>{clientData?.financialDetails?.accountDetails?.accountNo}&nbsp;</p>
+                                            </div>
+                                            <div className='w-full'>
+                                                <h3 className="block text-sm font-medium text-gray-700 mb-1">IFSC Code</h3>
+                                                <p className='border-2 rounded-lg px-2 py-1'>{clientData?.financialDetails?.accountDetails?.ifscCode}&nbsp;</p>
+                                            </div>
+                                            <div className='w-full'>
+                                                <h3 className="block text-sm font-medium text-gray-700 mb-1">Bank Name</h3>
+                                                <p className='border-2 rounded-lg px-2 py-1'>{clientData?.financialDetails?.accountDetails?.bankName}&nbsp;</p>
+                                            </div>
+                                        </div>
+                                    </AccordionDetails>
+                                </Accordion>
+                                <Accordion defaultExpanded className='!bg-white/95 !mt-0 !rounded-b-xl !shadow-[rgba(50,_50,_105,_0.15)_0px_2px_5px_0px,_rgba(0,_0,_0,_0.05)_0px_1px_1px_0px]'>
+                                    <AccordionSummary expandIcon={<ExpandMore />} >
+                                        <p className='text-2xl font-semibold px-2 pt-1'>Employment Details</p>
+                                    </AccordionSummary>
+                                    <Divider />
+                                    <AccordionDetails className='!px-8 !py-4'>
+                                        <div className='flex justify-between gap-4 mb-2'>
+                                            <div className='w-full'>
+                                                <h3 className="block text-sm font-medium text-gray-700 mb-1">Company Name</h3>
+                                                <p className='border-2 rounded-lg px-2 py-1'>{clientData?.employmentDetails?.companyName}&nbsp;</p>
+                                            </div>
+                                            <div className='w-full'>
+                                                <h3 className="block text-sm font-medium text-gray-700 mb-1">Designation</h3>
+                                                <p className='border-2 rounded-lg px-2 py-1'>{clientData?.employmentDetails?.designation}&nbsp;</p>
+                                            </div>
+                                            <div className='w-full'>
+                                                <h3 className="block text-sm font-medium text-gray-700 mb-1">Annual Income</h3>
+                                                <p className='border-2 rounded-lg px-2 py-1'>₹ {clientData?.employmentDetails?.annualIncome}&nbsp;</p>
+                                            </div>
+                                        </div>
+                                    </AccordionDetails>
+                                </Accordion>
+                                <div className='my-8 ml-6'>
+                                    <Button
+                                        variant='contained'
+                                        onClick={handleDelete}
+                                        className='flex items-center gap-2.5 !bg-red-600 hover:opacity-95'
+                                    >
+                                        Delete Profile
+                                        <Delete className='!size-4' />
+                                    </Button>
+                                </div>
+                            </div>
+                            <div className='relative bg-white/95 py-4 px-6 rounded-xl shadow-[rgba(50,_50,_105,_0.15)_0px_2px_5px_0px,_rgba(0,_0,_0,_0.05)_0px_1px_1px_0px]'>
+                                <h1 className='text-3xl text-left font-semibold'>
+                                    Interaction History
+                                </h1>
+                                <div className='px-4 py-6'>
+                                    {clientData?.interactionHistory?.length === 0 &&
+                                        <div className='bg-gray-100 px-4 py-2 rounded-md'>
+                                            No prior interaction history
+                                        </div>
+                                    }
+                                    <ScrollArea className='h-[50vh]'>
+                                        <Timeline sx={{ [`& .${timelineOppositeContentClasses.root}`]: { flex: 0.2, }, }}>
+                                            {clientData?.interactionHistory?.map(({ timestamp, type, description }, index) => (
+                                                <TimelineItem key={index} className='!p-0' sx={{ p: 0 }} >
+                                                    <TimelineOppositeContent color='textSecondary' className='!flex !justify-end !mr-2 !items-center !pl-0'>
+                                                        {toFormattedDate(timestamp)} :: {toFormattedTime(timestamp)}
+                                                    </TimelineOppositeContent>
+                                                    <TimelineSeparator>
+                                                        <TimelineDot />
+                                                        <TimelineConnector />
+                                                    </TimelineSeparator>
+                                                    <TimelineContent>
+                                                        <div className='bg-gray-100 ml-2 px-4 py-2 rounded-md'>
+                                                            <p><strong>Type:</strong>&nbsp;{type}</p>
+                                                            <p><strong>Description:</strong>&nbsp;{description}</p>
+                                                        </div>
+                                                    </TimelineContent>
+                                                </TimelineItem>
+                                            ))}
+                                        </Timeline>
+                                    </ScrollArea>
+                                </div>
                             </div>
                         </div>
             }
-            {updateProfile &&
-                <UpdateProfileForm clientData={clientData} setClientData={setClientData} closeUpdateProfile={closeUpdateProfile} />
+            {isUpdateProfileOpen &&
+                <UpdateProfileForm
+                    clientData={clientData}
+                    closeUpdateProfile={closeUpdateProfile}
+                    onSubmit={handleUpdate}
+                    label='Update Details'
+                />
             }
             <Footer />
         </div>

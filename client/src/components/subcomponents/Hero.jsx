@@ -1,7 +1,7 @@
 import { useContext } from 'react';
 import { useNavigate } from 'react-router-dom';
 // importing contexts
-import { ClientContext } from '../contexts/Client.context';
+import { ClientContext } from '../../contexts/Client.context';
 
 const Hero = () => {
     const navigate = useNavigate();

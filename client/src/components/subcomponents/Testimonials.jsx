@@ -1,6 +1,6 @@
 import { Star } from '@mui/icons-material';
 // importing content
-import content from "../content.json";
+import content from "../../content.json";
 
 const Testimonials = () => {
     const reviews = content['reviews'];

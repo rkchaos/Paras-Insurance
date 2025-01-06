@@ -1,6 +1,6 @@
 import { useState } from 'react';
 // importing components
-import Sidebar from './Sidebar';
+import Sidebar from './subcomponents/Sidebar';
 import Dashboard from './sections/Dashboard';
 import ClientManagement from './sections/ClientManagement';
 import PolicyManagement from './sections/PolicyManagement';

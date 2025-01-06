@@ -41,6 +41,7 @@ const CompanyManagement = () => {
             setCompaniesData(prevCompaniesData => prevCompaniesData.filter((company) => company._id !== companyId));
         } catch (error) {
             console.error(error);
+            // TODO: error handling
         }
     };
 

@@ -2,7 +2,6 @@ import { useContext } from 'react';
 import {
     BrowserRouter as Router,
     Routes, Route,
-    useParams
 } from 'react-router-dom';
 import { tailChase } from 'ldrs';
 // importing pages
@@ -11,8 +10,11 @@ import AboutUs from './pages/AboutUs.page';
 import ContactUs from './pages/ContactUs.page';
 import Authentication from './pages/Authentication.page';
 import InsuranceForm from './pages/InsuranceForm.page';
+import GeneralInsurance from './pages/GeneralInsurance.page copy';
+import SIP from './pages/SIP.page';
 import ClientProfile from './pages/ClientProfile.page';
 import ClientPolicies from './pages/ClientPolicies.page';
+import FileViewer from './pages/FileViewer.page';
 import ResetPassword from './pages/ResetPassword.page';
 import PageNotFound from './pages/PageNotFound.page';
 // importing utils
@@ -27,7 +29,6 @@ import Footer from './components/Footer';
 import SnackBar from './components/subcomponents/SnackBar';
 import ConfirmationDialog from './components/subcomponents/ConfirmationDialog';
 import ProtectedRoute from './utils/ProtectedRoute';
-import FileViewer from './pages/FileViewer.page';
 
 const App = () => {
     const { loading, condenseClientInfo } = useFetchClient();
@@ -54,11 +55,11 @@ const App = () => {
                 />
                 <Route
                     path='/aboutUs'
-                    element={<><AboutUs /><Footer /></>}
+                    element={<div><AboutUs /><Footer /></div>}
                 />
                 <Route
                     path='/contactUs'
-                    element={<><ContactUs /><Footer /></>}
+                    element={<div><ContactUs /><Footer /></div>}
                 />
                 <Route
                     path='/auth'
@@ -66,7 +67,15 @@ const App = () => {
                 />
                 <Route
                     path='/insuranceForm'
-                    element={<><InsuranceForm /><Footer /></>}
+                    element={<ProtectedRoute Component={InsuranceForm} user={condenseClientInfo} />}
+                />
+                <Route
+                    path='/generalInsurance/:id'
+                    element={<ProtectedRoute Component={GeneralInsurance} user={condenseClientInfo} />}
+                />
+                <Route
+                    path='/sip/:id'
+                    element={<ProtectedRoute Component={SIP} user={condenseClientInfo} />}
                 />
                 <Route
                     path='/profile/:id'
@@ -82,11 +91,11 @@ const App = () => {
                 />
                 <Route
                     path='/resetPassword/:resetToken'
-                    element={<><ResetPassword /><Footer /></>}
+                    element={<div><ResetPassword /><Footer /></div>}
                 />
                 <Route
                     path="*"
-                    element={<><PageNotFound /><Footer /></>} />
+                    element={<div><PageNotFound /><Footer /></div>} />
             </Routes>
             <SnackBar
                 openSnackbar={snackbarState} handleClose={handleSnackbarState} timeOut={5000}

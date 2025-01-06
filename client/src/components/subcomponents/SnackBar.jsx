@@ -4,7 +4,7 @@ const SnackBar = (props) => {
     const { openSnackbar, timeOut, handleClose, type, message, sx, vertical, horizontal } = props;
 
     return (
-        <>
+        <div>
             {(vertical && horizontal) ?
                 <Snackbar open={openSnackbar} autoHideDuration={timeOut} onClose={handleClose} anchorOrigin={{ vertical, horizontal }} sx={sx}>
                     <Alert
@@ -24,7 +24,7 @@ const SnackBar = (props) => {
                     </Alert>
                 </Snackbar>
             }
-        </>
+        </div>
     );
 }
 

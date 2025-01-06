@@ -131,10 +131,7 @@ const fetchProfileData = async (req, res) => {
         const client = await Client.findById(clientId).select('-password -refreshToken -deleted -leadDetails -notes');
         if (!client) return res.status(404).json({ message: 'No client found.' });
 
-        const clientFirstName = client?.personalDetails?.firstName;
-        const clientLastName = client?.personalDetails?.lastName;
-
-        res.status(200).json({ client, clientFirstName, clientLastName });
+        res.status(200).json(client);
     } catch (error) {
         console.error(error);
         res.status(503).json({ message: 'Network error. Try again' })
@@ -239,7 +236,8 @@ const fetchAllClients = async (req, res) => {
 // 
 const updateProfile = async (req, res) => {
     try {
-        const { formData } = req.body;
+        console.log(req.body);
+        const { formData, removedFiles } = req.body.formData;
         // console.log(formData);
         const clientId = formData._id;
         const currentClientId = req.client._id;
@@ -276,6 +274,18 @@ const updateProfile = async (req, res) => {
 
         if (existingClient) return res.status(400).json({ message: 'Email, Phone, Aadhaar No, or PAN Card No must be unique.' });
 
+        const client = await Client.findById(clientId);
+        if (removedFiles.aadhaar && client.financialDetails?.aadhaarURL) {
+            const aadhaarPath = path.join(__dirname, 'uploads', client.financialDetails.aadhaarURL);
+            if (fs.existsSync(aadhaarPath)) fs.unlinkSync(aadhaarPath);
+            financialDetails.aadhaarURL = '';
+        }
+        if (removedFiles.panCard && client.financialDetails?.panCardURL) {
+            const panCardPath = path.join(__dirname, 'uploads', client.financialDetails.panCardURL);
+            if (fs.existsSync(panCardPath)) fs.unlinkSync(panCardPath);
+            financialDetails.panCardURL = '';
+        }
+
         // update in interaction history
         const updatedClient = await Client.findByIdAndUpdate(
             clientId,
@@ -284,6 +294,12 @@ const updateProfile = async (req, res) => {
         );
 
         if (!updatedClient) return res.status(404).json({ message: 'Client not found.' });
+
+        if (clientId !== currentClientId.toString()) {
+            await updatedClient.addInteraction('Details updated', `An admin has updated your profile.`);
+        } else {
+            await updatedClient.addInteraction('Details updated', `You've updated your profile.`);
+        }
 
         res.status(200).json(updatedClient);
     } catch (error) {
@@ -295,54 +311,74 @@ const uploadProfileMedia = async (req, res) => {
     try {
         const { clientId } = req.body;
         const filesArray = req.files;
-        const filesPath = { panCardFilePath: '', aadhaarFilePath: '' };
+        console.log(filesArray);
+        // const filesPath = { panCardFilePath: '', aadhaarFilePath: '' };
 
-        for (let i = 0; i < filesArray.length; i++) {
-            const file = filesArray[i];
-            const fieldName = file.fieldname;
-            const fileName = file.filename;
-            if (fieldName === 'panCard') {
-                filesPath.panCardFilePath = fileName;
-            } else if (fieldName === 'aadhaar') {
-                filesPath.aadhaarFilePath = fileName;
-            }
-        }
-        console.log(filesPath);
-        // Find the client
+        // for (let i = 0; i < filesArray.length; i++) {
+        //     const file = filesArray[i];
+        //     const fieldName = file.fieldname;
+        //     const fileName = file.filename;
+        //     if (fieldName === 'panCard') {
+        //         filesPath.panCardFilePath = fileName;
+        //     } else if (fieldName === 'aadhaar') {
+        //         filesPath.aadhaarFilePath = fileName;
+        //     }
+        // }
+        // console.log(filesPath);
+        // // Find the client
+        // const client = await Client.findById(clientId);
+
+        // if (!client) {
+        //     // Delete the newly uploaded files since the client doesn't exist
+        //     if (filesPath.panCardFilePath) {
+        //         fs.unlinkSync(path.join(__dirname, 'uploads', filesPath.panCardFilePath));
+        //     }
+        //     if (filesPath.aadhaarFilePath) {
+        //         fs.unlinkSync(path.join(__dirname, 'uploads', filesPath.aadhaarFilePath));
+        //     }
+        //     return res.status(404).json({ message: 'Client not found.' });
+        // }
+
+        // // Delete existing files if they exist
+        // if (client.financialDetails?.panCardURL) {
+        //     const existingPanCardPath = path.join(__dirname, 'uploads', client.financialDetails.panCardURL);
+        //     if (fs.existsSync(existingPanCardPath)) {
+        //         fs.unlinkSync(existingPanCardPath);
+        //     }
+        // }
+        // if (client.financialDetails?.aadhaarURL) {
+        //     const existingAadhaarPath = path.join(__dirname, 'uploads', client.financialDetails.aadhaarURL);
+        //     if (fs.existsSync(existingAadhaarPath)) {
+        //         fs.unlinkSync(existingAadhaarPath);
+        //     }
+        // }
+
+        // // Update the client's financial details
+        // client.financialDetails.panCardURL = filesPath.panCardFilePath;
+        // client.financialDetails.aadhaarURL = filesPath.aadhaarFilePath;
+
+        // await client.save();
         const client = await Client.findById(clientId);
+        if (!client) return res.status(404).json({ message: 'Client not found.' });
 
-        if (!client) {
-            // Delete the newly uploaded files since the client doesn't exist
-            if (filesPath.panCardFilePath) {
-                fs.unlinkSync(path.join(__dirname, 'uploads', filesPath.panCardFilePath));
-            }
-            if (filesPath.aadhaarFilePath) {
-                fs.unlinkSync(path.join(__dirname, 'uploads', filesPath.aadhaarFilePath));
-            }
-            return res.status(404).json({ message: 'Client not found.' });
-        }
-
-        // Delete existing files if they exist
-        if (client.financialDetails?.panCardURL) {
-            const existingPanCardPath = path.join(__dirname, 'uploads', client.financialDetails.panCardURL);
-            if (fs.existsSync(existingPanCardPath)) {
-                fs.unlinkSync(existingPanCardPath);
-            }
-        }
-        if (client.financialDetails?.aadhaarURL) {
-            const existingAadhaarPath = path.join(__dirname, 'uploads', client.financialDetails.aadhaarURL);
-            if (fs.existsSync(existingAadhaarPath)) {
-                fs.unlinkSync(existingAadhaarPath);
+        for (let file of filesArray) {
+            const fieldName = file.fieldname;
+            if (fieldName === 'panCard') {
+                // Delete old PAN card file
+                if (client.financialDetails?.panCardURL) {
+                    const oldPath = path.join(__dirname, 'uploads', client.financialDetails.panCardURL);
+                    if (fs.existsSync(oldPath)) fs.unlinkSync(oldPath);
+                }
+                client.financialDetails.panCardURL = file.filename;
+            } else if (fieldName === 'aadhaar') {
+                // Delete old Aadhaar file
+                if (client.financialDetails?.aadhaarURL) {
+                    const oldPath = path.join(__dirname, 'uploads', client.financialDetails.aadhaarURL);
+                    if (fs.existsSync(oldPath)) fs.unlinkSync(oldPath);
+                }
+                client.financialDetails.aadhaarURL = file.filename;
             }
         }
-
-        // Update the client's financial details
-        client.financialDetails.panCardURL = filesPath.panCardFilePath;
-        client.financialDetails.aadhaarURL = filesPath.aadhaarFilePath;
-
-        // Save the updated client
-        await client.save();
-        console.log(client);
         res.status(200).json(client);
     } catch (error) {
         console.error(error);
