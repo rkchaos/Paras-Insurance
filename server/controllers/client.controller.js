@@ -1,113 +1,43 @@
+import fs from 'fs';
+import ejs from 'ejs';
+import path from 'path';
+import jwt from 'jsonwebtoken';
+import { ObjectId } from 'mongodb';
+// importing models
 import Client from '../models/client.model.js';
-import { ObjectId } from "mongodb";
-import jwt from "jsonwebtoken";
-import nodemailer from "nodemailer";
 import Employee from '../models/employee.model.js';
-import AssignedPolicy from '../models/assignedPolicy.model.js';
-import ejs from "ejs";
-import fs from "fs";
+import ClientPolicy from '../models/clientPolicy.model.js';
+// importing helper functions
+import { condenseClientInfo, cookiesOptions, generateAccessAndRefreshTokens, transporter } from '../utils/helperFunctions.js';
 
-const cookiesOptions = {
-    httpOnly: true,
-    secure: true,
-    sameSite: 'None'
-};
+const __dirname = path.resolve();
 
-const transporter = nodemailer.createTransport({
-    service: "gmail",
-    auth: {
-        user: process.env.SMTP_EMAIL,
-        pass: process.env.SMTP_PASSWORD
-    }
-});
-
-const condenseClientInfo = async (client) => {
-    const employee = await Employee.findOne({ clientId: client._id });
-    const clientSessionObj = {
-        _id: client._id,
-        firstName: client.personalDetails.firstName,
-        lastName: client.personalDetails.lastName,
-        email: client.personalDetails.contact.email,
-        phone: client.personalDetails.contact.phone,
-        role: employee ? employee.role : 'user'
-    };
-    if (employee) {
-        return { ...clientSessionObj, employeeId: employee._id };
-    } else {
-        return clientSessionObj;
-    }
-}
-
-const generateAccessAndRefreshTokens = async (client) => {
-    try {
-        const accessToken = await client.generateAccessToken();
-        const refreshToken = await client.generateRefreshToken();
-
-        client.refreshToken = refreshToken;
-        await client.save({ validateBeforeSave: false });
-
-        return { accessToken, refreshToken };
-    } catch (error) { return null }
-}
-
+// working
 const sendResetPasswordMail = async ({ res, to, client, resetToken }) => {
-    const emailTemplate = fs.readFileSync("./assets/resetPasswordEmailTemplate.ejs", "utf-8");
+    const emailTemplate = fs.readFileSync('./assets/resetPasswordEmailTemplate.ejs', 'utf-8');
     const emailContent = ejs.render(emailTemplate, {
         firstName: client.personalDetails.firstName,
-        resetToken: resetToken,
+        resetLink: `${process.env.FRONT_END_URL}/resetPassword/${resetToken}`,
         year: new Date().getFullYear()
     });
-    // let emailContent =
-    //     `   
-    //     Dear ${client.personalDetails.firstName},<br>
-    //         We received a request to reset the password for your account. 
-    //         If you made this request, please click the link below to reset your password:
-    //         <br><br>
-    //         <a href=${process.env.FRONT_END_URL}/resetPassword/${resetToken}>Reset your password</a>
-    //         <br><br>
-    //         After resetting your password, navigate to ${process.env.FRONT_END_URL} and log in with your new password to access your account.
-    //         This link will expire in ${process.env.RESET_TOKEN_EXPIRY} for security reasons. If you did not request a password reset, please ignore this email or contact our support team if you have concerns.
-    //         <br><br>
-    //         Thank you,
-    //         <br>
-    //         Paaras Financials 
-    //         <br>
-    //         Support Team
-    //     `;
 
     const mailOptions = {
         from: process.env.SMTP_EMAIL,
         to: to.toString(),
-        subject: "Password Reset Request",
+        subject: 'Password Reset Request',
         html: emailContent
     };
 
     await transporter.sendMail(mailOptions, (error, info) => {
         if (error) {
-            console.error("Error on Nodemailer side: ", error);
+            console.error('Error on Nodemailer side: ', error);
+            res.status(503).json({ message: 'Network error. Try again' })
         } else {
             res.status(200).json({ message: 'A URL has been sent to the email address above. Click it to reset your password.' })
         }
     });
-}
-
-const fetchCondenseInfo = async (req, res) => {
-    try {
-        const clientInfo = await condenseClientInfo(req.client);
-
-        if (!req.refreshedAccessToken) return res.status(200).json(clientInfo);
-
-        const client = await Client.findById(req.client._id).select("-password -refreshToken");
-        const accessToken = await client.generateAccessToken();
-        res.status(200)
-            .cookie("accessToken", accessToken, cookiesOptions)
-            .json(clientInfo);
-    } catch (error) {
-        console.error(error);
-        res.status(503).json({ message: "Network error. Try again" })
-    }
-}
-
+};
+// working
 const register = async (req, res) => {
     try {
         const { firstName, lastName, email, phone, password } = req.body;
@@ -142,168 +72,8 @@ const register = async (req, res) => {
         console.error(error);
         res.status(503).json({ message: 'Network error. Try agin' });
     }
-}
-
-const fetchAllData = async (req, res) => {
-    try {
-        const { clientId } = req.query;
-        const clientData = await Client.aggregate([
-            { $match: { _id: new ObjectId(clientId) } },
-            {
-                $lookup: {
-                    from: "assignedpolicies",
-                    localField: "_id",
-                    foreignField: "clientId",
-                    as: "assignedPolicies",
-                },
-            },
-            {
-                $unwind: {
-                    path: "$assignedPolicies",
-                    preserveNullAndEmptyArrays: true,
-                },
-            },
-            {
-                $lookup: {
-                    from: "policies",
-                    localField: "assignedPolicies.policyId",
-                    foreignField: "_id",
-                    as: "policyDetails",
-                },
-            },
-            {
-                $addFields: {
-                    "assignedPolicies.policyDetails": {
-                        $arrayElemAt: ["$policyDetails", 0],
-                    },
-                },
-            },
-            {
-                $group: {
-                    _id: "$_id",
-                    userType: { $first: "$userType" },
-                    personalDetails: { $first: "$personalDetails" },
-                    KYC: { $first: "$KYC" },
-                    leadDetails: { $first: "$leadDetails" },
-                    interactionHistory: { $first: "$interactionHistory" },
-                    notes: { $first: "$notes" },
-                    createdAt: { $first: "$createdAt" },
-                    updatedAt: { $first: "$updatedAt" },
-                    assignedPolicies: { $push: "$assignedPolicies" },
-                },
-            },
-            {
-                $project: {
-                    userType: 1,
-                    personalDetails: 1,
-                    financialDetails: 1,
-                    employmentDetails: 1,
-                    KYC: 1,
-                    leadDetails: 1,
-                    interactionHistory: 1,
-                    notes: 1,
-                    assignedPolicies: 1,
-                    createdAt: 1,
-                    updatedAt: 1,
-                },
-            },
-        ]);
-
-        const assignedPolicies = await AssignedPolicy.aggregate([
-            { $match: { clientId: new ObjectId(clientId) } },
-            {
-                $lookup: {
-                    from: "clients",
-                    localField: "clientId",
-                    foreignField: "_id",
-                    as: "clientData"
-                }
-            },
-            {
-                $unwind: "$clientData"
-            },
-            {
-                $lookup: {
-                    from: "policies",
-                    localField: "policyId",
-                    foreignField: "_id",
-                    as: "policyData"
-                }
-            },
-            {
-                $unwind: "$policyData"
-            },
-            {
-                $project: {
-                    _id: 1,
-                    clientId: 1,
-                    policyId: 1,
-                    data: 1,
-                    stage: 1,
-                    createdAt: 1,
-                    updatedAt: 1,
-                    availablePolicies: 1,
-                    clientDetails: {
-                        firstName: "$clientData.personalDetails.firstName",
-                        lastName: "$clientData.personalDetails.lastName",
-                        dob: "$clientData.personalDetails.dob",
-                        gender: "$clientData.personalDetails.gender",
-                        city: "$clientData.personalDetails.address.city",
-                        email: "$clientData.personalDetails.contact.email",
-                        phone: "$clientData.personalDetails.contact.phone"
-                    },
-                    policyDetails: {
-                        policyName: "$policyData.policyName",
-                        policyType: "$policyData.policyType",
-                        policyDescription: "$policyData.policyDescription",
-                        policyForm: "$policyData.form"
-                    }
-                }
-            }
-        ]);
-        if (clientData.length > 0) {
-            return res.status(200).json({ clientData: clientData[0], assignedPolicies: assignedPolicies });
-        } else {
-            return res.status(200).json({ clientData: null, assignedPolicies: null });
-        }
-    } catch (error) {
-        console.error(error);
-        res.status(503).json({ message: 'Network error. Try again' })
-    }
-}
-
-const fetchAllCustomers = async (req, res) => {
-    try {
-        const clients = await Client.aggregate([
-            {
-                $lookup: {
-                    from: "employees",
-                    localField: "_id",
-                    foreignField: "clientId",
-                    as: "employeeData",
-                },
-            },
-            {
-                $match: {
-                    employeeData: { $size: 0 },
-                },
-            },
-            {
-                $project: {
-                    password: 0,
-                    refreshToken: 0,
-                    employeeData: 0,
-                },
-            },
-        ]);
-
-        res.status(200).json(clients);
-    } catch (error) {
-        console.error(error);
-        res.status(503).json({ message: 'Network error. Try again' })
-    }
-}
-
+};
+// working
 const login = async (req, res) => {
     try {
         const { emailOrPhone, password } = req.body;
@@ -329,8 +99,257 @@ const login = async (req, res) => {
         console.error(error);
         res.status(503).json({ message: 'Network error. Try again' })
     }
-}
+};
+// working
+const fetchCondenseInfo = async (req, res) => {
+    try {
+        const clientInfo = await condenseClientInfo(req.client);
 
+        if (!req.refreshedAccessToken) return res.status(200).json(clientInfo);
+
+        const client = await Client.findById(req.client._id).select('-password -refreshToken');
+        const accessToken = await client.generateAccessToken();
+        res.status(200)
+            .cookie('accessToken', accessToken, cookiesOptions)
+            .json(clientInfo);
+    } catch (error) {
+        console.error(error);
+        res.status(503).json({ message: 'Network error. Try again' })
+    }
+};
+// working
+const fetchProfileData = async (req, res) => {
+    try {
+        const { clientId } = req.query;
+        const currentClientId = req.client._id;
+        if (clientId !== currentClientId.toString()) {
+            const isCurrentClientEmployee = await Employee.findOne({ clientId: currentClientId.toString() });
+
+            if (!isCurrentClientEmployee) return res.status(400).json({ message: 'Unauthorised action.' });
+
+        }
+        const client = await Client.findById(clientId).select('-password -refreshToken -deleted -leadDetails -notes');
+        if (!client) return res.status(404).json({ message: 'No client found.' });
+
+        const clientFirstName = client?.personalDetails?.firstName;
+        const clientLastName = client?.personalDetails?.lastName;
+
+        res.status(200).json({ client, clientFirstName, clientLastName });
+    } catch (error) {
+        console.error(error);
+        res.status(503).json({ message: 'Network error. Try again' })
+    }
+};
+// working TODO: (needs to be updated for quotation)
+const fetchPoliciesData = async (req, res) => {
+    try {
+        const { clientId } = req.query;
+        const currentClientId = req.client._id;
+        let clientFirstName, clientLastName;
+        if (clientId !== currentClientId.toString()) {
+            const isCurrentClientEmployee = await Employee.findOne({ clientId: currentClientId.toString() });
+
+            if (!isCurrentClientEmployee) return res.status(400).json({ message: 'Unauthorised action.' });
+
+            const client = await Client.findById(clientId);
+            if (!client) return res.status(404).json({ message: 'No client found.' });
+
+            clientFirstName = client?.personalDetails?.firstName;
+            clientLastName = client?.personalDetails?.lastName;
+        } else {
+            clientFirstName = req.client.personalDetails.firstName;
+            clientLastName = req.client.personalDetails.lastName;
+        }
+
+        const clientPolicies = await ClientPolicy.aggregate([
+            { $match: { clientId: new ObjectId(clientId) } },
+            {
+                $lookup: {
+                    from: 'policies',
+                    localField: 'policyId',
+                    foreignField: '_id',
+                    as: 'policyData'
+                }
+            },
+            {
+                $unwind: '$policyData'
+            },
+            {
+                $project: {
+                    _id: 1,
+                    clientId: 1,
+                    policyId: 1,
+                    data: 1,
+                    stage: 1,
+                    createdAt: 1,
+                    updatedAt: 1,
+                    policyDetails: {
+                        policyName: '$policyData.policyName',
+                        policyType: '$policyData.policyType',
+                        policyDescription: '$policyData.policyDescription',
+                        policyForm: '$policyData.form'
+                    }
+                }
+            }
+        ]);
+
+        res.status(200).json({ clientPolicies, clientFirstName, clientLastName });
+    } catch (error) {
+        console.error(error);
+        res.status(503).json({ message: 'Network error. Try again' })
+    }
+};
+// working
+const fetchAllClients = async (req, res) => {
+    try {
+        const clientId = req.client._id;
+        const employee = await Employee.findOne({ clientId: clientId });
+        if (!employee) return res.status(400).json({ message: 'Unauthorised action.' });
+
+        const clients = await Client.aggregate([
+            { $match: { 'deleted.isDeleted': false } },
+            {
+                $lookup: {
+                    from: 'employees',
+                    localField: '_id',
+                    foreignField: 'clientId',
+                    as: 'employeeData',
+                },
+            },
+            {
+                $match: {
+                    employeeData: { $size: 0 },
+                },
+            },
+            {
+                $project: {
+                    password: 0,
+                    refreshToken: 0,
+                    employeeData: 0,
+                },
+            },
+        ]);
+
+        res.status(200).json(clients);
+    } catch (error) {
+        console.error(error);
+        res.status(503).json({ message: 'Network error. Try again' })
+    }
+};
+// 
+const updateProfile = async (req, res) => {
+    try {
+        const { formData } = req.body;
+        // console.log(formData);
+        const clientId = formData._id;
+        const currentClientId = req.client._id;
+        if (clientId !== currentClientId.toString()) {
+            const isCurrentClientEmployee = await Employee.findOne({ clientId: currentClientId.toString() });
+
+            if (!isCurrentClientEmployee) return res.status(400).json({ message: 'Unauthorised action.' });
+        }
+
+        const { personalDetails, financialDetails } = formData;
+        if (
+            !personalDetails?.firstName ||
+            !personalDetails?.contact?.email ||
+            !personalDetails?.contact?.phone
+        ) return res.status(400).json({ message: 'First Name, Email, and Phone are required.' });
+
+        const uniqueFields = [
+            { 'personalDetails.contact.email': personalDetails.contact.email },
+            { 'personalDetails.contact.phone': personalDetails.contact.phone },
+        ];
+
+        if (financialDetails?.aadhaarNo && financialDetails.aadhaarNo.trim() !== '') {
+            uniqueFields.push({ 'financialDetails.aadhaarNo': financialDetails.aadhaarNo });
+        }
+
+        if (financialDetails?.panCardNo && financialDetails.panCardNo.trim() !== '') {
+            uniqueFields.push({ 'financialDetails.panCardNo': financialDetails.panCardNo });
+        }
+
+        const existingClient = await Client.findOne({
+            $or: uniqueFields,
+            _id: { $ne: clientId },
+        });
+
+        if (existingClient) return res.status(400).json({ message: 'Email, Phone, Aadhaar No, or PAN Card No must be unique.' });
+
+        // update in interaction history
+        const updatedClient = await Client.findByIdAndUpdate(
+            clientId,
+            { personalDetails, financialDetails },
+            { new: true, runValidators: true }
+        );
+
+        if (!updatedClient) return res.status(404).json({ message: 'Client not found.' });
+
+        res.status(200).json(updatedClient);
+    } catch (error) {
+        console.error(error);
+        res.status(503).json({ message: 'Network error. Try again' })
+    }
+};
+const uploadProfileMedia = async (req, res) => {
+    try {
+        const { clientId } = req.body;
+        const filesArray = req.files;
+        const filesPath = { panCardFilePath: '', aadhaarFilePath: '' };
+
+        for (let i = 0; i < filesArray.length; i++) {
+            const file = filesArray[i];
+            const fieldName = file.fieldname;
+            const fileName = file.filename;
+            if (fieldName === 'panCard') {
+                filesPath.panCardFilePath = fileName;
+            } else if (fieldName === 'aadhaar') {
+                filesPath.aadhaarFilePath = fileName;
+            }
+        }
+        console.log(filesPath);
+        // Find the client
+        const client = await Client.findById(clientId);
+
+        if (!client) {
+            // Delete the newly uploaded files since the client doesn't exist
+            if (filesPath.panCardFilePath) {
+                fs.unlinkSync(path.join(__dirname, 'uploads', filesPath.panCardFilePath));
+            }
+            if (filesPath.aadhaarFilePath) {
+                fs.unlinkSync(path.join(__dirname, 'uploads', filesPath.aadhaarFilePath));
+            }
+            return res.status(404).json({ message: 'Client not found.' });
+        }
+
+        // Delete existing files if they exist
+        if (client.financialDetails?.panCardURL) {
+            const existingPanCardPath = path.join(__dirname, 'uploads', client.financialDetails.panCardURL);
+            if (fs.existsSync(existingPanCardPath)) {
+                fs.unlinkSync(existingPanCardPath);
+            }
+        }
+        if (client.financialDetails?.aadhaarURL) {
+            const existingAadhaarPath = path.join(__dirname, 'uploads', client.financialDetails.aadhaarURL);
+            if (fs.existsSync(existingAadhaarPath)) {
+                fs.unlinkSync(existingAadhaarPath);
+            }
+        }
+
+        // Update the client's financial details
+        client.financialDetails.panCardURL = filesPath.panCardFilePath;
+        client.financialDetails.aadhaarURL = filesPath.aadhaarFilePath;
+
+        // Save the updated client
+        await client.save();
+        console.log(client);
+        res.status(200).json(client);
+    } catch (error) {
+        console.error(error);
+        res.status(503).json({ message: 'Network error. Try again' })
+    }
+};
+// working
 const logout = async (req, res) => {
     try {
         Client.findByIdAndUpdate(
@@ -347,8 +366,40 @@ const logout = async (req, res) => {
         console.error(error);
         res.status(503).json({ message: 'Network error. Try again' })
     }
-}
+};
+// working TODO: (delete assosiated ClientPolicy)
+const deleteProfile = async (req, res) => {
+    try {
+        const clientId = req.client._id;
 
+        const client = await Client.findById(clientId);
+        if (!client) return res.status(404).json({ message: 'Client not found' });
+
+        client.deleted.isDeleted = true;
+        client.deleted.contact.email = client.personalDetails.contact.email || null;
+        client.deleted.contact.phone = client.personalDetails.contact.phone || null;
+
+        client.personalDetails.contact.email = null;
+        client.personalDetails.contact.phone = null;
+
+        await client.save();
+
+        await Employee.findOneAndDelete({ clientId: clientId });
+        await ClientPolicy.deleteMany({
+            clientId: clientId,
+            stage: 'Interested',
+        });
+
+        res.status(200)
+            .clearCookie('accessToken', cookiesOptions)
+            .clearCookie('refreshToken', cookiesOptions)
+            .json({ message: 'Profile marked as deleted successfully' });
+    } catch (error) {
+        console.error(error);
+        res.status(503).json({ message: 'Network error. Try again' });
+    }
+};
+// working
 const forgotPassword = async (req, res) => {
     try {
         const { email } = req.query;
@@ -366,8 +417,8 @@ const forgotPassword = async (req, res) => {
         console.error(error);
         res.status(503).json({ message: 'Network error. Try again' })
     }
-}
-
+};
+// working
 const resetPassword = async (req, res) => {
     try {
         const { resetToken, newPassword } = req.body;
@@ -377,11 +428,11 @@ const resetPassword = async (req, res) => {
         );
 
         if (!decodedToken) {
-            return res.status(401).send({ message: "Invalid token" });
+            return res.status(401).send({ message: 'Invalid token' });
         }
 
         const client = await Client.findOne({ _id: decodedToken.clientId });
-        if (!client) { return res.status(401).send({ message: "No client found" }) }
+        if (!client) { return res.status(401).send({ message: 'No client found' }) }
 
         client.password = newPassword;
         await client.save();
@@ -401,38 +452,19 @@ const resetPassword = async (req, res) => {
             res.status(503).json({ message: 'Network error. Try again' })
         }
     }
-}
-
-const deleteProfile = async (req, res) => {
-    try {
-        const clientId = req.client._id
-        await Client.findByIdAndDelete(clientId);
-        await Employee.findOneAndDelete({ clientId: clientId });
-        await AssignedPolicy.deleteMany({
-            clientId: new ObjectId(clientId),
-            stage: 1
-        });
-
-        res.status(200)
-            .clearCookie("accessToken", cookiesOptions)
-            .clearCookie("refreshToken", cookiesOptions)
-            .json({ message: "Profile deleted successfully" });
-    } catch (error) {
-        console.log(error);
-        res.status(503).json({ message: "Network error. Try again" });
-    }
-}
+};
 
 export {
-    condenseClientInfo,
-    generateAccessAndRefreshTokens,
-    fetchCondenseInfo,
-    fetchAllData,
-    fetchAllCustomers,
     register,
     login,
+    fetchCondenseInfo,
+    fetchProfileData,
+    fetchPoliciesData,
+    fetchAllClients,
+    updateProfile,
+    uploadProfileMedia,
     logout,
+    deleteProfile,
     forgotPassword,
     resetPassword,
-    deleteProfile
 };

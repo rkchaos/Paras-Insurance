@@ -189,7 +189,7 @@ const InsuranceForm = () => {
                             </select>
                             <ExpandMore className='absolute right-7 pointer-events-none' />
                         </div>
-                        <form id='insuranceForm' onSubmit={handleFormSubmit} className='bg-white shadow-md rounded-lg py-6 px-8 transition duration-300 ease-in-out hover:shadow-xl'>
+                        <form id='insuranceForm' onSubmit={handleFormSubmit} className='bg-white shadow-md rounded-lg pt-6 pb-8 px-8 transition duration-300 ease-in-out hover:shadow-xl'>
                             <h1 className='text-2xl font-bold text-center mb-4'>{formFields.sections[currentSection].heading}</h1>
                             {!isLoggedIn && currentSection === 0 &&
                                 <div>
@@ -204,10 +204,10 @@ const InsuranceForm = () => {
                                     </div>
                                     <div>
                                         <label htmlFor='lastName' className='block text-sm font-medium text-gray-700 mb-1'>
-                                            Last Name<span className='text-red-600'>*</span>
+                                            Last Name
                                         </label>
                                         <input
-                                            type='text' id='lastName' name='lastName' value={defaultFormData.lastName} onChange={handleDefaultFormDataChange} placeholder='Enter your last name' required={true}
+                                            type='text' id='lastName' name='lastName' value={defaultFormData.lastName} onChange={handleDefaultFormDataChange} placeholder='Enter your last name'
                                             className='appearance-none block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm placeholder-gray-400 focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm'
                                         />
                                     </div>
@@ -252,9 +252,9 @@ const InsuranceForm = () => {
                                     </button>
                                 )}
                             </div>
-                            <p className='text-red-500 mt-4 text-sm'>
-                                {error && error}
-                            </p>
+                            <div className='relative'>
+                                {error && <span className='absolute -bottom-6 text-sm text-red-600'>{error}</span>}
+                            </div>
                         </form>
                     </div>
                 </div>

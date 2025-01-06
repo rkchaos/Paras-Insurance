@@ -1,7 +1,8 @@
 import { useContext } from 'react';
 import {
     BrowserRouter as Router,
-    Routes, Route
+    Routes, Route,
+    useParams
 } from 'react-router-dom';
 import { tailChase } from 'ldrs';
 // importing pages
@@ -11,6 +12,7 @@ import ContactUs from './pages/ContactUs.page';
 import Authentication from './pages/Authentication.page';
 import InsuranceForm from './pages/InsuranceForm.page';
 import ClientProfile from './pages/ClientProfile.page';
+import ClientPolicies from './pages/ClientPolicies.page';
 import ResetPassword from './pages/ResetPassword.page';
 import PageNotFound from './pages/PageNotFound.page';
 // importing utils
@@ -24,6 +26,8 @@ import Header from './components/Header';
 import Footer from './components/Footer';
 import SnackBar from './components/subcomponents/SnackBar';
 import ConfirmationDialog from './components/subcomponents/ConfirmationDialog';
+import ProtectedRoute from './utils/ProtectedRoute';
+import FileViewer from './pages/FileViewer.page';
 
 const App = () => {
     const { loading, condenseClientInfo } = useFetchClient();
@@ -66,7 +70,15 @@ const App = () => {
                 />
                 <Route
                     path='/profile/:id'
-                    element={<><ClientProfile /><Footer /></>}
+                    element={<ProtectedRoute Component={ClientProfile} user={condenseClientInfo} />}
+                />
+                <Route
+                    path='/myPolicies/:id'
+                    element={<ProtectedRoute Component={ClientPolicies} user={condenseClientInfo} />}
+                />
+                <Route
+                    path='/uploads/:filePath'
+                    element={<ProtectedRoute Component={FileViewer} user={condenseClientInfo} />}
                 />
                 <Route
                     path='/resetPassword/:resetToken'

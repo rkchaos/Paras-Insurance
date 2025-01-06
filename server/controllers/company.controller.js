@@ -1,5 +1,6 @@
-import AssignedPolicy from "../models/assignedPolicy.model.js";
+// importing models
 import Company from "../models/company.model.js";
+import AssignedPolicy from "../models/clientPolicy.model.js";
 
 const createCompany = async (req, res) => {
     try {
@@ -128,14 +129,14 @@ const fetchCompanyPoliciesByType = async (req, res) => {
 
 const sendCompanyPolicies = async (req, res) => {
     try {
-        const { assignedPolicyId, companyPolicies } = req.body;
-        const assignedPolicy = await AssignedPolicy.findByIdAndUpdate(assignedPolicyId, {
+        const { clientPolicyId, companyPolicies } = req.body;
+        const clientPolicy = await AssignedPolicy.findByIdAndUpdate(clientPolicyId, {
             $set: {
                 availablePolicies: companyPolicies
             },
             new: true
         });
-        console.log(assignedPolicy);
+        console.log(clientPolicy);
         res.sendStatus(200);
     } catch (error) {
         console.log(error);

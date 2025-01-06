@@ -3,7 +3,7 @@ import { BusinessRounded, ChevronLeft, ChevronRight, Dashboard, PeopleAlt, Perso
 const menuItems = [
     { id: 'dashboard', label: 'Dashboard', icon: Dashboard },
     { id: 'policies', label: 'Policy Management', icon: Policy },
-    { id: 'customers', label: 'Customer Management', icon: PeopleAlt },
+    { id: 'clients', label: 'Client Management', icon: PeopleAlt },
     { id: 'companies', label: 'Company Management', icon: BusinessRounded },
     { id: 'employee', label: 'Employee Management', icon: Person },
 ];
@@ -17,7 +17,7 @@ const Sidebar = ({ isCollapsed, toggleSidebar, activeSection, setActiveSection }
                     onClick={toggleSidebar}
                     className="p-2 rounded-lg hover:bg-gray-800 transition-colors"
                 >
-                    {isCollapsed ? <ChevronRight size={20} /> : <ChevronLeft size={20} />}
+                    {isCollapsed ? <ChevronRight /> : <ChevronLeft />}
                 </button>
             </div>
 
@@ -30,7 +30,7 @@ const Sidebar = ({ isCollapsed, toggleSidebar, activeSection, setActiveSection }
                             onClick={() => setActiveSection(item.id)}
                             className={`w-full flex items-center p-4 hover:bg-gray-800 transition-colors ${activeSection === item.id ? 'bg-blue-600' : ''}`}
                         >
-                            <Icon size={20} />
+                            <Icon />
                             {!isCollapsed && <span className="ml-4">{item.label}</span>}
                         </button>
                     );

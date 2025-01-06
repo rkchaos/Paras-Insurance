@@ -92,14 +92,14 @@ const DashboardTable = ({ unassignedPolicies, onSendCompanyPolicies, onAssignPol
     }
 
     const filteredUnassignedPolicies = useMemo(() => {
-        return unassignedPolicies.filter(unassignedPolicy => {
+        return unassignedPolicies.filter(unclientPolicy => {
             const searchMatch =
-                unassignedPolicy.clientDetails.firstName.toLowerCase().includes(searchTerm.toLowerCase()) ||
-                unassignedPolicy.clientDetails.lastName.toLowerCase().includes(searchTerm.toLowerCase()) ||
-                unassignedPolicy.clientDetails.email.toLowerCase().includes(searchTerm.toLowerCase()) ||
-                unassignedPolicy.clientDetails.phone.includes(searchTerm);
+                unclientPolicy.clientDetails.firstName.toLowerCase().includes(searchTerm.toLowerCase()) ||
+                unclientPolicy.clientDetails.lastName.toLowerCase().includes(searchTerm.toLowerCase()) ||
+                unclientPolicy.clientDetails.email.toLowerCase().includes(searchTerm.toLowerCase()) ||
+                unclientPolicy.clientDetails.phone.includes(searchTerm);
 
-            const genderMatch = filterGender === 'ALL' || unassignedPolicy.clientDetails.gender?.toLowerCase() === filterGender.toLowerCase();
+            const genderMatch = filterGender === 'ALL' || unclientPolicy.clientDetails.gender?.toLowerCase() === filterGender.toLowerCase();
 
             let policyMatch = true;
             return searchMatch && genderMatch && policyMatch;
@@ -107,9 +107,9 @@ const DashboardTable = ({ unassignedPolicies, onSendCompanyPolicies, onAssignPol
     }, [searchTerm, filterGender, unassignedPolicies]);
 
     const totalPages = Math.ceil(filteredUnassignedPolicies.length / itemsPerPage);
-    const indexOfLastCustomer = currentPage * itemsPerPage;
-    const indexOfFirstCustomer = indexOfLastCustomer - itemsPerPage;
-    const currentUnassignedPolicies = filteredUnassignedPolicies.slice(indexOfFirstCustomer, indexOfLastCustomer);
+    const indexOfLastClient = currentPage * itemsPerPage;
+    const indexOfFirstClient = indexOfLastClient - itemsPerPage;
+    const currentUnassignedPolicies = filteredUnassignedPolicies.slice(indexOfFirstClient, indexOfLastClient);
 
     const handleViewDetails = (policy) => {
         setSelectedPolicy(policy);
@@ -257,7 +257,7 @@ const DashboardTable = ({ unassignedPolicies, onSendCompanyPolicies, onAssignPol
                                                 <div className='absolute left-6'>
                                                     <Tooltip title='Policies Sent'>
                                                         {console.log(policy.availablePolicies)}
-                                                        <DoneAllOutlined size={20} />
+                                                        <DoneAllOutlined />
                                                     </Tooltip>
                                                 </div>
                                             }
@@ -304,7 +304,7 @@ const DashboardTable = ({ unassignedPolicies, onSendCompanyPolicies, onAssignPol
 
                 <div className="flex justify-between items-center mt-4">
                     <div className="text-sm text-gray-700">
-                        Showing {indexOfFirstCustomer + 1} to {Math.min(indexOfLastCustomer, filteredUnassignedPolicies.length)} of {filteredUnassignedPolicies.length} results
+                        Showing {indexOfFirstClient + 1} to {Math.min(indexOfLastClient, filteredUnassignedPolicies.length)} of {filteredUnassignedPolicies.length} results
                     </div>
                     <div className="flex space-x-2">
                         <button
@@ -368,7 +368,7 @@ const DashboardTable = ({ unassignedPolicies, onSendCompanyPolicies, onAssignPol
                             <input id='excelUpload' type='file' multiple={false} accept='.xlsx,.xls,.csv' onChange={handleFileUpload} className='opacity-0 absolute pointer-events-none' />
                             <div className='bg-gray-100 rounded-md p-4'>
                                 <div className="mt-3 flex flex-col gap-2 items-center cursor-pointer" onClick={handleUploadExcel}>
-                                    <Upload size={100} />
+                                    <Upload />
                                     Upload Excel (.xlsx, .xls, .csv)
                                 </div>
                             </div>

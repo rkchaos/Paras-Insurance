@@ -8,7 +8,7 @@ const PageNotFound = () => {
                 colors="primary:#111827,secondary:#111827"
                 style={{ width: '250px', height: '250px' }}
             />
-            <div className="text-3xl font-semibold">Page Not Found</div>
+            <p className="text-3xl font-semibold text-gray-900">Page Not Found</p>
         </div>
     );
 }

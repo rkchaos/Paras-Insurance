@@ -124,9 +124,9 @@ const ResetPassword = () => {
                             >
                                 Reset password
                             </button>
-                            <p className='text-red-500 mt-4 text-sm'>
-                                {error && error}
-                            </p>
+                            <div className='relative'>
+                                {error && <span className='absolute -bottom-4 text-sm text-red-600'>{error}</span>}
+                            </div>
                         </form>
                     )}
                 </div>

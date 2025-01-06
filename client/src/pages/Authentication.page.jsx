@@ -112,14 +112,15 @@ const Authentication = () => {
     const [showForgotPasswordModal, setForgotPasswordModal] = useState(false);
     const [modalFieldIsDisabled, setModalFieldIsDisabled] = useState(false);
     const [modalText, setModalText] = useState('');
+    const [showLinearProgress, setShowLinearProgress] = useState(false);
     const handleForgotPassword = async (email) => {
         try {
             setModalText('');
+            setShowLinearProgress(true);
             const { data } = await forgotPassword({ email });
+            setShowLinearProgress(false);
             setModalText(data?.message);
-            if (data?.message === 'No such user found.') {
-                setModalFieldIsDisabled(false);
-            }
+            setModalFieldIsDisabled(false);
         } catch (error) {
             handleError(error);
         }
@@ -130,7 +131,7 @@ const Authentication = () => {
             <div className={`bg-gray-100 flex flex-col justify-center py-4 sm:px-6 lg:px-8 ${!isRegister && 'md:py-24'}`}>
                 <h1 className='font-bold text-3xl text-center'>{isRegister ? 'Register' : 'Login'}</h1>
                 <div className='mt-4 sm:mx-auto sm:w-full sm:max-w-md'>
-                    <div className='bg-white py-8 px-4 shadow sm:rounded-lg sm:px-10'>
+                    <div className='bg-white pt-8 pb-12 px-4 shadow sm:rounded-lg sm:px-10'>
                         {isRegister && (
                             <form className='space-y-4' onSubmit={handleSubmit}>
                                 <div>
@@ -175,7 +176,7 @@ const Authentication = () => {
                                     </label>
                                     <div className='mt-1'>
                                         <input
-                                            id='phone' name='phone' type='tel' pattern='[7-9]{1}[0-9]{9}' placeholder='Enter your phone number' ref={phoneField} required
+                                            id='phone' name='phone' type='tel' pattern='[0-9]{10}' placeholder='Enter your phone number' ref={phoneField} required
                                             className='appearance-none block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm placeholder-gray-400 focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm'
                                             value={authData.phone} onChange={handleAuthDataChange}
                                         />
@@ -299,15 +300,16 @@ const Authentication = () => {
                                 : <>Don't have an account? <span className='text-blue-600 cursor-pointer' onClick={handleIsRegister}> Register</span></>
                             }
                         </p>
-                        <p className='text-red-500 mt-4 text-sm'>
-                            {error && error}
-                        </p>
+                        <div className='relative'>
+                            {error && <span className='absolute -bottom-8 text-sm text-red-600'>{error}</span>}
+                        </div>
                     </div>
                 </div>
                 <ForgotPasswordModal
                     isOpen={showForgotPasswordModal}
                     onClose={() => setForgotPasswordModal(false)}
                     modalText={modalText}
+                    showLinearProgress={showLinearProgress}
                     modalFieldIsDisabled={modalFieldIsDisabled}
                     setModalFieldIsDisabled={setModalFieldIsDisabled}
                     onSubmit={handleForgotPassword}

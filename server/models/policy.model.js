@@ -2,19 +2,21 @@ import mongoose from 'mongoose';
 
 const sectionSchema = new mongoose.Schema({
     heading: {
-        type: String
+        type: String,
     },
     fields: {
-        type: mongoose.Schema.Types.Array
+        type: mongoose.Schema.Types.Array,
+        default: [],
     }
 });
 
 const formSchema = new mongoose.Schema({
     sections: {
-        type: [sectionSchema]
+        type: [sectionSchema],
+        default: [],
     },
     submitButtonLabel: {
-        type: String
+        type: String,
     }
 });
 
@@ -29,6 +31,8 @@ const policySchema = new mongoose.Schema({
     },
     policyDescription: {
         type: String,
+        enum: ['Life', 'Health', 'Home', 'Travel', 'Vehicle', 'General'],
+        default: 'Life',
         required: true,
     },
     policyIcon: {

@@ -1,16 +1,17 @@
 import mongoose from 'mongoose';
+// importing models
 import Client from './client.model.js';
 import Policy from './policy.model.js';
 
-const assignedPolicySchema = new mongoose.Schema({
+const clientPolicySchema = new mongoose.Schema({
     policyId: {
         type: mongoose.Schema.Types.ObjectId,
-        ref: "Policy",
+        ref: 'Policy',
         required: true,
     },
     clientId: {
         type: mongoose.Schema.Types.ObjectId,
-        ref: "Client",
+        ref: 'Client',
         required: true,
     },
     data: {
@@ -18,15 +19,17 @@ const assignedPolicySchema = new mongoose.Schema({
         required: true,
     },
     stage: {
-        type: Number,
+        type: String,
+        enum: ['Interested', 'Assigned'],
+        default: 'Interested',
         required: true,
     },
-    availablePolicies: {
-        type: mongoose.Schema.Types.Mixed,
-    }
+    // availablePolicies: {
+    //     type: mongoose.Schema.Types.Mixed,
+    // }
 }, { timestamps: true });
 
-assignedPolicySchema.post('save', async function (document, next) {
+clientPolicySchema.post('save', async function (document, next) {
     try {
         const policy = await Policy.findById(document.policyId);
         await Client.findByIdAndUpdate(document.clientId, {
@@ -44,5 +47,5 @@ assignedPolicySchema.post('save', async function (document, next) {
     next();
 });
 
-const AssignedPolicy = mongoose.model('AssignedPolicy', assignedPolicySchema);
-export default AssignedPolicy;
+const ClientPolicy = mongoose.model('ClientPolicy', clientPolicySchema);
+export default ClientPolicy;

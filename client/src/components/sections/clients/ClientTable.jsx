@@ -2,30 +2,30 @@ import { useState, useMemo } from 'react';
 import { Tooltip } from '@mui/material';
 import { Edit, Delete, FilterAltOutlined, PersonAddAlt1, SearchOutlined } from '@mui/icons-material';
 
-const CustomerTable = ({ customers }) => {
+const ClientTable = ({ clients }) => {
     const [searchTerm, setSearchTerm] = useState('');
     const [filterGender, setFilterGender] = useState('ALL');
     const [currentPage, setCurrentPage] = useState(1);
-    const customersPerPage = 10;
+    const clientsPerPage = 10;
 
-    const filteredCustomers = useMemo(() => {
-        return customers.filter(customer => {
+    const filteredClients = useMemo(() => {
+        return clients.filter(client => {
             const searchMatch =
-                customer.personalDetails.firstName.toLowerCase().includes(searchTerm.toLowerCase()) ||
-                customer.personalDetails.lastName.toLowerCase().includes(searchTerm.toLowerCase()) ||
-                customer.personalDetails.contact.email.toLowerCase().includes(searchTerm.toLowerCase()) ||
-                customer.personalDetails.contact.phone.includes(searchTerm);
+                client.personalDetails.firstName.toLowerCase().includes(searchTerm.toLowerCase()) ||
+                client.personalDetails.lastName.toLowerCase().includes(searchTerm.toLowerCase()) ||
+                client.personalDetails.contact.email.toLowerCase().includes(searchTerm.toLowerCase()) ||
+                client.personalDetails.contact.phone.includes(searchTerm);
 
-            const genderMatch = filterGender === 'ALL' || customer.personalDetails.gender?.toLowerCase() === filterGender.toLowerCase();
+            const genderMatch = filterGender === 'ALL' || client.personalDetails.gender?.toLowerCase() === filterGender.toLowerCase();
 
             return searchMatch && genderMatch;
         });
-    }, [searchTerm, filterGender, customers]);
+    }, [searchTerm, filterGender, clients]);
 
-    const totalPages = Math.ceil(filteredCustomers.length / customersPerPage);
-    const indexOfLastCustomer = currentPage * customersPerPage;
-    const indexOfFirstCustomer = indexOfLastCustomer - customersPerPage;
-    const currentCustomers = filteredCustomers.slice(indexOfFirstCustomer, indexOfLastCustomer);
+    const totalPages = Math.ceil(filteredClients.length / clientsPerPage);
+    const indexOfLastClient = currentPage * clientsPerPage;
+    const indexOfFirstClient = indexOfLastClient - clientsPerPage;
+    const currentClients = filteredClients.slice(indexOfFirstClient, indexOfLastClient);
 
     const nextPage = () => {
         setCurrentPage(prev => Math.min(prev + 1, totalPages));
@@ -80,7 +80,7 @@ const CustomerTable = ({ customers }) => {
                     <FilterAltOutlined className="h-4 w-4" />
                     <button className="px-3 py-2 bg-blue-600 text-white rounded-md shadow-sm hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 flex items-center space-x-1">
                         <PersonAddAlt1 className="h-4 w-4" />
-                        <span>Add Customer</span>
+                        <span>Add Client</span>
                     </button>
                 </div>
             </div>
@@ -98,31 +98,31 @@ const CustomerTable = ({ customers }) => {
                         </tr>
                     </thead>
                     <tbody className="bg-white divide-y divide-gray-200">
-                        {currentCustomers.map((customer) => (
-                            <tr key={customer.id}>
+                        {currentClients.map((client) => (
+                            <tr key={client.id}>
                                 <td className="px-6 py-4 whitespace-nowrap">
                                     <div className="text-sm font-medium text-gray-900">
-                                        {customer.personalDetails.firstName} {customer.personalDetails.lastName}
+                                        {client.personalDetails.firstName} {client.personalDetails.lastName}
                                     </div>
                                 </td>
                                 <td className="px-6 py-4 whitespace-nowrap">
-                                    <div className="text-sm text-gray-500">{customer.personalDetails.contact.email}</div>
+                                    <div className="text-sm text-gray-500">{client.personalDetails.contact.email}</div>
                                 </td>
                                 <td className="px-6 py-4 whitespace-nowrap">
-                                    <div className="text-sm text-gray-500">{customer.personalDetails.contact.phone}</div>
+                                    <div className="text-sm text-gray-500">{client.personalDetails.contact.phone}</div>
                                 </td>
                                 <td className="px-6 py-4 whitespace-nowrap">
-                                    <div className="text-sm text-gray-500">{customer.userType}</div>
+                                    <div className="text-sm text-gray-500">{client.userType}</div>
                                 </td>
                                 <td className="px-6 py-4 whitespace-nowrap">
-                                    <div className="text-sm text-gray-500">{calculateAge(customer.personalDetails.dob)}</div>
+                                    <div className="text-sm text-gray-500">{calculateAge(client.personalDetails.dob)}</div>
                                 </td>
                                 <td className="px-6 py-4 whitespace-nowrap">
-                                    <span className={`px-2 inline-flex text-xs leading-5 font-semibold rounded-full ${customer.personalDetails.gender?.toLowerCase() === 'male'
+                                    <span className={`px-2 inline-flex text-xs leading-5 font-semibold rounded-full ${client.personalDetails.gender?.toLowerCase() === 'male'
                                         ? 'bg-green-100 text-blue-800'
-                                        : customer.personalDetails.gender?.toLowerCase() === 'female' ? 'bg-red-100 text-pink-800' : 'bg-yellow-100 text-yellow-800'
+                                        : client.personalDetails.gender?.toLowerCase() === 'female' ? 'bg-red-100 text-pink-800' : 'bg-yellow-100 text-yellow-800'
                                         }`}>
-                                        {customer.personalDetails.gender?.toLowerCase() === 'male' ? 'Male' : customer.personalDetails.gender?.toLowerCase() === 'female' ? 'Female' : '-'}
+                                        {client.personalDetails.gender?.toLowerCase() === 'male' ? 'Male' : client.personalDetails.gender?.toLowerCase() === 'female' ? 'Female' : '-'}
                                     </span>
                                 </td>
                                 <td className="px-6 py-4 whitespace-nowrap text-sm">
@@ -146,7 +146,7 @@ const CustomerTable = ({ customers }) => {
             </div>
             <div className="flex justify-between items-center mt-4">
                 <div className="text-sm text-gray-700">
-                    Showing {indexOfFirstCustomer + 1} to {Math.min(indexOfLastCustomer, filteredCustomers.length)} of {filteredCustomers.length} results
+                    Showing {indexOfFirstClient + 1} to {Math.min(indexOfLastClient, filteredClients.length)} of {filteredClients.length} results
                 </div>
                 <div className="flex space-x-2">
                     <button
@@ -169,5 +169,5 @@ const CustomerTable = ({ customers }) => {
     );
 }
 
-export default CustomerTable;
+export default ClientTable;
 

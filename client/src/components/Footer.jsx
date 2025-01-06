@@ -49,7 +49,7 @@ const Footer = () => {
                         <h5 className='font-bold text-md sm:text-xl mb-4'>Support</h5>
                         <ul className='sm:space-y-2'>
                             <li className='text-xs sm:text-md py-1'>+91 9876543210</li>
-                            <li className='text-xs sm:text-md py-1'>support@paarasinsurance.com</li>
+                            <li className='text-xs sm:text-md py-1'>support@paarasfinancials.com</li>
                         </ul>
                     </div>
                 </div>

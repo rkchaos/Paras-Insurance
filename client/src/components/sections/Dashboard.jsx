@@ -30,7 +30,7 @@ const Dashboard = () => {
     const handleCloseModal = () => setIsModalOpen(false);
     const handleSend = async () => {
         try {
-            await sendCompanyPolicies({ assignedPolicyId: currentAssignedPolicyId, companyPolicies });
+            await sendCompanyPolicies({ clientPolicyId: currentAssignedPolicyId, companyPolicies });
             handleCloseModal();
         } catch (error) {
             console.log(error);
@@ -48,9 +48,9 @@ const Dashboard = () => {
         }
     }
 
-    const handleAssignPolicy = async (assignedPolicyId) => {
+    const handleAssignPolicy = async (clientPolicyId) => {
         try {
-            const { data } = await addAssignPolicy({ assignedPolicyId });
+            const { data } = await addAssignPolicy({ clientPolicyId });
             getAllUnassignedPolicies();
         } catch (error) {
             console.log(error);
@@ -74,7 +74,7 @@ const Dashboard = () => {
                 <button
                     className="bg-blue-600 text-white px-4 py-2 rounded-lg flex items-center gap-2 hover:bg-blue-700"
                 >
-                    <Add size={20} />
+                    <Add />
                     Assign New Policy
                 </button> 
                 */}

@@ -1,15 +1,11 @@
-import Client from "../models/client.model.js";
-import AssignedPolicy from "../models/assignedPolicy.model.js";
 import { ObjectId } from "mongodb";
-import { condenseClientInfo, generateAccessAndRefreshTokens } from "./client.controller.js";
+// importing models
+import Client from "../models/client.model.js";
 import Policy from "../models/policy.model.js";
 import Company from "../models/company.model.js";
-
-const cookiesOptions = {
-    httpOnly: true,
-    secure: true,
-    sameSite: 'None'
-};
+import ClientPolicy from "../models/clientPolicy.model.js";
+// importing helper functions
+import { condenseClientInfo, cookiesOptions, generateAccessAndRefreshTokens } from "../utils/helperFunctions.js";
 
 const processFormData = (formData) => {
     const fieldMappings = {
@@ -18,7 +14,7 @@ const processFormData = (formData) => {
         street: "personalDetails.address.street",
         city: "personalDetails.address.city",
         state: "personalDetails.address.state",
-        PINCODE: "personalDetails.address.PINCODE",
+        pincode: "personalDetails.address.pincode",
         country: "personalDetails.address.country",
         panCard: "financialDetails.pan_card",
         accountNo: "financialDetails.accountDetails.accountNo",
@@ -104,50 +100,53 @@ const addAdditionalClientData = async (clientId, formData) => {
     }
 }
 
-const assignedPolicyWithClientId = async (res, { policyId, clientId, data, clientData }) => {
-    const newAssignedPolicy = await AssignedPolicy.create({
+const clientPolicyWithClientId = async (res, { policyId, clientId, data, clientData, isNewClient }) => {
+    const newClientPolicy = await ClientPolicy.create({
         policyId: policyId,
         clientId: clientId,
         data: data,
-        stage: 1
+        stage: 'Interested'
     });
 
-    // check for these fields: dob, gender, street, city, state, PINCODE, country, panCard, accountNo,
-    // aadharNo, ifscCode, bankName, companyName, designation, annualIncome; if exists then update client 
     addAdditionalClientData(clientId, data);
 
     // send mail to all companies
-    // Company.find()
-    
 
     const { accessToken, refreshToken } = await generateAccessAndRefreshTokens(clientData);
     const clientInfo = await condenseClientInfo(clientData);
 
-    const clientPolicies = clientData.policies;
-    clientPolicies.push({ policyId: newAssignedPolicy._id, interestedIn: true });
-    // change to assigned from admin side
-    await Client.findByIdAndUpdate(clientId, {
-        $set: { policies: clientPolicies }
-    });
+    // const clientPolicies = clientData.policies;
+    // clientPolicies.push({ policyId: newClientPolicy._id, interestedIn: true });
+    // await Client.findByIdAndUpdate(clientId, {
+    //     $set: { policies: clientPolicies }
+    // });
 
     res.status(200)
         .cookie('accessToken', accessToken, cookiesOptions)
         .cookie('refreshToken', refreshToken, cookiesOptions)
-        .json({ clientInfo, newAssignedPolicy });
+        .json({ clientInfo, newClientPolicy });
 }
 
-const assignPolicy = async (req, res) => {
+// if logged in; if not logged in (has account; no account)
+const createClientPolicy = async (req, res) => {
     try {
         console.log(req.body);
         const { policyId, clientId, password, formData } = req.body;
         if (!clientId && password) {
             let newClientId;
             const { firstName, lastName, phone, email } = formData;
+            // working
             if (email) {
                 const clientCorrespondingToEmail = await Client.findOne({ 'personalDetails.contact.email': email });
                 if (clientCorrespondingToEmail) {
                     newClientId = clientCorrespondingToEmail._id;
-                    await assignedPolicyWithClientId(res, { policyId, clientId: newClientId, data: formData, clientData: clientCorrespondingToEmail });
+                    await clientPolicyWithClientId(res, {
+                        policyId,
+                        clientId: newClientId,
+                        data: formData,
+                        clientData: clientCorrespondingToEmail,
+                        isNewClient: false
+                    });
                     return;
                 }
             }
@@ -155,7 +154,13 @@ const assignPolicy = async (req, res) => {
                 const clientCorrespondingToPhone = await Client.findOne({ 'personalDetails.contact.phone': phone });
                 if (clientCorrespondingToPhone) {
                     newClientId = clientCorrespondingToPhone._id;
-                    await assignedPolicyWithClientId(res, { policyId, clientId: newClientId, data: formData, clientData: clientCorrespondingToPhone });
+                    await clientPolicyWithClientId(res, {
+                        policyId,
+                        clientId: newClientId,
+                        data: formData,
+                        clientData: clientCorrespondingToPhone,
+                        isNewClient: false
+                    });
                     return;
                 }
             }
@@ -173,11 +178,24 @@ const assignPolicy = async (req, res) => {
             });
 
             newClientId = newClient._id;
-            await assignedPolicyWithClientId(res, { policyId, clientId: newClientId, data: formData, clientData: newClient });
+            await clientPolicyWithClientId(res, {
+                policyId,
+                clientId: newClientId,
+                data: formData,
+                clientData: newClient,
+                isNewClient: true
+            });
             return;
         } else {
+            // working
             const client = await Client.findById(new ObjectId(clientId));
-            await assignedPolicyWithClientId(res, { policyId, clientId: new ObjectId(clientId), data: formData, clientData: client });
+            await clientPolicyWithClientId(res, {
+                policyId,
+                clientId: new ObjectId(clientId),
+                data: formData,
+                clientData: client,
+                isNewClient: false
+            });
             return;
         }
     } catch (error) {
@@ -188,7 +206,7 @@ const assignPolicy = async (req, res) => {
 
 const fecthAllUnassignedPolicies = async (req, res) => {
     try {
-        const unassignedPolicies = await AssignedPolicy.aggregate([
+        const unassignedPolicies = await ClientPolicy.aggregate([
             { $match: { stage: 1, } },
             {
                 $lookup: {
@@ -248,13 +266,13 @@ const fecthAllUnassignedPolicies = async (req, res) => {
     }
 }
 
-const addAssignPolicy = async (req, res) => {
+const assignPolicy = async (req, res) => {
     try {
-        const { assignedPolicyId } = req.query;
-        const assignedPolicy = await AssignedPolicy.findByIdAndUpdate(assignedPolicyId, { $set: { stage: 2 } }, { new: true });
-        const policy = await Policy.findById(assignedPolicy.policyId);
+        const { clientPolicyId } = req.query;
+        const clientPolicy = await ClientPolicy.findByIdAndUpdate(clientPolicyId, { $set: { stage: 2 } }, { new: true });
+        const policy = await Policy.findById(clientPolicy.policyId);
         await Client.findByIdAndUpdate(
-            assignedPolicy.clientId,
+            clientPolicy.clientId,
             {
                 $push: {
                     interactionHistory: {
@@ -279,14 +297,14 @@ const addAvailableCompanyPolicies = async (req, res) => {
     try {
         console.log(req.body);
         const { policyIdForExcel, excelData } = req.body;
-        const assignedPolicy = await AssignedPolicy.findByIdAndUpdate(policyIdForExcel,
+        const clientPolicy = await ClientPolicy.findByIdAndUpdate(policyIdForExcel,
             { $set: { availablePolicies: excelData } },
             { new: true }
         );
-        console.log(assignedPolicy);
-        const policy = await Policy.findById(assignedPolicy.policyId);
+        console.log(clientPolicy);
+        const policy = await Policy.findById(clientPolicy.policyId);
         await Client.findByIdAndUpdate(
-            assignedPolicy.clientId,
+            clientPolicy.clientId,
             {
                 $push: {
                     interactionHistory: {
@@ -304,8 +322,8 @@ const addAvailableCompanyPolicies = async (req, res) => {
 }
 
 export {
-    assignPolicy,
+    createClientPolicy,
     fecthAllUnassignedPolicies,
-    addAssignPolicy,
+    assignPolicy,
     addAvailableCompanyPolicies
 };

@@ -76,7 +76,7 @@ const CompanyManagement = () => {
                     onClick={() => setShowForm(true)}
                     className="bg-blue-600 text-white px-4 py-2 rounded-lg flex items-center gap-2 hover:bg-blue-700"
                 >
-                    <Add size={20} />
+                    <Add />
                     Add New Company
                 </button>
             </div>

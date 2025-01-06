@@ -1,54 +1,61 @@
 import mongoose from 'mongoose';
 
-const companyPolicySchema = new mongoose.Schema({
+const policyProviedSchema = new mongoose.Schema({
     policyName: {
         type: String,
-        required: true
+        required: true,
     },
     policyType: {
         type: String,
-        required: true
+        enum: ['Life', 'Health', 'Home', 'Travel', 'Vehicle', 'General'],
+        default: 'Life',
+        required: true,
     },
     policyDescription: {
         type: String,
-        required: true
+        required: true,
     },
     coverageAmount: {
         type: Number,
-        required: true
+        required: true,
     },
     coverageType: {
         type: String,
-        required: true
+        required: true,
     },
     policyFeatures: {
         type: String,
-        required: true
+        required: true,
     },
     premiumType: {
         type: String,
-        required: true
+        required: true,
     },
     premiumAmount: {
         type: Number,
-        required: true
+        required: true,
     }
 });
 
 const companySchema = new mongoose.Schema({
     companyName: {
         type: String,
-        required: true
+        required: true,
     },
     companyType: {
         type: String,
-        required: true
+        enum: ['Corporate', 'Enterprise', 'SME'],
+        default: 'Corporate',
+        required: true,
     },
     companyDescription: {
-        type: String
+        type: String,
     },
     companyStatus: {
-        type: String
+        type: String,
+        enum: ['Active', 'Inactive'],
+        default: 'Active',
+        required: true,
     },
     contactInfo: {
         contactPerson: {
@@ -71,7 +78,7 @@ const companySchema = new mongoose.Schema({
         type: String,
         required: true
     },
-    policies: [companyPolicySchema]
+    policiesProvided: [policyProviedSchema]
 }, { timestamps: true });
 
 const Company = mongoose.model('Company', companySchema);

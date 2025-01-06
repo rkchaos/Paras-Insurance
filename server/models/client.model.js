@@ -3,157 +3,207 @@ import jwt from 'jsonwebtoken';
 import mongoose from 'mongoose';
 const saltRounds = 10;
 
-const policySchema = new mongoose.Schema({
-    policyId: {
-        type: mongoose.Schema.Types.ObjectId,
-        ref: 'Policy'
+// const policySchema = new mongoose.Schema({
+//     policyId: {
+//         type: mongoose.Schema.Types.ObjectId,
+//         ref: 'Policy',
+//     }
+// });
+
+const interactionSchema = new mongoose.Schema({
+    type: {
+        type: String,
     },
-    interestedIn: {
-        type: Boolean
+    description: {
+        type: String,
+    },
+    timestamp: {
+        type: Date,
+        default: Date.now,
     }
-});
+})
 
 const clientSchema = new mongoose.Schema({
     userType: {
-        type: String
+        type: String,
+        enum: ['Lead', 'Client', 'Employee'],
+        default: 'Lead',
+        required: true,
     },
     password: {
-        type: String
+        type: String,
+        required: true,
     },
     refreshToken: {
-        type: String
+        type: String,
     },
-    personalDetails: {
-        firstName: {
-            type: String
-        },
-        lastName: {
-            type: String
-        },
-        dob: {
-            type: Date
-        },
-        gender: {
-            type: String
+    deleted: {
+        isDeleted: {
+            type: Boolean,
+            default: false,
         },
         contact: {
             email: {
-                type: String
+                type: String,
+                default: null,
             },
             phone: {
-                type: String
+                type: String,
+                default: null,
+            }
+        }
+    },
+    personalDetails: {
+        firstName: {
+            type: String,
+            default: '',
+            required: true,
+        },
+        lastName: {
+            type: String,
+            default: '',
+        },
+        dob: {
+            type: Date,
+        },
+        gender: {
+            type: String,
+            enum: ['Male', 'Female', ''],
+            default: '',
+        },
+        contact: {
+            email: {
+                type: String,
+                default: null,
+            },
+            phone: {
+                type: String,
+                default: null,
             }
         },
         address: {
             street: {
-                type: String
+                type: String,
+                default: '',
             },
             city: {
-                type: String
+                type: String,
+                default: '',
             },
             state: {
-                type: String
+                type: String,
+                default: '',
             },
-            PINCODE: {
-                type: String
+            pincode: {
+                type: String,
+                default: '',
             },
             country: {
-                type: String
+                type: String,
+                default: '',
             }
         },
         nominee: {
             name: {
-                type: String
+                type: String,
+                default: '',
             },
             dob: {
-                type: String
+                type: String,
+                default: '',
             },
             relationship: {
-                type: String
+                type: String,
+                default: '',
             },
             phone: {
-                type: String
+                type: String,
+                default: '',
             }
         }
     },
     financialDetails: {
-        panCard: {
-            type: String
+        panCardNo: {
+            type: String,
+            default: '',
+        },
+        panCardURL: {
+            type: String,
+            default: '',
         },
         aadhaarNo: {
-            type: String
+            type: String,
+            default: '',
+        },
+        aadhaarURL: {
+            type: String,
+            default: '',
         },
         accountDetails: {
             accountNo: {
-                type: String
+                type: String,
+                default: '',
             },
             ifscCode: {
-                type: String
+                type: String,
+                default: '',
             },
             bankName: {
-                type: String
+                type: String,
+                default: '',
             }
         }
     },
     KYC: {
         type: Boolean,
-        default: false
+        default: false,
     },
     employmentDetails: {
         companyName: {
-            type: String
+            type: String,
+            default: '',
         },
         designation: {
-            type: String
+            type: String,
+            default: '',
         },
         annualIncome: {
-            type: Number
+            type: String,
+            default: '',
         }
     },
     leadDetails: {
         source: {
-            type: String
+            type: String,
         },
         interestLevel: {
-            type: String
+            type: String,
         },
         leadStage: {
-            type: String
+            type: String,
         },
         assignedTo: {
-            type: String
+            type: String,
         },
         priority: {
-            type: String
+            type: String,
         },
         notes: {
             type: mongoose.Schema.Types.Array,
-            default: []
+            default: [],
         }
     },
     interactionHistory: {
-        type: [
-            {
-                type: {
-                    type: String,
-                },
-                description: {
-                    type: String,
-                },
-                timestamp: {
-                    type: Date,
-                    default: Date.now,
-                }
-            }
-        ],
-        default: []
+        type: [interactionSchema],
+        default: [],
     },
-    policies: {
-        type: [policySchema]
-    },
+    // policies: {
+    //     type: [policySchema],
+    //     default: [],
+    // },
     notes: {
         type: mongoose.Schema.Types.Array,
-        default: []
+        default: [],
     }
 }, { timestamps: true });
 

@@ -1,6 +1,7 @@
 import { useState } from 'react';
+import { LinearProgress } from '@mui/material';
 
-const ForgotPasswordModal = ({ isOpen, onClose, modalText, modalFieldIsDisabled, setModalFieldIsDisabled, onSubmit }) => {
+const ForgotPasswordModal = ({ isOpen, onClose, modalText, showLinearProgress, modalFieldIsDisabled, setModalFieldIsDisabled, onSubmit }) => {
     const [email, setEmail] = useState('');
 
     const handleSubmit = (event) => {
@@ -18,9 +19,12 @@ const ForgotPasswordModal = ({ isOpen, onClose, modalText, modalFieldIsDisabled,
         >
             <div
                 onClick={(e) => e.stopPropagation()}
-                className="fixed bg-white p-8 rounded-lg shadow-xl w-96 sm:w-[400px] z-10"
+                className="fixed bg-white p-8 pb-16 rounded-lg shadow-xl w-96 sm:w-[400px] z-10"
             >
-                <h2 className="text-xl text-center font-normal mb-4">Enter your registered email</h2>
+                <div className='mb-4'>
+                    <h2 className="text-xl text-center font-normal mb-1">Enter your registered email</h2>
+                    <LinearProgress sx={{ opacity: showLinearProgress ? '100%' : '0%' }} />
+                </div>
                 <form onSubmit={handleSubmit}>
                     <div className="mb-6">
                         <label htmlFor="email" className="block text-sm font-medium text-gray-700 mb-1">
@@ -33,15 +37,14 @@ const ForgotPasswordModal = ({ isOpen, onClose, modalText, modalFieldIsDisabled,
                         />
                     </div>
                     <button
-                        type="submit"
+                        type="submit" disabled={modalFieldIsDisabled}
                         className="w-full bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline"
                     >
                         Send reset password link
                     </button>
-                    {modalText
-                        &&
-                        <p className='text-xs mt-1 text-gray-700'>{modalText}</p>
-                    }
+                    <div className='relative'>
+                        {modalText && <span className='absolute -bottom-10 text-xs text-gray-700'>{modalText}</span>}
+                    </div>
                 </form>
             </div>
         </div>

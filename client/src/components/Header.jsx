@@ -70,7 +70,7 @@ const Header = () => {
                         Paaras Financials
                     </Link>
                 }
-                < nav className='hidden md:flex gap-8'>
+                <nav className='hidden md:flex gap-8 pr-28'>
                     {(!isLoggedIn || !(condenseClientInfo.role?.toLowerCase() === 'admin' || condenseClientInfo.role?.toLowerCase() === 'superadmin'))
                         &&
                         <>

@@ -3,34 +3,42 @@ import mongoose from 'mongoose';
 const employeeSchema = new mongoose.Schema({
     clientId: {
         type: mongoose.Schema.Types.ObjectId,
-        ref: "Client",
+        ref: 'Client',
         required: true
     },
     notes: {
         type: String,
-        default: null
+        default: null,
     },
     role: {
         type: String,
-        default: 'admin'
+        enum: ['Admin', 'SuperAdmin'],
+        default: 'Admin',
+        required: true,
     },
     managerID: {
         type: mongoose.Schema.Types.ObjectId,
-        ref: "Client",
-        default: null
+        ref: 'Client',
+        default: null,
     },
     status: {
         type: String,
-        default: "active"
+        enum: ['Active', 'Inactive'],
+        default: 'Active',
+        required: true,
     },
     statusChangedBy: {
         type: String,
-        default: "system"
+        default: 'System',
     },
     loginAccess: {
         type: Boolean,
-        default: false
+        default: false,
     },
+    lastLogin: {
+        type: Date,
+        default: null,
+    }
 }, { timestamps: true });
 
 const Employee = mongoose.model('Employee', employeeSchema);

@@ -9,7 +9,7 @@ const PolicyManagement = () => {
             <div className="flex justify-between items-center mb-6">
                 <h1 className="text-2xl font-bold text-gray-800">Policy Management</h1>
                 <button className="bg-blue-600 text-white px-4 py-2 rounded-lg flex items-center gap-2 hover:bg-blue-700">
-                    <Add size={20} />
+                    <Add />
                     Create New Policy
                 </button>
             </div>
@@ -40,7 +40,7 @@ const PolicyManagement = () => {
                                     <p className="text-sm text-blue-600 font-medium">Active Policies</p>
                                     <p className="text-2xl font-bold text-blue-900">567</p>
                                 </div>
-                                <Description className="text-blue-600" size={24} />
+                                <Description className="text-blue-600" />
                             </div>
                         </div>
                     </div>

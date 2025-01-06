@@ -1,11 +1,11 @@
 import { useEffect, useState } from 'react';
 import Papa from "papaparse";
 import { Upload, Download } from '@mui/icons-material';
-import { fetchAllCustomers } from '../../api';
-import CustomerTable from './customers/CustomerTable';
-import CustomerStats from './customers/CustomerStats';
+import { fetchAllClients } from '../../api';
+import ClientTable from './clients/ClientTable';
+import ClientStats from './clients/ClientStats';
 
-const CustomerManagement = () => {
+const ClientManagement = () => {
     const [countError, setCountError] = useState(0);
     const handleFileUpload = (event) => {
         const file = event.target.files[0];
@@ -29,8 +29,8 @@ const CustomerManagement = () => {
                             return null; // Skip invalid row
                         }
 
-                        // Map the CSV fields to the customer structure
-                        const newCustomer = {
+                        // Map the CSV fields to the client structure
+                        const newClient = {
                             userType: userType || 'Lead',  // Default userType if missing
                             personalDetails: {
                                 firstName: firstName || '',
@@ -40,7 +40,7 @@ const CustomerManagement = () => {
                                     phone: phone || ''
                                 }
                             },
-                            KYC: false,  // Assuming new customers don't have KYC completed
+                            KYC: false,  // Assuming new clients don't have KYC completed
                             leadDetails: {
                                 notes: []  // Initialize empty notes
                             },
@@ -52,15 +52,15 @@ const CustomerManagement = () => {
                             __v: 0  // MongoDB version field, assuming no versioning needed
                         };
 
-                        return newCustomer;
+                        return newClient;
                     }).filter(Boolean); // Remove null values from invalid rows
 
-                    // Append valid rows to the existing customers list
-                    setCustomers((prevCustomers) => {
+                    // Append valid rows to the existing clients list
+                    setClients((prevClients) => {
                         // Use phone as the unique identifier for deduplication
-                        const existingPhones = new Set(prevCustomers.map((customer) => customer.personalDetails.contact.phone));
-                        const newCustomers = validData.filter((customer) => !existingPhones.has(customer.personalDetails.contact.phone));
-                        return [...prevCustomers, ...newCustomers];
+                        const existingPhones = new Set(prevClients.map((client) => client.personalDetails.contact.phone));
+                        const newClients = validData.filter((client) => !existingPhones.has(client.personalDetails.contact.phone));
+                        return [...prevClients, ...newClients];
                     });
 
                     // Show the alert after the file is processed
@@ -83,35 +83,35 @@ const CustomerManagement = () => {
         const url = window.URL.createObjectURL(blob);
         const a = document.createElement('a');
         a.href = url;
-        a.download = 'sample_customers.csv';
+        a.download = 'sample_clients.csv';
         document.body.appendChild(a);
         a.click();
         document.body.removeChild(a);
         window.URL.revokeObjectURL(url);
     };
 
-    const [customers, setCustomers] = useState([]);
+    const [clients, setClients] = useState([]);
 
-    const getAllCustomers = async () => {
+    const getAllClients = async () => {
         try {
-            const { data } = await fetchAllCustomers();
-            setCustomers(data);
+            const { data } = await fetchAllClients();
+            setClients(data);
         } catch (error) {
             console.error(error);
         }
     }
 
     useEffect(() => {
-        getAllCustomers();
+        getAllClients();
     }, []);
 
     return (
         <div>
             <div className="flex justify-between items-center mb-6">
-                <h1 className="text-2xl font-bold text-gray-800">Customer Management</h1>
+                <h1 className="text-2xl font-bold text-gray-800">Client Management</h1>
                 <div className="flex gap-3">
                     <label className="bg-green-600 text-white px-4 py-2 rounded-lg flex items-center gap-2 hover:bg-green-700 cursor-pointer">
-                        <Upload size={20} />
+                        <Upload />
                         Upload CSV
                         <input
                             type="file"
@@ -124,7 +124,7 @@ const CustomerManagement = () => {
                         onClick={downloadSampleCSV}
                         className="bg-blue-600 text-white px-4 py-2 rounded-lg flex items-center gap-2 hover:bg-blue-700"
                     >
-                        <Download size={20} />
+                        <Download />
                         Sample CSV
                     </button>
                 </div>
@@ -132,9 +132,9 @@ const CustomerManagement = () => {
 
             <div className="bg-white rounded-lg shadow">
                 <div className="p-6">
-                    <CustomerStats customers={customers} />
+                    <ClientStats clients={clients} />
                     <div className="mt-6">
-                        <CustomerTable customers={customers} />
+                        <ClientTable clients={clients} />
                     </div>
                 </div>
             </div>
@@ -142,4 +142,4 @@ const CustomerManagement = () => {
     );
 }
 
-export default CustomerManagement;
+export default ClientManagement;

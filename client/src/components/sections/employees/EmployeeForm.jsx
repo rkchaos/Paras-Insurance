@@ -44,7 +44,7 @@ const EmployeeForm = ({ onClose, onSubmit }) => {
                 <div className="flex justify-between items-center p-6 border-b">
                     <h2 className="text-xl font-semibold">Add New Employee</h2>
                     <button onClick={onClose} className="text-gray-500 hover:text-gray-700">
-                        <Close size={24} />
+                        <Close />
                     </button>
                 </div>
 

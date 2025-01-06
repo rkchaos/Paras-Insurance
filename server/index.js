@@ -1,7 +1,8 @@
 import 'dotenv/config';
 import cors from 'cors';
+import path from 'path';
 import express from 'express';
-import cookieParser from "cookie-parser";
+import cookieParser from 'cookie-parser';
 import methodOverride from 'method-override';
 
 const app = express();
@@ -12,17 +13,20 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use(cookieParser());
 
-app.use(methodOverride('_method'));
-
-import connection from './database.js';
-connection();
-
 const corsOptions = {
     origin: true,
     credentials: true,
     optionsSuccessStatus: 200,
 }
 app.use(cors(corsOptions));
+
+const __dirname = path.resolve();
+app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
+
+app.use(methodOverride('_method'));
+
+import connection from './database.js';
+connection();
 
 import clientRoutes from './routes/client.route.js';
 app.use('/client', clientRoutes);
@@ -32,11 +36,18 @@ import employeeRoutes from './routes/employee.route.js';
 app.use('/employee', employeeRoutes);
 import companyRoutes from './routes/company.route.js';
 app.use('/company', companyRoutes);
-import assignedPolicyRoutes from './routes/assignedPolicy.route.js';
-app.use('/assignedPolicy', assignedPolicyRoutes);
+import clientPolicyRoutes from './routes/clientPolicy.route.js';
+app.use('/clientPolicy', clientPolicyRoutes);
 
 app.get('/', (req, res) => {
     res.send('Working!');
+});
+
+import Newsletter from './models/newsletter.model.js';
+app.get('/subscribe/:email', async (req, res) => {
+    const { email } = req.query;
+    await Newsletter.create({ email: email });
+    res.send(200);
 });
 
 app.listen(PORT, () => {

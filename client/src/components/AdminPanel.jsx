@@ -2,7 +2,7 @@ import { useState } from 'react';
 // importing components
 import Sidebar from './Sidebar';
 import Dashboard from './sections/Dashboard';
-import CustomerManagement from './sections/CustomerManagement';
+import ClientManagement from './sections/ClientManagement';
 import PolicyManagement from './sections/PolicyManagement';
 import CompanyManagement from './sections/CompanyManagement';
 import EmployeeManagement from './sections/EmployeeManagement';
@@ -19,8 +19,8 @@ const AdminPanel = () => {
         switch (activeSection) {
             case 'dashbord':
                 return <Dashboard />;
-            case 'customers':
-                return <CustomerManagement />;
+            case 'clients':
+                return <ClientManagement />;
             case 'policies':
                 return <PolicyManagement />;
             case 'companies':

@@ -1,6 +1,8 @@
+// importing models
 import Client from '../models/client.model.js';
 import Employee from '../models/employee.model.js';
-import { generateAccessAndRefreshTokens } from './client.controller.js';
+// importing helper functions
+import { generateAccessAndRefreshTokens } from '../utils/helperFunctions.js';
 
 // normal user ko admin ya superadmin banana
 const createEmployee = async (req, res) => {

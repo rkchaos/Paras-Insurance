@@ -4,15 +4,22 @@ axios.defaults.withCredentials = true;
 const API = axios.create({ baseURL: import.meta.env.VITE_BACKEND_URL });
 
 // Client
-export const fetchCondenseClientInfo = () => API.get('/client/fetchCondenseInfo');
-export const fetchAllClientData = (clientId) => API.get('/client/fetchAllData', { params: clientId });
-export const fetchAllCustomers = () => API.get('/client/fetchAll');
 export const register = (authData) => API.post('/client/register', authData);
 export const login = (authData) => API.post('/client/login', authData);
+export const fetchCondenseClientInfo = () => API.get('/client/fetchCondenseInfo');
+export const fetchProfileData = (clientId) => API.get('/client/fetchProfileData', { params: clientId });
+export const fetchPoliciesData = (clientId) => API.get('/client/fetchPoliciesData', { params: clientId });
+export const fetchAllClients = () => API.get('/client/fetchAll');
+export const updateProfile = (formData) => API.post('/client/updateProfile', { formData });
+export const uploadProfileMedia = (media) => API.post('/client/uploadProfileMedia', media, {
+    headers: {
+        "Content-Type": "multipart/form-data",
+    }
+});
 export const logout = () => API.delete('/client/logout');
+export const deleteProfile = () => API.delete('/client/deleteProfile');
 export const forgotPassword = (email) => API.get('/client/forgotPassword', { params: email });
 export const resetPassword = (authData) => API.patch('/client/resetPassword', authData);
-export const deleteProfile = () => API.delete('/client/deleteProfile');
 
 // Policy
 export const fetchAllPolicies = () => API.get('/policy/fetchAll');
@@ -20,10 +27,10 @@ export const fetchAllPolicyFields = (policyId) => API.get('/policy/fetchAllField
 export const fetchEveryPolicyId = () => API.get('/policy/fetchEveryPolicyId');
 
 // AssignedPolicy
-export const assignPolicy = (assignedPolicyData) => API.post('/assignedPolicy/assign', assignedPolicyData);
-export const fetchAllUnassignedPolicies = () => API.get('/assignedPolicy/fecthAllUnassigned');
-export const addAssignPolicy = (assignedPolicyId) => API.get('/assignedPolicy/addAssign', { params: assignedPolicyId });
-export const addAvailableCompanyPolicies = (formData) => API.post('/assignedPolicy/addAvailableCompany', formData);
+export const assignPolicy = (clientPolicyData) => API.post('/clientPolicy/assign', clientPolicyData);
+export const fetchAllUnassignedPolicies = () => API.get('/clientPolicy/fecthAllUnassigned');
+export const addAssignPolicy = (clientPolicyId) => API.get('/clientPolicy/addAssign', { params: clientPolicyId });
+export const addAvailableCompanyPolicies = (formData) => API.post('/clientPolicy/addAvailableCompany', formData);
 
 // Employee
 export const fetchAllEmployees = () => API.get('/employee/fetchAll');
