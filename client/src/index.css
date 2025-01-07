@@ -3,1196 +3,1215 @@
 @tailwind utilities;
 
 * {
-  scroll-behavior: smooth !important;
+    scroll-behavior: smooth !important;
+}
+
+@layer utilities {
+    .no-scrollbar::-webkit-scrollbar {
+        width: 10px;
+    }
+
+    .no-scrollbar::-webkit-scrollbar-track {
+        background-color: darkgrey;
+    }
+
+    .no-scrollbar::-webkit-scrollbar-thumb {
+        box-shadow: inset 0 0 6px rgba(0, 0, 0, 0.3);
+    }
+
+    .no-scrollbar {
+        scrollbar-color: #111827 #e0e0e0;
+        scrollbar-width: thin;
+    }
 }
 
 .dynamicBackgroundContainer {
-  position: absolute;
-  top: 50%;
-  left: 50%;
-  transform: translate(-50%, -50%);
-  width: 108.3333333333vw;
-  height: 108.3333333333vw;
-  display: grid;
-  grid-template-columns: repeat(12, 1fr);
-  grid-template-rows: repeat(12, 1fr);
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 108.3333333333vw;
+    height: 108.3333333333vw;
+    display: grid;
+    grid-template-columns: repeat(12, 1fr);
+    grid-template-rows: repeat(12, 1fr);
 }
 
 .dynamicBackgroundSquare {
-  position: relative;
+    position: relative;
 }
 
 .dynamicBackgroundSquare::before,
 .dynamicBackgroundSquare::after {
-  content: "";
-  position: absolute;
-  display: #F5F5F5;
-  background: #F5F5F5;
-  border-radius: 4px;
+    content: "";
+    position: absolute;
+    display: #F5F5F5;
+    background: #F5F5F5;
+    border-radius: 4px;
 }
 
 .dynamicBackgroundSquare:before {
-  top: 0rem;
-  left: 2.375vw;
-  width: calc(100% - 1.75vw - 3vw);
-  height: 2px;
-  transform: translateY(-50%) rotate(0deg);
-  animation: lineYpulse 2.5s infinite alternate-reverse ease-in;
+    top: 0rem;
+    left: 2.375vw;
+    width: calc(100% - 1.75vw - 3vw);
+    height: 2px;
+    transform: translateY(-50%) rotate(0deg);
+    animation: lineYpulse 2.5s infinite alternate-reverse ease-in;
 }
 
 .dynamicBackgroundSquare:after {
-  top: 2.375vw;
-  left: 0rem;
-  width: 2px;
-  height: calc(100% - 1.75vw - 3vw);
-  transform: translateX(-50%) rotate(0deg);
-  animation: lineXpulse 2.5s infinite alternate-reverse ease-in;
+    top: 2.375vw;
+    left: 0rem;
+    width: 2px;
+    height: calc(100% - 1.75vw - 3vw);
+    transform: translateX(-50%) rotate(0deg);
+    animation: lineXpulse 2.5s infinite alternate-reverse ease-in;
 }
 
 .dynamicBackgroundDot {
-  position: absolute;
-  width: 1.75vw;
-  height: 1.75vw;
-  background: #F5F5F5;
-  border-radius: 50%;
-  transform: translate(-50%, -50%);
-  animation: dynamicBackgroundDotPulse 2.5s infinite alternate ease-in;
+    position: absolute;
+    width: 1.75vw;
+    height: 1.75vw;
+    background: #F5F5F5;
+    border-radius: 50%;
+    transform: translate(-50%, -50%);
+    animation: dynamicBackgroundDotPulse 2.5s infinite alternate ease-in;
 }
 
 .dynamicBackgroundDot:last-child {
-  top: 50%;
-  left: 50%;
-  transform: translate(-50%, -50%) scale(0.5);
-  animation-direction: alternate-reverse;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%) scale(0.5);
+    animation-direction: alternate-reverse;
 }
 
 .dynamicBackgroundSquare:nth-child(1)::before,
 .dynamicBackgroundSquare:nth-child(1)::after,
 .dynamicBackgroundSquare:nth-child(1) .dynamicBackgroundDot {
-  opacity: 0.125;
-  animation-delay: -0.125s;
+    opacity: 0.125;
+    animation-delay: -0.125s;
 }
 
 .dynamicBackgroundSquare:nth-child(2)::before,
 .dynamicBackgroundSquare:nth-child(2)::after,
 .dynamicBackgroundSquare:nth-child(2) .dynamicBackgroundDot {
-  opacity: 0.25;
-  animation-delay: -0.25s;
+    opacity: 0.25;
+    animation-delay: -0.25s;
 }
 
 .dynamicBackgroundSquare:nth-child(3)::before,
 .dynamicBackgroundSquare:nth-child(3)::after,
 .dynamicBackgroundSquare:nth-child(3) .dynamicBackgroundDot {
-  opacity: 0.375;
-  animation-delay: -0.375s;
+    opacity: 0.375;
+    animation-delay: -0.375s;
 }
 
 .dynamicBackgroundSquare:nth-child(4)::before,
 .dynamicBackgroundSquare:nth-child(4)::after,
 .dynamicBackgroundSquare:nth-child(4) .dynamicBackgroundDot {
-  opacity: 0.5;
-  animation-delay: -0.5s;
+    opacity: 0.5;
+    animation-delay: -0.5s;
 }
 
 .dynamicBackgroundSquare:nth-child(5)::before,
 .dynamicBackgroundSquare:nth-child(5)::after,
 .dynamicBackgroundSquare:nth-child(5) .dynamicBackgroundDot {
-  opacity: 0.625;
-  animation-delay: -0.625s;
+    opacity: 0.625;
+    animation-delay: -0.625s;
 }
 
 .dynamicBackgroundSquare:nth-child(6)::before,
 .dynamicBackgroundSquare:nth-child(6)::after,
 .dynamicBackgroundSquare:nth-child(6) .dynamicBackgroundDot {
-  opacity: 0.75;
-  animation-delay: -0.75s;
+    opacity: 0.75;
+    animation-delay: -0.75s;
 }
 
 .dynamicBackgroundSquare:nth-child(7)::before,
 .dynamicBackgroundSquare:nth-child(7)::after,
 .dynamicBackgroundSquare:nth-child(7) .dynamicBackgroundDot {
-  opacity: 0.625;
-  animation-delay: -0.625s;
+    opacity: 0.625;
+    animation-delay: -0.625s;
 }
 
 .dynamicBackgroundSquare:nth-child(8)::before,
 .dynamicBackgroundSquare:nth-child(8)::after,
 .dynamicBackgroundSquare:nth-child(8) .dynamicBackgroundDot {
-  opacity: 0.5;
-  animation-delay: -0.5s;
+    opacity: 0.5;
+    animation-delay: -0.5s;
 }
 
 .dynamicBackgroundSquare:nth-child(9)::before,
 .dynamicBackgroundSquare:nth-child(9)::after,
 .dynamicBackgroundSquare:nth-child(9) .dynamicBackgroundDot {
-  opacity: 0.375;
-  animation-delay: -0.375s;
+    opacity: 0.375;
+    animation-delay: -0.375s;
 }
 
 .dynamicBackgroundSquare:nth-child(10)::before,
 .dynamicBackgroundSquare:nth-child(10)::after,
 .dynamicBackgroundSquare:nth-child(10) .dynamicBackgroundDot {
-  opacity: 0.25;
-  animation-delay: -0.25s;
+    opacity: 0.25;
+    animation-delay: -0.25s;
 }
 
 .dynamicBackgroundSquare:nth-child(11)::before,
 .dynamicBackgroundSquare:nth-child(11)::after,
 .dynamicBackgroundSquare:nth-child(11) .dynamicBackgroundDot {
-  opacity: 0.125;
-  animation-delay: -0.125s;
+    opacity: 0.125;
+    animation-delay: -0.125s;
 }
 
 .dynamicBackgroundSquare:nth-child(12)::before,
 .dynamicBackgroundSquare:nth-child(12)::after,
 .dynamicBackgroundSquare:nth-child(12) .dynamicBackgroundDot {
-  opacity: 0;
-  animation-delay: 0s;
+    opacity: 0;
+    animation-delay: 0s;
 }
 
 .dynamicBackgroundSquare:nth-child(13)::before,
 .dynamicBackgroundSquare:nth-child(13)::after,
 .dynamicBackgroundSquare:nth-child(13) .dynamicBackgroundDot {
-  opacity: 0.25;
-  animation-delay: -0.25s;
+    opacity: 0.25;
+    animation-delay: -0.25s;
 }
 
 .dynamicBackgroundSquare:nth-child(14)::before,
 .dynamicBackgroundSquare:nth-child(14)::after,
 .dynamicBackgroundSquare:nth-child(14) .dynamicBackgroundDot {
-  opacity: 0.375;
-  animation-delay: -0.375s;
+    opacity: 0.375;
+    animation-delay: -0.375s;
 }
 
 .dynamicBackgroundSquare:nth-child(15)::before,
 .dynamicBackgroundSquare:nth-child(15)::after,
 .dynamicBackgroundSquare:nth-child(15) .dynamicBackgroundDot {
-  opacity: 0.5;
-  animation-delay: -0.5s;
+    opacity: 0.5;
+    animation-delay: -0.5s;
 }
 
 .dynamicBackgroundSquare:nth-child(16)::before,
 .dynamicBackgroundSquare:nth-child(16)::after,
 .dynamicBackgroundSquare:nth-child(16) .dynamicBackgroundDot {
-  opacity: 0.625;
-  animation-delay: -0.625s;
+    opacity: 0.625;
+    animation-delay: -0.625s;
 }
 
 .dynamicBackgroundSquare:nth-child(17)::before,
 .dynamicBackgroundSquare:nth-child(17)::after,
 .dynamicBackgroundSquare:nth-child(17) .dynamicBackgroundDot {
-  opacity: 0.75;
-  animation-delay: -0.75s;
+    opacity: 0.75;
+    animation-delay: -0.75s;
 }
 
 .dynamicBackgroundSquare:nth-child(18)::before,
 .dynamicBackgroundSquare:nth-child(18)::after,
 .dynamicBackgroundSquare:nth-child(18) .dynamicBackgroundDot {
-  opacity: 0.875;
-  animation-delay: -0.875s;
+    opacity: 0.875;
+    animation-delay: -0.875s;
 }
 
 .dynamicBackgroundSquare:nth-child(19)::before,
 .dynamicBackgroundSquare:nth-child(19)::after,
 .dynamicBackgroundSquare:nth-child(19) .dynamicBackgroundDot {
-  opacity: 0.75;
-  animation-delay: -0.75s;
+    opacity: 0.75;
+    animation-delay: -0.75s;
 }
 
 .dynamicBackgroundSquare:nth-child(20)::before,
 .dynamicBackgroundSquare:nth-child(20)::after,
 .dynamicBackgroundSquare:nth-child(20) .dynamicBackgroundDot {
-  opacity: 0.625;
-  animation-delay: -0.625s;
+    opacity: 0.625;
+    animation-delay: -0.625s;
 }
 
 .dynamicBackgroundSquare:nth-child(21)::before,
 .dynamicBackgroundSquare:nth-child(21)::after,
 .dynamicBackgroundSquare:nth-child(21) .dynamicBackgroundDot {
-  opacity: 0.5;
-  animation-delay: -0.5s;
+    opacity: 0.5;
+    animation-delay: -0.5s;
 }
 
 .dynamicBackgroundSquare:nth-child(22)::before,
 .dynamicBackgroundSquare:nth-child(22)::after,
 .dynamicBackgroundSquare:nth-child(22) .dynamicBackgroundDot {
-  opacity: 0.375;
-  animation-delay: -0.375s;
+    opacity: 0.375;
+    animation-delay: -0.375s;
 }
 
 .dynamicBackgroundSquare:nth-child(23)::before,
 .dynamicBackgroundSquare:nth-child(23)::after,
 .dynamicBackgroundSquare:nth-child(23) .dynamicBackgroundDot {
-  opacity: 0.25;
-  animation-delay: -0.25s;
+    opacity: 0.25;
+    animation-delay: -0.25s;
 }
 
 .dynamicBackgroundSquare:nth-child(24)::before,
 .dynamicBackgroundSquare:nth-child(24)::after,
 .dynamicBackgroundSquare:nth-child(24) .dynamicBackgroundDot {
-  opacity: 0.125;
-  animation-delay: -0.125s;
+    opacity: 0.125;
+    animation-delay: -0.125s;
 }
 
 .dynamicBackgroundSquare:nth-child(25)::before,
 .dynamicBackgroundSquare:nth-child(25)::after,
 .dynamicBackgroundSquare:nth-child(25) .dynamicBackgroundDot {
-  opacity: 0.375;
-  animation-delay: -0.375s;
+    opacity: 0.375;
+    animation-delay: -0.375s;
 }
 
 .dynamicBackgroundSquare:nth-child(26)::before,
 .dynamicBackgroundSquare:nth-child(26)::after,
 .dynamicBackgroundSquare:nth-child(26) .dynamicBackgroundDot {
-  opacity: 0.5;
-  animation-delay: -0.5s;
+    opacity: 0.5;
+    animation-delay: -0.5s;
 }
 
 .dynamicBackgroundSquare:nth-child(27)::before,
 .dynamicBackgroundSquare:nth-child(27)::after,
 .dynamicBackgroundSquare:nth-child(27) .dynamicBackgroundDot {
-  opacity: 0.625;
-  animation-delay: -0.625s;
+    opacity: 0.625;
+    animation-delay: -0.625s;
 }
 
 .dynamicBackgroundSquare:nth-child(28)::before,
 .dynamicBackgroundSquare:nth-child(28)::after,
 .dynamicBackgroundSquare:nth-child(28) .dynamicBackgroundDot {
-  opacity: 0.75;
-  animation-delay: -0.75s;
+    opacity: 0.75;
+    animation-delay: -0.75s;
 }
 
 .dynamicBackgroundSquare:nth-child(29)::before,
 .dynamicBackgroundSquare:nth-child(29)::after,
 .dynamicBackgroundSquare:nth-child(29) .dynamicBackgroundDot {
-  opacity: 0.875;
-  animation-delay: -0.875s;
+    opacity: 0.875;
+    animation-delay: -0.875s;
 }
 
 .dynamicBackgroundSquare:nth-child(30)::before,
 .dynamicBackgroundSquare:nth-child(30)::after,
 .dynamicBackgroundSquare:nth-child(30) .dynamicBackgroundDot {
-  opacity: 1;
-  animation-delay: -1s;
+    opacity: 1;
+    animation-delay: -1s;
 }
 
 .dynamicBackgroundSquare:nth-child(31)::before,
 .dynamicBackgroundSquare:nth-child(31)::after,
 .dynamicBackgroundSquare:nth-child(31) .dynamicBackgroundDot {
-  opacity: 0.875;
-  animation-delay: -0.875s;
+    opacity: 0.875;
+    animation-delay: -0.875s;
 }
 
 .dynamicBackgroundSquare:nth-child(32)::before,
 .dynamicBackgroundSquare:nth-child(32)::after,
 .dynamicBackgroundSquare:nth-child(32) .dynamicBackgroundDot {
-  opacity: 0.75;
-  animation-delay: -0.75s;
+    opacity: 0.75;
+    animation-delay: -0.75s;
 }
 
 .dynamicBackgroundSquare:nth-child(33)::before,
 .dynamicBackgroundSquare:nth-child(33)::after,
 .dynamicBackgroundSquare:nth-child(33) .dynamicBackgroundDot {
-  opacity: 0.625;
-  animation-delay: -0.625s;
+    opacity: 0.625;
+    animation-delay: -0.625s;
 }
 
 .dynamicBackgroundSquare:nth-child(34)::before,
 .dynamicBackgroundSquare:nth-child(34)::after,
 .dynamicBackgroundSquare:nth-child(34) .dynamicBackgroundDot {
-  opacity: 0.5;
-  animation-delay: -0.5s;
+    opacity: 0.5;
+    animation-delay: -0.5s;
 }
 
 .dynamicBackgroundSquare:nth-child(35)::before,
 .dynamicBackgroundSquare:nth-child(35)::after,
 .dynamicBackgroundSquare:nth-child(35) .dynamicBackgroundDot {
-  opacity: 0.375;
-  animation-delay: -0.375s;
+    opacity: 0.375;
+    animation-delay: -0.375s;
 }
 
 .dynamicBackgroundSquare:nth-child(36)::before,
 .dynamicBackgroundSquare:nth-child(36)::after,
 .dynamicBackgroundSquare:nth-child(36) .dynamicBackgroundDot {
-  opacity: 0.25;
-  animation-delay: -0.25s;
+    opacity: 0.25;
+    animation-delay: -0.25s;
 }
 
 .dynamicBackgroundSquare:nth-child(37)::before,
 .dynamicBackgroundSquare:nth-child(37)::after,
 .dynamicBackgroundSquare:nth-child(37) .dynamicBackgroundDot {
-  opacity: 0.5;
-  animation-delay: -0.5s;
+    opacity: 0.5;
+    animation-delay: -0.5s;
 }
 
 .dynamicBackgroundSquare:nth-child(38)::before,
 .dynamicBackgroundSquare:nth-child(38)::after,
 .dynamicBackgroundSquare:nth-child(38) .dynamicBackgroundDot {
-  opacity: 0.625;
-  animation-delay: -0.625s;
+    opacity: 0.625;
+    animation-delay: -0.625s;
 }
 
 .dynamicBackgroundSquare:nth-child(39)::before,
 .dynamicBackgroundSquare:nth-child(39)::after,
 .dynamicBackgroundSquare:nth-child(39) .dynamicBackgroundDot {
-  opacity: 0.75;
-  animation-delay: -0.75s;
+    opacity: 0.75;
+    animation-delay: -0.75s;
 }
 
 .dynamicBackgroundSquare:nth-child(40)::before,
 .dynamicBackgroundSquare:nth-child(40)::after,
 .dynamicBackgroundSquare:nth-child(40) .dynamicBackgroundDot {
-  opacity: 0.875;
-  animation-delay: -0.875s;
+    opacity: 0.875;
+    animation-delay: -0.875s;
 }
 
 .dynamicBackgroundSquare:nth-child(41)::before,
 .dynamicBackgroundSquare:nth-child(41)::after,
 .dynamicBackgroundSquare:nth-child(41) .dynamicBackgroundDot {
-  opacity: 1;
-  animation-delay: -1s;
+    opacity: 1;
+    animation-delay: -1s;
 }
 
 .dynamicBackgroundSquare:nth-child(42)::before,
 .dynamicBackgroundSquare:nth-child(42)::after,
 .dynamicBackgroundSquare:nth-child(42) .dynamicBackgroundDot {
-  opacity: 1.125;
-  animation-delay: -1.125s;
+    opacity: 1.125;
+    animation-delay: -1.125s;
 }
 
 .dynamicBackgroundSquare:nth-child(43)::before,
 .dynamicBackgroundSquare:nth-child(43)::after,
 .dynamicBackgroundSquare:nth-child(43) .dynamicBackgroundDot {
-  opacity: 1;
-  animation-delay: -1s;
+    opacity: 1;
+    animation-delay: -1s;
 }
 
 .dynamicBackgroundSquare:nth-child(44)::before,
 .dynamicBackgroundSquare:nth-child(44)::after,
 .dynamicBackgroundSquare:nth-child(44) .dynamicBackgroundDot {
-  opacity: 0.875;
-  animation-delay: -0.875s;
+    opacity: 0.875;
+    animation-delay: -0.875s;
 }
 
 .dynamicBackgroundSquare:nth-child(45)::before,
 .dynamicBackgroundSquare:nth-child(45)::after,
 .dynamicBackgroundSquare:nth-child(45) .dynamicBackgroundDot {
-  opacity: 0.75;
-  animation-delay: -0.75s;
+    opacity: 0.75;
+    animation-delay: -0.75s;
 }
 
 .dynamicBackgroundSquare:nth-child(46)::before,
 .dynamicBackgroundSquare:nth-child(46)::after,
 .dynamicBackgroundSquare:nth-child(46) .dynamicBackgroundDot {
-  opacity: 0.625;
-  animation-delay: -0.625s;
+    opacity: 0.625;
+    animation-delay: -0.625s;
 }
 
 .dynamicBackgroundSquare:nth-child(47)::before,
 .dynamicBackgroundSquare:nth-child(47)::after,
 .dynamicBackgroundSquare:nth-child(47) .dynamicBackgroundDot {
-  opacity: 0.5;
-  animation-delay: -0.5s;
+    opacity: 0.5;
+    animation-delay: -0.5s;
 }
 
 .dynamicBackgroundSquare:nth-child(48)::before,
 .dynamicBackgroundSquare:nth-child(48)::after,
 .dynamicBackgroundSquare:nth-child(48) .dynamicBackgroundDot {
-  opacity: 0.375;
-  animation-delay: -0.375s;
+    opacity: 0.375;
+    animation-delay: -0.375s;
 }
 
 .dynamicBackgroundSquare:nth-child(49)::before,
 .dynamicBackgroundSquare:nth-child(49)::after,
 .dynamicBackgroundSquare:nth-child(49) .dynamicBackgroundDot {
-  opacity: 0.625;
-  animation-delay: -0.625s;
+    opacity: 0.625;
+    animation-delay: -0.625s;
 }
 
 .dynamicBackgroundSquare:nth-child(50)::before,
 .dynamicBackgroundSquare:nth-child(50)::after,
 .dynamicBackgroundSquare:nth-child(50) .dynamicBackgroundDot {
-  opacity: 0.75;
-  animation-delay: -0.75s;
+    opacity: 0.75;
+    animation-delay: -0.75s;
 }
 
 .dynamicBackgroundSquare:nth-child(51)::before,
 .dynamicBackgroundSquare:nth-child(51)::after,
 .dynamicBackgroundSquare:nth-child(51) .dynamicBackgroundDot {
-  opacity: 0.875;
-  animation-delay: -0.875s;
+    opacity: 0.875;
+    animation-delay: -0.875s;
 }
 
 .dynamicBackgroundSquare:nth-child(52)::before,
 .dynamicBackgroundSquare:nth-child(52)::after,
 .dynamicBackgroundSquare:nth-child(52) .dynamicBackgroundDot {
-  opacity: 1;
-  animation-delay: -1s;
+    opacity: 1;
+    animation-delay: -1s;
 }
 
 .dynamicBackgroundSquare:nth-child(53)::before,
 .dynamicBackgroundSquare:nth-child(53)::after,
 .dynamicBackgroundSquare:nth-child(53) .dynamicBackgroundDot {
-  opacity: 1.125;
-  animation-delay: -1.125s;
+    opacity: 1.125;
+    animation-delay: -1.125s;
 }
 
 .dynamicBackgroundSquare:nth-child(54)::before,
 .dynamicBackgroundSquare:nth-child(54)::after,
 .dynamicBackgroundSquare:nth-child(54) .dynamicBackgroundDot {
-  opacity: 1.25;
-  animation-delay: -1.25s;
+    opacity: 1.25;
+    animation-delay: -1.25s;
 }
 
 .dynamicBackgroundSquare:nth-child(55)::before,
 .dynamicBackgroundSquare:nth-child(55)::after,
 .dynamicBackgroundSquare:nth-child(55) .dynamicBackgroundDot {
-  opacity: 1.125;
-  animation-delay: -1.125s;
+    opacity: 1.125;
+    animation-delay: -1.125s;
 }
 
 .dynamicBackgroundSquare:nth-child(56)::before,
 .dynamicBackgroundSquare:nth-child(56)::after,
 .dynamicBackgroundSquare:nth-child(56) .dynamicBackgroundDot {
-  opacity: 1;
-  animation-delay: -1s;
+    opacity: 1;
+    animation-delay: -1s;
 }
 
 .dynamicBackgroundSquare:nth-child(57)::before,
 .dynamicBackgroundSquare:nth-child(57)::after,
 .dynamicBackgroundSquare:nth-child(57) .dynamicBackgroundDot {
-  opacity: 0.875;
-  animation-delay: -0.875s;
+    opacity: 0.875;
+    animation-delay: -0.875s;
 }
 
 .dynamicBackgroundSquare:nth-child(58)::before,
 .dynamicBackgroundSquare:nth-child(58)::after,
 .dynamicBackgroundSquare:nth-child(58) .dynamicBackgroundDot {
-  opacity: 0.75;
-  animation-delay: -0.75s;
+    opacity: 0.75;
+    animation-delay: -0.75s;
 }
 
 .dynamicBackgroundSquare:nth-child(59)::before,
 .dynamicBackgroundSquare:nth-child(59)::after,
 .dynamicBackgroundSquare:nth-child(59) .dynamicBackgroundDot {
-  opacity: 0.625;
-  animation-delay: -0.625s;
+    opacity: 0.625;
+    animation-delay: -0.625s;
 }
 
 .dynamicBackgroundSquare:nth-child(60)::before,
 .dynamicBackgroundSquare:nth-child(60)::after,
 .dynamicBackgroundSquare:nth-child(60) .dynamicBackgroundDot {
-  opacity: 0.5;
-  animation-delay: -0.5s;
+    opacity: 0.5;
+    animation-delay: -0.5s;
 }
 
 .dynamicBackgroundSquare:nth-child(61)::before,
 .dynamicBackgroundSquare:nth-child(61)::after,
 .dynamicBackgroundSquare:nth-child(61) .dynamicBackgroundDot {
-  opacity: 0.75;
-  animation-delay: -0.75s;
+    opacity: 0.75;
+    animation-delay: -0.75s;
 }
 
 .dynamicBackgroundSquare:nth-child(62)::before,
 .dynamicBackgroundSquare:nth-child(62)::after,
 .dynamicBackgroundSquare:nth-child(62) .dynamicBackgroundDot {
-  opacity: 0.875;
-  animation-delay: -0.875s;
+    opacity: 0.875;
+    animation-delay: -0.875s;
 }
 
 .dynamicBackgroundSquare:nth-child(63)::before,
 .dynamicBackgroundSquare:nth-child(63)::after,
 .dynamicBackgroundSquare:nth-child(63) .dynamicBackgroundDot {
-  opacity: 1;
-  animation-delay: -1s;
+    opacity: 1;
+    animation-delay: -1s;
 }
 
 .dynamicBackgroundSquare:nth-child(64)::before,
 .dynamicBackgroundSquare:nth-child(64)::after,
 .dynamicBackgroundSquare:nth-child(64) .dynamicBackgroundDot {
-  opacity: 1.125;
-  animation-delay: -1.125s;
+    opacity: 1.125;
+    animation-delay: -1.125s;
 }
 
 .dynamicBackgroundSquare:nth-child(65)::before,
 .dynamicBackgroundSquare:nth-child(65)::after,
 .dynamicBackgroundSquare:nth-child(65) .dynamicBackgroundDot {
-  opacity: 1.25;
-  animation-delay: -1.25s;
+    opacity: 1.25;
+    animation-delay: -1.25s;
 }
 
 .dynamicBackgroundSquare:nth-child(66)::before,
 .dynamicBackgroundSquare:nth-child(66)::after,
 .dynamicBackgroundSquare:nth-child(66) .dynamicBackgroundDot {
-  opacity: 1.375;
-  animation-delay: -1.375s;
+    opacity: 1.375;
+    animation-delay: -1.375s;
 }
 
 .dynamicBackgroundSquare:nth-child(67)::before,
 .dynamicBackgroundSquare:nth-child(67)::after,
 .dynamicBackgroundSquare:nth-child(67) .dynamicBackgroundDot {
-  opacity: 1.25;
-  animation-delay: -1.25s;
+    opacity: 1.25;
+    animation-delay: -1.25s;
 }
 
 .dynamicBackgroundSquare:nth-child(68)::before,
 .dynamicBackgroundSquare:nth-child(68)::after,
 .dynamicBackgroundSquare:nth-child(68) .dynamicBackgroundDot {
-  opacity: 1.125;
-  animation-delay: -1.125s;
+    opacity: 1.125;
+    animation-delay: -1.125s;
 }
 
 .dynamicBackgroundSquare:nth-child(69)::before,
 .dynamicBackgroundSquare:nth-child(69)::after,
 .dynamicBackgroundSquare:nth-child(69) .dynamicBackgroundDot {
-  opacity: 1;
-  animation-delay: -1s;
+    opacity: 1;
+    animation-delay: -1s;
 }
 
 .dynamicBackgroundSquare:nth-child(70)::before,
 .dynamicBackgroundSquare:nth-child(70)::after,
 .dynamicBackgroundSquare:nth-child(70) .dynamicBackgroundDot {
-  opacity: 0.875;
-  animation-delay: -0.875s;
+    opacity: 0.875;
+    animation-delay: -0.875s;
 }
 
 .dynamicBackgroundSquare:nth-child(71)::before,
 .dynamicBackgroundSquare:nth-child(71)::after,
 .dynamicBackgroundSquare:nth-child(71) .dynamicBackgroundDot {
-  opacity: 0.75;
-  animation-delay: -0.75s;
+    opacity: 0.75;
+    animation-delay: -0.75s;
 }
 
 .dynamicBackgroundSquare:nth-child(72)::before,
 .dynamicBackgroundSquare:nth-child(72)::after,
 .dynamicBackgroundSquare:nth-child(72) .dynamicBackgroundDot {
-  opacity: 0.625;
-  animation-delay: -0.625s;
+    opacity: 0.625;
+    animation-delay: -0.625s;
 }
 
 .dynamicBackgroundSquare:nth-child(73)::before,
 .dynamicBackgroundSquare:nth-child(73)::after,
 .dynamicBackgroundSquare:nth-child(73) .dynamicBackgroundDot {
-  opacity: 0.875;
-  animation-delay: -0.875s;
+    opacity: 0.875;
+    animation-delay: -0.875s;
 }
 
 .dynamicBackgroundSquare:nth-child(74)::before,
 .dynamicBackgroundSquare:nth-child(74)::after,
 .dynamicBackgroundSquare:nth-child(74) .dynamicBackgroundDot {
-  opacity: 1;
-  animation-delay: -1s;
+    opacity: 1;
+    animation-delay: -1s;
 }
 
 .dynamicBackgroundSquare:nth-child(75)::before,
 .dynamicBackgroundSquare:nth-child(75)::after,
 .dynamicBackgroundSquare:nth-child(75) .dynamicBackgroundDot {
-  opacity: 1.125;
-  animation-delay: -1.125s;
+    opacity: 1.125;
+    animation-delay: -1.125s;
 }
 
 .dynamicBackgroundSquare:nth-child(76)::before,
 .dynamicBackgroundSquare:nth-child(76)::after,
 .dynamicBackgroundSquare:nth-child(76) .dynamicBackgroundDot {
-  opacity: 1.25;
-  animation-delay: -1.25s;
+    opacity: 1.25;
+    animation-delay: -1.25s;
 }
 
 .dynamicBackgroundSquare:nth-child(77)::before,
 .dynamicBackgroundSquare:nth-child(77)::after,
 .dynamicBackgroundSquare:nth-child(77) .dynamicBackgroundDot {
-  opacity: 1.375;
-  animation-delay: -1.375s;
+    opacity: 1.375;
+    animation-delay: -1.375s;
 }
 
 .dynamicBackgroundSquare:nth-child(78)::before,
 .dynamicBackgroundSquare:nth-child(78)::after,
 .dynamicBackgroundSquare:nth-child(78) .dynamicBackgroundDot {
-  opacity: 1.5;
-  animation-delay: -1.5s;
+    opacity: 1.5;
+    animation-delay: -1.5s;
 }
 
 .dynamicBackgroundSquare:nth-child(79)::before,
 .dynamicBackgroundSquare:nth-child(79)::after,
 .dynamicBackgroundSquare:nth-child(79) .dynamicBackgroundDot {
-  opacity: 1.375;
-  animation-delay: -1.375s;
+    opacity: 1.375;
+    animation-delay: -1.375s;
 }
 
 .dynamicBackgroundSquare:nth-child(80)::before,
 .dynamicBackgroundSquare:nth-child(80)::after,
 .dynamicBackgroundSquare:nth-child(80) .dynamicBackgroundDot {
-  opacity: 1.25;
-  animation-delay: -1.25s;
+    opacity: 1.25;
+    animation-delay: -1.25s;
 }
 
 .dynamicBackgroundSquare:nth-child(81)::before,
 .dynamicBackgroundSquare:nth-child(81)::after,
 .dynamicBackgroundSquare:nth-child(81) .dynamicBackgroundDot {
-  opacity: 1.125;
-  animation-delay: -1.125s;
+    opacity: 1.125;
+    animation-delay: -1.125s;
 }
 
 .dynamicBackgroundSquare:nth-child(82)::before,
 .dynamicBackgroundSquare:nth-child(82)::after,
 .dynamicBackgroundSquare:nth-child(82) .dynamicBackgroundDot {
-  opacity: 1;
-  animation-delay: -1s;
+    opacity: 1;
+    animation-delay: -1s;
 }
 
 .dynamicBackgroundSquare:nth-child(83)::before,
 .dynamicBackgroundSquare:nth-child(83)::after,
 .dynamicBackgroundSquare:nth-child(83) .dynamicBackgroundDot {
-  opacity: 0.875;
-  animation-delay: -0.875s;
+    opacity: 0.875;
+    animation-delay: -0.875s;
 }
 
 .dynamicBackgroundSquare:nth-child(84)::before,
 .dynamicBackgroundSquare:nth-child(84)::after,
 .dynamicBackgroundSquare:nth-child(84) .dynamicBackgroundDot {
-  opacity: 0.75;
-  animation-delay: -0.75s;
+    opacity: 0.75;
+    animation-delay: -0.75s;
 }
 
 .dynamicBackgroundSquare:nth-child(85)::before,
 .dynamicBackgroundSquare:nth-child(85)::after,
 .dynamicBackgroundSquare:nth-child(85) .dynamicBackgroundDot {
-  opacity: 0.75;
-  animation-delay: -0.75s;
+    opacity: 0.75;
+    animation-delay: -0.75s;
 }
 
 .dynamicBackgroundSquare:nth-child(86)::before,
 .dynamicBackgroundSquare:nth-child(86)::after,
 .dynamicBackgroundSquare:nth-child(86) .dynamicBackgroundDot {
-  opacity: 0.875;
-  animation-delay: -0.875s;
+    opacity: 0.875;
+    animation-delay: -0.875s;
 }
 
 .dynamicBackgroundSquare:nth-child(87)::before,
 .dynamicBackgroundSquare:nth-child(87)::after,
 .dynamicBackgroundSquare:nth-child(87) .dynamicBackgroundDot {
-  opacity: 1;
-  animation-delay: -1s;
+    opacity: 1;
+    animation-delay: -1s;
 }
 
 .dynamicBackgroundSquare:nth-child(88)::before,
 .dynamicBackgroundSquare:nth-child(88)::after,
 .dynamicBackgroundSquare:nth-child(88) .dynamicBackgroundDot {
-  opacity: 1.125;
-  animation-delay: -1.125s;
+    opacity: 1.125;
+    animation-delay: -1.125s;
 }
 
 .dynamicBackgroundSquare:nth-child(89)::before,
 .dynamicBackgroundSquare:nth-child(89)::after,
 .dynamicBackgroundSquare:nth-child(89) .dynamicBackgroundDot {
-  opacity: 1.25;
-  animation-delay: -1.25s;
+    opacity: 1.25;
+    animation-delay: -1.25s;
 }
 
 .dynamicBackgroundSquare:nth-child(90)::before,
 .dynamicBackgroundSquare:nth-child(90)::after,
 .dynamicBackgroundSquare:nth-child(90) .dynamicBackgroundDot {
-  opacity: 1.375;
-  animation-delay: -1.375s;
+    opacity: 1.375;
+    animation-delay: -1.375s;
 }
 
 .dynamicBackgroundSquare:nth-child(91)::before,
 .dynamicBackgroundSquare:nth-child(91)::after,
 .dynamicBackgroundSquare:nth-child(91) .dynamicBackgroundDot {
-  opacity: 1.25;
-  animation-delay: -1.25s;
+    opacity: 1.25;
+    animation-delay: -1.25s;
 }
 
 .dynamicBackgroundSquare:nth-child(92)::before,
 .dynamicBackgroundSquare:nth-child(92)::after,
 .dynamicBackgroundSquare:nth-child(92) .dynamicBackgroundDot {
-  opacity: 1.125;
-  animation-delay: -1.125s;
+    opacity: 1.125;
+    animation-delay: -1.125s;
 }
 
 .dynamicBackgroundSquare:nth-child(93)::before,
 .dynamicBackgroundSquare:nth-child(93)::after,
 .dynamicBackgroundSquare:nth-child(93) .dynamicBackgroundDot {
-  opacity: 1;
-  animation-delay: -1s;
+    opacity: 1;
+    animation-delay: -1s;
 }
 
 .dynamicBackgroundSquare:nth-child(94)::before,
 .dynamicBackgroundSquare:nth-child(94)::after,
 .dynamicBackgroundSquare:nth-child(94) .dynamicBackgroundDot {
-  opacity: 0.875;
-  animation-delay: -0.875s;
+    opacity: 0.875;
+    animation-delay: -0.875s;
 }
 
 .dynamicBackgroundSquare:nth-child(95)::before,
 .dynamicBackgroundSquare:nth-child(95)::after,
 .dynamicBackgroundSquare:nth-child(95) .dynamicBackgroundDot {
-  opacity: 0.75;
-  animation-delay: -0.75s;
+    opacity: 0.75;
+    animation-delay: -0.75s;
 }
 
 .dynamicBackgroundSquare:nth-child(96)::before,
 .dynamicBackgroundSquare:nth-child(96)::after,
 .dynamicBackgroundSquare:nth-child(96) .dynamicBackgroundDot {
-  opacity: 0.625;
-  animation-delay: -0.625s;
+    opacity: 0.625;
+    animation-delay: -0.625s;
 }
 
 .dynamicBackgroundSquare:nth-child(97)::before,
 .dynamicBackgroundSquare:nth-child(97)::after,
 .dynamicBackgroundSquare:nth-child(97) .dynamicBackgroundDot {
-  opacity: 0.625;
-  animation-delay: -0.625s;
+    opacity: 0.625;
+    animation-delay: -0.625s;
 }
 
 .dynamicBackgroundSquare:nth-child(98)::before,
 .dynamicBackgroundSquare:nth-child(98)::after,
 .dynamicBackgroundSquare:nth-child(98) .dynamicBackgroundDot {
-  opacity: 0.75;
-  animation-delay: -0.75s;
+    opacity: 0.75;
+    animation-delay: -0.75s;
 }
 
 .dynamicBackgroundSquare:nth-child(99)::before,
 .dynamicBackgroundSquare:nth-child(99)::after,
 .dynamicBackgroundSquare:nth-child(99) .dynamicBackgroundDot {
-  opacity: 0.875;
-  animation-delay: -0.875s;
+    opacity: 0.875;
+    animation-delay: -0.875s;
 }
 
 .dynamicBackgroundSquare:nth-child(100)::before,
 .dynamicBackgroundSquare:nth-child(100)::after,
 .dynamicBackgroundSquare:nth-child(100) .dynamicBackgroundDot {
-  opacity: 1;
-  animation-delay: -1s;
+    opacity: 1;
+    animation-delay: -1s;
 }
 
 .dynamicBackgroundSquare:nth-child(101)::before,
 .dynamicBackgroundSquare:nth-child(101)::after,
 .dynamicBackgroundSquare:nth-child(101) .dynamicBackgroundDot {
-  opacity: 1.125;
-  animation-delay: -1.125s;
+    opacity: 1.125;
+    animation-delay: -1.125s;
 }
 
 .dynamicBackgroundSquare:nth-child(102)::before,
 .dynamicBackgroundSquare:nth-child(102)::after,
 .dynamicBackgroundSquare:nth-child(102) .dynamicBackgroundDot {
-  opacity: 1.25;
-  animation-delay: -1.25s;
+    opacity: 1.25;
+    animation-delay: -1.25s;
 }
 
 .dynamicBackgroundSquare:nth-child(103)::before,
 .dynamicBackgroundSquare:nth-child(103)::after,
 .dynamicBackgroundSquare:nth-child(103) .dynamicBackgroundDot {
-  opacity: 1.125;
-  animation-delay: -1.125s;
+    opacity: 1.125;
+    animation-delay: -1.125s;
 }
 
 .dynamicBackgroundSquare:nth-child(104)::before,
 .dynamicBackgroundSquare:nth-child(104)::after,
 .dynamicBackgroundSquare:nth-child(104) .dynamicBackgroundDot {
-  opacity: 1;
-  animation-delay: -1s;
+    opacity: 1;
+    animation-delay: -1s;
 }
 
 .dynamicBackgroundSquare:nth-child(105)::before,
 .dynamicBackgroundSquare:nth-child(105)::after,
 .dynamicBackgroundSquare:nth-child(105) .dynamicBackgroundDot {
-  opacity: 0.875;
-  animation-delay: -0.875s;
+    opacity: 0.875;
+    animation-delay: -0.875s;
 }
 
 .dynamicBackgroundSquare:nth-child(106)::before,
 .dynamicBackgroundSquare:nth-child(106)::after,
 .dynamicBackgroundSquare:nth-child(106) .dynamicBackgroundDot {
-  opacity: 0.75;
-  animation-delay: -0.75s;
+    opacity: 0.75;
+    animation-delay: -0.75s;
 }
 
 .dynamicBackgroundSquare:nth-child(107)::before,
 .dynamicBackgroundSquare:nth-child(107)::after,
 .dynamicBackgroundSquare:nth-child(107) .dynamicBackgroundDot {
-  opacity: 0.625;
-  animation-delay: -0.625s;
+    opacity: 0.625;
+    animation-delay: -0.625s;
 }
 
 .dynamicBackgroundSquare:nth-child(108)::before,
 .dynamicBackgroundSquare:nth-child(108)::after,
 .dynamicBackgroundSquare:nth-child(108) .dynamicBackgroundDot {
-  opacity: 0.5;
-  animation-delay: -0.5s;
+    opacity: 0.5;
+    animation-delay: -0.5s;
 }
 
 .dynamicBackgroundSquare:nth-child(109)::before,
 .dynamicBackgroundSquare:nth-child(109)::after,
 .dynamicBackgroundSquare:nth-child(109) .dynamicBackgroundDot {
-  opacity: 0.5;
-  animation-delay: -0.5s;
+    opacity: 0.5;
+    animation-delay: -0.5s;
 }
 
 .dynamicBackgroundSquare:nth-child(110)::before,
 .dynamicBackgroundSquare:nth-child(110)::after,
 .dynamicBackgroundSquare:nth-child(110) .dynamicBackgroundDot {
-  opacity: 0.625;
-  animation-delay: -0.625s;
+    opacity: 0.625;
+    animation-delay: -0.625s;
 }
 
 .dynamicBackgroundSquare:nth-child(111)::before,
 .dynamicBackgroundSquare:nth-child(111)::after,
 .dynamicBackgroundSquare:nth-child(111) .dynamicBackgroundDot {
-  opacity: 0.75;
-  animation-delay: -0.75s;
+    opacity: 0.75;
+    animation-delay: -0.75s;
 }
 
 .dynamicBackgroundSquare:nth-child(112)::before,
 .dynamicBackgroundSquare:nth-child(112)::after,
 .dynamicBackgroundSquare:nth-child(112) .dynamicBackgroundDot {
-  opacity: 0.875;
-  animation-delay: -0.875s;
+    opacity: 0.875;
+    animation-delay: -0.875s;
 }
 
 .dynamicBackgroundSquare:nth-child(113)::before,
 .dynamicBackgroundSquare:nth-child(113)::after,
 .dynamicBackgroundSquare:nth-child(113) .dynamicBackgroundDot {
-  opacity: 1;
-  animation-delay: -1s;
+    opacity: 1;
+    animation-delay: -1s;
 }
 
 .dynamicBackgroundSquare:nth-child(114)::before,
 .dynamicBackgroundSquare:nth-child(114)::after,
 .dynamicBackgroundSquare:nth-child(114) .dynamicBackgroundDot {
-  opacity: 1.125;
-  animation-delay: -1.125s;
+    opacity: 1.125;
+    animation-delay: -1.125s;
 }
 
 .dynamicBackgroundSquare:nth-child(115)::before,
 .dynamicBackgroundSquare:nth-child(115)::after,
 .dynamicBackgroundSquare:nth-child(115) .dynamicBackgroundDot {
-  opacity: 1;
-  animation-delay: -1s;
+    opacity: 1;
+    animation-delay: -1s;
 }
 
 .dynamicBackgroundSquare:nth-child(116)::before,
 .dynamicBackgroundSquare:nth-child(116)::after,
 .dynamicBackgroundSquare:nth-child(116) .dynamicBackgroundDot {
-  opacity: 0.875;
-  animation-delay: -0.875s;
+    opacity: 0.875;
+    animation-delay: -0.875s;
 }
 
 .dynamicBackgroundSquare:nth-child(117)::before,
 .dynamicBackgroundSquare:nth-child(117)::after,
 .dynamicBackgroundSquare:nth-child(117) .dynamicBackgroundDot {
-  opacity: 0.75;
-  animation-delay: -0.75s;
+    opacity: 0.75;
+    animation-delay: -0.75s;
 }
 
 .dynamicBackgroundSquare:nth-child(118)::before,
 .dynamicBackgroundSquare:nth-child(118)::after,
 .dynamicBackgroundSquare:nth-child(118) .dynamicBackgroundDot {
-  opacity: 0.625;
-  animation-delay: -0.625s;
+    opacity: 0.625;
+    animation-delay: -0.625s;
 }
 
 .dynamicBackgroundSquare:nth-child(119)::before,
 .dynamicBackgroundSquare:nth-child(119)::after,
 .dynamicBackgroundSquare:nth-child(119) .dynamicBackgroundDot {
-  opacity: 0.5;
-  animation-delay: -0.5s;
+    opacity: 0.5;
+    animation-delay: -0.5s;
 }
 
 .dynamicBackgroundSquare:nth-child(120)::before,
 .dynamicBackgroundSquare:nth-child(120)::after,
 .dynamicBackgroundSquare:nth-child(120) .dynamicBackgroundDot {
-  opacity: 0.375;
-  animation-delay: -0.375s;
+    opacity: 0.375;
+    animation-delay: -0.375s;
 }
 
 .dynamicBackgroundSquare:nth-child(121)::before,
 .dynamicBackgroundSquare:nth-child(121)::after,
 .dynamicBackgroundSquare:nth-child(121) .dynamicBackgroundDot {
-  opacity: 0.375;
-  animation-delay: -0.375s;
+    opacity: 0.375;
+    animation-delay: -0.375s;
 }
 
 .dynamicBackgroundSquare:nth-child(122)::before,
 .dynamicBackgroundSquare:nth-child(122)::after,
 .dynamicBackgroundSquare:nth-child(122) .dynamicBackgroundDot {
-  opacity: 0.5;
-  animation-delay: -0.5s;
+    opacity: 0.5;
+    animation-delay: -0.5s;
 }
 
 .dynamicBackgroundSquare:nth-child(123)::before,
 .dynamicBackgroundSquare:nth-child(123)::after,
 .dynamicBackgroundSquare:nth-child(123) .dynamicBackgroundDot {
-  opacity: 0.625;
-  animation-delay: -0.625s;
+    opacity: 0.625;
+    animation-delay: -0.625s;
 }
 
 .dynamicBackgroundSquare:nth-child(124)::before,
 .dynamicBackgroundSquare:nth-child(124)::after,
 .dynamicBackgroundSquare:nth-child(124) .dynamicBackgroundDot {
-  opacity: 0.75;
-  animation-delay: -0.75s;
+    opacity: 0.75;
+    animation-delay: -0.75s;
 }
 
 .dynamicBackgroundSquare:nth-child(125)::before,
 .dynamicBackgroundSquare:nth-child(125)::after,
 .dynamicBackgroundSquare:nth-child(125) .dynamicBackgroundDot {
-  opacity: 0.875;
-  animation-delay: -0.875s;
+    opacity: 0.875;
+    animation-delay: -0.875s;
 }
 
 .dynamicBackgroundSquare:nth-child(126)::before,
 .dynamicBackgroundSquare:nth-child(126)::after,
 .dynamicBackgroundSquare:nth-child(126) .dynamicBackgroundDot {
-  opacity: 1;
-  animation-delay: -1s;
+    opacity: 1;
+    animation-delay: -1s;
 }
 
 .dynamicBackgroundSquare:nth-child(127)::before,
 .dynamicBackgroundSquare:nth-child(127)::after,
 .dynamicBackgroundSquare:nth-child(127) .dynamicBackgroundDot {
-  opacity: 0.875;
-  animation-delay: -0.875s;
+    opacity: 0.875;
+    animation-delay: -0.875s;
 }
 
 .dynamicBackgroundSquare:nth-child(128)::before,
 .dynamicBackgroundSquare:nth-child(128)::after,
 .dynamicBackgroundSquare:nth-child(128) .dynamicBackgroundDot {
-  opacity: 0.75;
-  animation-delay: -0.75s;
+    opacity: 0.75;
+    animation-delay: -0.75s;
 }
 
 .dynamicBackgroundSquare:nth-child(129)::before,
 .dynamicBackgroundSquare:nth-child(129)::after,
 .dynamicBackgroundSquare:nth-child(129) .dynamicBackgroundDot {
-  opacity: 0.625;
-  animation-delay: -0.625s;
+    opacity: 0.625;
+    animation-delay: -0.625s;
 }
 
 .dynamicBackgroundSquare:nth-child(130)::before,
 .dynamicBackgroundSquare:nth-child(130)::after,
 .dynamicBackgroundSquare:nth-child(130) .dynamicBackgroundDot {
-  opacity: 0.5;
-  animation-delay: -0.5s;
+    opacity: 0.5;
+    animation-delay: -0.5s;
 }
 
 .dynamicBackgroundSquare:nth-child(131)::before,
 .dynamicBackgroundSquare:nth-child(131)::after,
 .dynamicBackgroundSquare:nth-child(131) .dynamicBackgroundDot {
-  opacity: 0.375;
-  animation-delay: -0.375s;
+    opacity: 0.375;
+    animation-delay: -0.375s;
 }
 
 .dynamicBackgroundSquare:nth-child(132)::before,
 .dynamicBackgroundSquare:nth-child(132)::after,
 .dynamicBackgroundSquare:nth-child(132) .dynamicBackgroundDot {
-  opacity: 0.25;
-  animation-delay: -0.25s;
+    opacity: 0.25;
+    animation-delay: -0.25s;
 }
 
 .dynamicBackgroundSquare:nth-child(133)::before,
 .dynamicBackgroundSquare:nth-child(133)::after,
 .dynamicBackgroundSquare:nth-child(133) .dynamicBackgroundDot {
-  opacity: 0.25;
-  animation-delay: -0.25s;
+    opacity: 0.25;
+    animation-delay: -0.25s;
 }
 
 .dynamicBackgroundSquare:nth-child(134)::before,
 .dynamicBackgroundSquare:nth-child(134)::after,
 .dynamicBackgroundSquare:nth-child(134) .dynamicBackgroundDot {
-  opacity: 0.375;
-  animation-delay: -0.375s;
+    opacity: 0.375;
+    animation-delay: -0.375s;
 }
 
 .dynamicBackgroundSquare:nth-child(135)::before,
 .dynamicBackgroundSquare:nth-child(135)::after,
 .dynamicBackgroundSquare:nth-child(135) .dynamicBackgroundDot {
-  opacity: 0.5;
-  animation-delay: -0.5s;
+    opacity: 0.5;
+    animation-delay: -0.5s;
 }
 
 .dynamicBackgroundSquare:nth-child(136)::before,
 .dynamicBackgroundSquare:nth-child(136)::after,
 .dynamicBackgroundSquare:nth-child(136) .dynamicBackgroundDot {
-  opacity: 0.625;
-  animation-delay: -0.625s;
+    opacity: 0.625;
+    animation-delay: -0.625s;
 }
 
 .dynamicBackgroundSquare:nth-child(137)::before,
 .dynamicBackgroundSquare:nth-child(137)::after,
 .dynamicBackgroundSquare:nth-child(137) .dynamicBackgroundDot {
-  opacity: 0.75;
-  animation-delay: -0.75s;
+    opacity: 0.75;
+    animation-delay: -0.75s;
 }
 
 .dynamicBackgroundSquare:nth-child(138)::before,
 .dynamicBackgroundSquare:nth-child(138)::after,
 .dynamicBackgroundSquare:nth-child(138) .dynamicBackgroundDot {
-  opacity: 0.875;
-  animation-delay: -0.875s;
+    opacity: 0.875;
+    animation-delay: -0.875s;
 }
 
 .dynamicBackgroundSquare:nth-child(139)::before,
 .dynamicBackgroundSquare:nth-child(139)::after,
 .dynamicBackgroundSquare:nth-child(139) .dynamicBackgroundDot {
-  opacity: 0.75;
-  animation-delay: -0.75s;
+    opacity: 0.75;
+    animation-delay: -0.75s;
 }
 
 .dynamicBackgroundSquare:nth-child(140)::before,
 .dynamicBackgroundSquare:nth-child(140)::after,
 .dynamicBackgroundSquare:nth-child(140) .dynamicBackgroundDot {
-  opacity: 0.625;
-  animation-delay: -0.625s;
+    opacity: 0.625;
+    animation-delay: -0.625s;
 }
 
 .dynamicBackgroundSquare:nth-child(141)::before,
 .dynamicBackgroundSquare:nth-child(141)::after,
 .dynamicBackgroundSquare:nth-child(141) .dynamicBackgroundDot {
-  opacity: 0.5;
-  animation-delay: -0.5s;
+    opacity: 0.5;
+    animation-delay: -0.5s;
 }
 
 .dynamicBackgroundSquare:nth-child(142)::before,
 .dynamicBackgroundSquare:nth-child(142)::after,
 .dynamicBackgroundSquare:nth-child(142) .dynamicBackgroundDot {
-  opacity: 0.375;
-  animation-delay: -0.375s;
+    opacity: 0.375;
+    animation-delay: -0.375s;
 }
 
 .dynamicBackgroundSquare:nth-child(143)::before,
 .dynamicBackgroundSquare:nth-child(143)::after,
 .dynamicBackgroundSquare:nth-child(143) .dynamicBackgroundDot {
-  opacity: 0.25;
-  animation-delay: -0.25s;
+    opacity: 0.25;
+    animation-delay: -0.25s;
 }
 
 .dynamicBackgroundSquare:nth-child(144)::before,
 .dynamicBackgroundSquare:nth-child(144)::after,
 .dynamicBackgroundSquare:nth-child(144) .dynamicBackgroundDot {
-  opacity: 0.125;
-  animation-delay: -0.125s;
+    opacity: 0.125;
+    animation-delay: -0.125s;
 }
 
 .dynamicBackgroundSquare:nth-child(145)::before,
 .dynamicBackgroundSquare:nth-child(145)::after,
 .dynamicBackgroundSquare:nth-child(145) .dynamicBackgroundDot {
-  opacity: 0.125;
-  animation-delay: -0.125s;
+    opacity: 0.125;
+    animation-delay: -0.125s;
 }
 
 .dynamicBackgroundSquare:nth-child(146)::before,
 .dynamicBackgroundSquare:nth-child(146)::after,
 .dynamicBackgroundSquare:nth-child(146) .dynamicBackgroundDot {
-  opacity: 0.25;
-  animation-delay: -0.25s;
+    opacity: 0.25;
+    animation-delay: -0.25s;
 }
 
 .dynamicBackgroundSquare:nth-child(147)::before,
 .dynamicBackgroundSquare:nth-child(147)::after,
 .dynamicBackgroundSquare:nth-child(147) .dynamicBackgroundDot {
-  opacity: 0.375;
-  animation-delay: -0.375s;
+    opacity: 0.375;
+    animation-delay: -0.375s;
 }
 
 .dynamicBackgroundSquare:nth-child(148)::before,
 .dynamicBackgroundSquare:nth-child(148)::after,
 .dynamicBackgroundSquare:nth-child(148) .dynamicBackgroundDot {
-  opacity: 0.5;
-  animation-delay: -0.5s;
+    opacity: 0.5;
+    animation-delay: -0.5s;
 }
 
 .dynamicBackgroundSquare:nth-child(149)::before,
 .dynamicBackgroundSquare:nth-child(149)::after,
 .dynamicBackgroundSquare:nth-child(149) .dynamicBackgroundDot {
-  opacity: 0.625;
-  animation-delay: -0.625s;
+    opacity: 0.625;
+    animation-delay: -0.625s;
 }
 
 .dynamicBackgroundSquare:nth-child(150)::before,
 .dynamicBackgroundSquare:nth-child(150)::after,
 .dynamicBackgroundSquare:nth-child(150) .dynamicBackgroundDot {
-  opacity: 0.75;
-  animation-delay: -0.75s;
+    opacity: 0.75;
+    animation-delay: -0.75s;
 }
 
 .dynamicBackgroundSquare:nth-child(151)::before,
 .dynamicBackgroundSquare:nth-child(151)::after,
 .dynamicBackgroundSquare:nth-child(151) .dynamicBackgroundDot {
-  opacity: 0.625;
-  animation-delay: -0.625s;
+    opacity: 0.625;
+    animation-delay: -0.625s;
 }
 
 .dynamicBackgroundSquare:nth-child(152)::before,
 .dynamicBackgroundSquare:nth-child(152)::after,
 .dynamicBackgroundSquare:nth-child(152) .dynamicBackgroundDot {
-  opacity: 0.5;
-  animation-delay: -0.5s;
+    opacity: 0.5;
+    animation-delay: -0.5s;
 }
 
 .dynamicBackgroundSquare:nth-child(153)::before,
 .dynamicBackgroundSquare:nth-child(153)::after,
 .dynamicBackgroundSquare:nth-child(153) .dynamicBackgroundDot {
-  opacity: 0.375;
-  animation-delay: -0.375s;
+    opacity: 0.375;
+    animation-delay: -0.375s;
 }
 
 .dynamicBackgroundSquare:nth-child(154)::before,
 .dynamicBackgroundSquare:nth-child(154)::after,
 .dynamicBackgroundSquare:nth-child(154) .dynamicBackgroundDot {
-  opacity: 0.25;
-  animation-delay: -0.25s;
+    opacity: 0.25;
+    animation-delay: -0.25s;
 }
 
 .dynamicBackgroundSquare:nth-child(155)::before,
 .dynamicBackgroundSquare:nth-child(155)::after,
 .dynamicBackgroundSquare:nth-child(155) .dynamicBackgroundDot {
-  opacity: 0.125;
-  animation-delay: -0.125s;
+    opacity: 0.125;
+    animation-delay: -0.125s;
 }
 
 .dynamicBackgroundSquare:nth-child(156)::before,
 .dynamicBackgroundSquare:nth-child(156)::after,
 .dynamicBackgroundSquare:nth-child(156) .dynamicBackgroundDot {
-  opacity: 0;
-  animation-delay: 0s;
+    opacity: 0;
+    animation-delay: 0s;
 }
 
 @keyframes dynamicBackgroundDotPulse {
 
-  0%,
-  35% {
-    transform: translate3d(-50%, -50%, 0) scale(0);
-  }
+    0%,
+    35% {
+        transform: translate3d(-50%, -50%, 0) scale(0);
+    }
 
-  65%,
-  100% {
-    transform: translate3d(-50%, -50%, 0) scale(1);
-  }
+    65%,
+    100% {
+        transform: translate3d(-50%, -50%, 0) scale(1);
+    }
 }
 
 @keyframes lineXpulse {
 
-  0%,
-  35% {
-    transform: translate3d(-50%, 0, 0) rotate(0deg);
-  }
+    0%,
+    35% {
+        transform: translate3d(-50%, 0, 0) rotate(0deg);
+    }
 
-  65%,
-  100% {
-    transform: translate3d(-50%, 0, 0) rotate(90deg);
-  }
+    65%,
+    100% {
+        transform: translate3d(-50%, 0, 0) rotate(90deg);
+    }
 }
 
 @keyframes lineYpulse {
 
-  0%,
-  35% {
-    transform: translate3d(0, -50%, 0) rotate(0deg);
-  }
+    0%,
+    35% {
+        transform: translate3d(0, -50%, 0) rotate(0deg);
+    }
 
-  65%,
-  100% {
-    transform: translate3d(0, -50%, 0) rotate(90deg);
-  }
+    65%,
+    100% {
+        transform: translate3d(0, -50%, 0) rotate(90deg);
+    }
 }

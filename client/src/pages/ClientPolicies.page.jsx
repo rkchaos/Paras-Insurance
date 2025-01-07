@@ -1,19 +1,20 @@
 import { useContext, useEffect, useState } from 'react';
-import * as XLSX from "xlsx";
 import { tailChase } from 'ldrs';
 import { useNavigate, useParams } from 'react-router-dom';
-import { Timeline, TimelineDot, TimelineItem, TimelineConnector, TimelineContent, TimelineOppositeContent, timelineOppositeContentClasses, TimelineSeparator } from '@mui/lab';
+import { Button, Divider, Tab, Tabs } from '@mui/material';
+import { Close, Event, Info, Person } from '@mui/icons-material';
 // importing api end-points
 import { fetchPoliciesData } from '../api';
 // importing contexts
 import { ClientContext } from '../contexts/Client.context';
 // importing components
-import { Badge } from '../components/subcomponents/Badge';
 import { ScrollArea } from '../components/subcomponents/ScrollArea';
-import Spreadsheet from 'react-spreadsheet';
-import { Close, Download, Info } from '@mui/icons-material';
-import { Button, Divider, Tab, Tabs } from '@mui/material';
 import Footer from '../components/Footer';
+// importing helper functions
+import { toFormattedDate } from '../utils/helperFunctions';
+// import * as XLSX from "xlsx";
+// import Spreadsheet from 'react-spreadsheet';
+// import { Download } from '@mui/icons-material';
 
 const ClientProfile = () => {
     const { id } = useParams();
@@ -57,17 +58,9 @@ const ClientProfile = () => {
     }, [id]);
 
     const [tabIndex, setTabIndex] = useState(0);
-
     const handleTabIndexChange = (event, newTabIndex) => {
         setTabIndex(newTabIndex);
     };
-
-    const [isCompanyPolicySelected, setIsCompanyPolicySelected] = useState(false);
-    const [selectedCompanyPolicies, setSelectedCompanyPolicies] = useState([]);
-    const selectCompanyPolicies = (availablePolicies) => {
-        setIsCompanyPolicySelected(true);
-        setSelectedCompanyPolicies(availablePolicies);
-    }
 
     const [isPolicySelected, setIsPolicySelected] = useState(false);
     const [selectedPolicy, setSelectedPolicy] = useState({});
@@ -76,61 +69,49 @@ const ClientProfile = () => {
         setSelectedPolicy(policyData);
     }
 
-    const handleDownloadExcel = () => {
-        const worksheetData = selectedCompanyPolicies.map((row) =>
-            Array.isArray(row) ? row.map((cell) => (cell.value ? cell.value : cell)) : row
-        );
-
-        const worksheet = XLSX.utils.aoa_to_sheet(worksheetData);
-
-        const workbook = XLSX.utils.book_new();
-        XLSX.utils.book_append_sheet(workbook, worksheet, "Sheet1");
-
-        XLSX.writeFile(workbook, "Quotation.xlsx");
-    };
-
     const repeatedFields = (n, field) => {
-        // need to add default values in policies
         const elements = [];
+        let hasNonNullElement = false;
+
         for (let index = 0; index < n; index++) {
             elements.push(
                 ...Object.entries(field.children).map(([key, childField]) => {
-                    if (selectedPolicy.data[`${index + 1}${childField.name}`] == null || selectedPolicy.data[`${index + 1}${childField.name}`] == '' || selectedPolicy.data[`${index + 1}${childField.name}`] == 'Self') {
+                    const dataValue = selectedPolicy.data[`${index + 1}${childField.name}`];
+                    if (dataValue == null || dataValue === '') {
                         return null;
                     } else {
+                        hasNonNullElement = true;
                         return (
-                            <p className='ml-4' key={`${index}-${key}`}>
-                                <strong>{childField.label}</strong>: {selectedPolicy.data[`${index + 1}${childField.name}`]}
-                            </p>
+                            <div className="w-full" key={`${index}-${key}`}>
+                                <h3 className="block text-sm font-medium text-gray-700 mb-1">{childField.label}</h3>
+                                <p className="border-2 rounded-lg px-2 py-1">
+                                    {dataValue}&nbsp;
+                                </p>
+                            </div>
                         );
                     }
                 })
             );
         }
-        return elements;
+
+        return { isEmpty: !hasNonNullElement, elements };
     };
 
-    const toFormattedDate = (timestamp) => {
-        const formattedDate = new Date(Date.parse(timestamp))
-        const date = formattedDate.getDate();
-        const monthsArray = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
-        const month = monthsArray[formattedDate.getMonth()];
-        const year = formattedDate.getFullYear();
-
-        return `${date} ${month}, ${year}`;
-    }
-
-    const toFormattedTime = (timestamp) => {
-        const date = new Date(Date.parse(timestamp))
-
-        const hours24 = date.getHours();
-        const minutes = date.getMinutes();
-
-        const period = hours24 >= 12 ? 'PM' : 'AM';
-        const hours12 = hours24 % 12 || 12;
-
-        return `${hours12}:${minutes.toString().padStart(2, '0')} ${period}`;
-    }
+    // const [isCompanyPolicySelected, setIsCompanyPolicySelected] = useState(false);
+    // const [selectedCompanyPolicies, setSelectedCompanyPolicies] = useState([]);
+    // const selectCompanyPolicies = (availablePolicies) => {
+    //     setIsCompanyPolicySelected(true);
+    //     setSelectedCompanyPolicies(availablePolicies);
+    // }
+    // const handleDownloadExcel = () => {
+    //     const worksheetData = selectedCompanyPolicies.map((row) =>
+    //         Array.isArray(row) ? row.map((cell) => (cell.value ? cell.value : cell)) : row
+    //     );
+    //     const worksheet = XLSX.utils.aoa_to_sheet(worksheetData);
+    //     const workbook = XLSX.utils.book_new();
+    //     XLSX.utils.book_append_sheet(workbook, worksheet, "Sheet1");
+    //     XLSX.writeFile(workbook, "Quotation.xlsx");
+    // };
 
     tailChase.register();
 
@@ -179,9 +160,9 @@ const ClientProfile = () => {
                                 ) ? `${clientName}'s Policies` : 'My Policies'}
                             </h1>
                             <div className='pb-4 rounded-xl relative bg-white/95 shadow-[rgba(50,_50,_105,_0.15)_0px_2px_5px_0px,_rgba(0,_0,_0,_0.05)_0px_1px_1px_0px]'>
-                                <Tabs value={tabIndex} onChange={handleTabIndexChange}>
-                                    <Tab label='Policies Interested In' className='!px-8 !py-4' />
-                                    <Tab label='Policies Assigned' className='!px-8 !py-4' />
+                                <Tabs value={tabIndex} onChange={handleTabIndexChange} TabIndicatorProps={{ style: { background: "#111827" } }}>
+                                    <Tab label='Policies Interested In' className='!px-8 !py-4 !text-gray-900' />
+                                    <Tab label='Policies Assigned' className='!px-8 !py-4 !text-gray-900' />
                                 </Tabs>
                                 <Divider />
                                 <div className='px-8 py-2'>
@@ -199,21 +180,37 @@ const ClientProfile = () => {
                                                         policy.stage === 'Interested' &&
                                                         <div key={policy?._id} className='bg-white rounded-xl mb-4 px-4 shadow-[rgba(50,_50,_105,_0.15)_0px_2px_5px_0px,_rgba(0,_0,_0,_0.05)_0px_1px_1px_0px]'>
                                                             <div className='pt-3 pb-12 px-2'>
-                                                                <h3 className='text-md font-semibold'>{policy?.policyDetails?.policyName}</h3>
-                                                                <p className='text-sm text-gray-500 mb-2'>Issued On: {toFormattedDate(policy.createdAt)}</p>
+                                                                <h3 className='text-xl font-semibold'>{policy?.policyDetails?.policyName}</h3>
+                                                                <div className='flex gap-1.5 items-center mt-1 mb-0.5'>
+                                                                    <Person />
+                                                                    <span className='text-gray-500'><strong>Applied By:</strong> {policy?.data?.email}</span>
+                                                                </div>
+                                                                <div className='flex gap-1.5 items-center mt-1 mb-0.5'>
+                                                                    <Event />
+                                                                    <span className='text-gray-500'><strong> Applied On:</strong> {toFormattedDate(policy.createdAt)}</span>
+                                                                </div>
                                                                 {policy.availablePolicies?.length > 0 &&
                                                                     <button
                                                                         onClick={() => selectCompanyPolicies(policy?.availablePolicies)}
                                                                         className='float-right mr-4 bg-gray-900 text-white py-1 px-2 rounded-sm hover:opacity-95'
                                                                     >Quotations</button>
                                                                 }
+
                                                                 <Button
-                                                                    onClick={() => selectPolicy({ data: policy?.data, format: policy?.policyDetails })}
+                                                                    onClick={() => selectPolicy({ data: policy?.data, format: policy?.policyDetails, stage: policy?.stage })}
                                                                     className='!flex !gap-2 !items-center !justify-center float-right mr-4 !text-white !bg-gray-900 py-1 px-2 rounded-sm hover:opacity-95'
                                                                 >
                                                                     Details
                                                                     <Info className='!size-4' />
                                                                 </Button>
+                                                                {/* <Button
+                                                                    onClick={() => selectPolicy({ data: policy?.data, format: policy?.policyDetails, stage: policy?.stage })}
+                                                                    className='!flex !gap-2 !items-center !justify-center float-right mr-4 !text-white !bg-gray-900 py-1 px-2 rounded-sm hover:opacity-95'
+                                                                >
+                                                                    Policy Certificate (for Assigned)
+                                                                    Policy Quotation (for Interested)
+                                                                    <Info className='!size-4' />
+                                                                </Button> */}
                                                             </div>
                                                         </div>
                                                     ))}
@@ -234,8 +231,15 @@ const ClientProfile = () => {
                                                         policy.stage === 'Assigned' &&
                                                         <div key={policy?._id} className='mb-4'>
                                                             <div className='pt-3 pb-12 px-2'>
-                                                                <h3 className='text-md font-semibold'>{policy?.policyDetails?.policyName}</h3>
-                                                                <p className='text-sm text-gray-500 mb-2'>Issued On: {toFormattedDate(policy.createdAt)}</p>
+                                                                <h3 className='text-xl font-semibold'>{policy?.policyDetails?.policyName}</h3>
+                                                                <div className='flex gap-1.5 items-center mt-1 mb-0.5'>
+                                                                    <Person />
+                                                                    <span className='text-gray-500'><strong>Applied By:</strong> {policy?.data?.email}</span>
+                                                                </div>
+                                                                <div className='flex gap-1.5 items-center mt-1 mb-0.5'>
+                                                                    <Event />
+                                                                    <span className='text-gray-500'><strong> Applied On:</strong> {toFormattedDate(policy.createdAt)}</span>
+                                                                </div>
                                                                 {policy.availablePolicies?.length > 0 &&
                                                                     <button
                                                                         onClick={() => selectCompanyPolicies(policy?.availablePolicies)}
@@ -243,7 +247,7 @@ const ClientProfile = () => {
                                                                     >Quotations</button>
                                                                 }
                                                                 <Button
-                                                                    onClick={() => selectPolicy({ data: policy?.data, format: policy?.policyDetails })}
+                                                                    onClick={() => selectPolicy({ data: policy?.data, format: policy?.policyDetails, stage: policy?.stage })}
                                                                     className='!flex !gap-2 !items-center !justify-center float-right mr-4 !text-white !bg-gray-900 py-1 px-2 rounded-sm hover:opacity-95'
                                                                 >
                                                                     Details
@@ -276,38 +280,87 @@ const ClientProfile = () => {
                             </div>
 
                             {isPolicySelected &&
-                                <div className='fixed inset-0 bg-gray-100/25 flex justify-center items-center' onClick={() => setIsPolicySelected(false)}>
+                                <div className='fixed !z-20 inset-0 bg-gray-100/25 flex justify-center items-center' onClick={() => setIsPolicySelected(false)}>
                                     <div
                                         onClick={(event) => event.stopPropagation()}
-                                        className='bg-white w-[65vw] px-6 pb-6 rounded-xl shadow-[rgba(50,_50,_105,_0.15)_0px_2px_5px_0px,_rgba(0,_0,_0,_0.05)_0px_1px_1px_0px]'
+                                        className='relative !z-30 h-[75vh] overflow-y-scroll no-scrollbar bg-white w-[65vw] pb-6 rounded-xl shadow-[rgba(50,_50,_105,_0.15)_0px_2px_5px_0px,_rgba(0,_0,_0,_0.05)_0px_1px_1px_0px]'
                                     >
-                                        <div className='flex items-center justify-between'>
-                                            <h1 className='text-3xl text-left font-semibold my-4'>
-                                                Renew Policy
-                                            </h1>
-                                            <Close onClick={() => setIsPolicySelected(false)} className='cursor-pointer' />
+                                        <div className='px-6'>
+                                            <div className='flex items-center justify-between'>
+                                                <h1 className='text-3xl text-left font-semibold my-4'>
+                                                    {selectedPolicy?.format?.policyName} ({selectedPolicy?.stage})
+                                                </h1>
+                                                <Close onClick={() => setIsPolicySelected(false)} className='cursor-pointer' />
+                                            </div>
                                         </div>
                                         <Divider />
-                                        <h2 className='text-xl font-semibold mb-2'>Applicant Information</h2>
-                                        <p className='ml-4'><strong>First Name</strong>: {selectedPolicy.data['firstName']}</p>
-                                        <p className='ml-4'><strong>Last Name</strong>: {selectedPolicy.data['lastName']}</p>
-                                        <p className='ml-4'><strong>Email</strong>: {selectedPolicy.data['email']}</p>
-                                        <p className='ml-4'><strong>Phone</strong>: {selectedPolicy.data['phone']}</p>
-                                        {Object.entries(selectedPolicy.format.policyForm.sections).map(([key, section]) => (
-                                            Object.entries(section.fields).map(([key, field], index) => (
-                                                field.type === 'repeat' ?
-                                                    <>
-                                                        <h2 className='text-xl font-semibold my-2'>Dependents Information</h2>
-                                                        {repeatedFields(field.maxCount, field)}
-                                                    </>
-                                                    :
-                                                    <p className='ml-4' key={index}>
-                                                        <strong>{field.label}</strong>: {selectedPolicy.data[field.name]}
-                                                    </p>
-                                            ))
-                                        ))}
+                                        <div className='px-6 py-2'>
+                                            <p className='text-2xl font-semibold pt-1'>Policy Details</p>
+                                            <div className='flex justify-between gap-4 mb-2'>
+                                                <div className='w-full'>
+                                                    <h3 className="block text-sm font-medium text-gray-700 mb-1">Name</h3>
+                                                    <p className='border-2 rounded-lg px-2 py-1'>{selectedPolicy?.format?.policyName}&nbsp;</p>
+                                                </div>
+                                                <div className='w-full'>
+                                                    <h3 className="block text-sm font-medium text-gray-700 mb-1">Category</h3>
+                                                    <p className='border-2 rounded-lg px-2 py-1'>{selectedPolicy?.format?.policyType}&nbsp;</p>
+                                                </div>
+                                            </div>
+                                            <div className='flex justify-between gap-4 mb-2'>
+                                                <div className='w-full'>
+                                                    <h3 className="block text-sm font-medium text-gray-700 mb-1">Description</h3>
+                                                    <p className='border-2 rounded-lg px-2 py-1'>{selectedPolicy?.format?.policyDescription}&nbsp;</p>
+                                                </div>
+                                            </div>
+                                            <Divider className='!my-4' />
+                                            <p className='text-2xl font-semibold'>Personal Details</p>
+                                            <div className='flex justify-between gap-4 mb-2'>
+                                                <div className='w-full'>
+                                                    <h3 className="block text-sm font-medium text-gray-700 mb-1">First Name</h3>
+                                                    <p className='border-2 rounded-lg px-2 py-1'>{selectedPolicy?.data?.firstName}&nbsp;</p>
+                                                </div>
+                                                <div className='w-full'>
+                                                    <h3 className="block text-sm font-medium text-gray-700 mb-1">Last Name</h3>
+                                                    <p className='border-2 rounded-lg px-2 py-1'>{selectedPolicy?.data?.lastName}&nbsp;</p>
+                                                </div>
+                                            </div>
+                                            <div className='flex justify-between gap-4 mb-2'>
+                                                <div className='w-full'>
+                                                    <h3 className="block text-sm font-medium text-gray-700 mb-1">Email</h3>
+                                                    <p className='border-2 rounded-lg px-2 py-1'>{selectedPolicy?.data?.email}&nbsp;</p>
+                                                </div>
+                                                <div className='w-full'>
+                                                    <h3 className="block text-sm font-medium text-gray-700 mb-1">Phone</h3>
+                                                    <p className='border-2 rounded-lg px-2 py-1'>+91-{selectedPolicy?.data?.phone}&nbsp;</p>
+                                                </div>
+                                            </div>
+                                            {Object.entries(selectedPolicy.format.policyForm.sections).map(([key, section]) => (
+                                                Object.entries(section.fields).map(([key, field], index) => (
+                                                    field.type === 'repeat' ?
+                                                        <>
+                                                            {(() => {
+                                                                const { isEmpty, elements } = repeatedFields(field.maxCount, field);
+
+                                                                return !isEmpty ? (
+                                                                    <>
+                                                                        <Divider className='!my-4' />
+                                                                        <p className='text-2xl font-semibold pb-2'>Dependents Information</p>
+                                                                        {elements}
+                                                                    </>
+                                                                ) : null;
+                                                            })()}
+                                                        </>
+                                                        :
+                                                        <div className='w-full' key={index}>
+                                                            <h3 className="block text-sm font-medium text-gray-700 mb-1">{field.label}</h3>
+                                                            <p className='border-2 rounded-lg px-2 py-1'>{selectedPolicy.data[field.name]}&nbsp;</p>
+                                                        </div>
+                                                ))
+                                            ))}
+                                        </div>
                                     </div>
 
+                                    {/* 
                                     {isCompanyPolicySelected &&
                                         <div className='mt-4'>
                                             <div className='p-6'>
@@ -324,7 +377,7 @@ const ClientProfile = () => {
                                                         <Spreadsheet data={selectedCompanyPolicies} />
                                                     </div>
                                                 </ScrollArea>
-                                                {/* 
+                                                
                                         {selectedCompanyPolicies.map((companyPolicy, index) => {
                                             return (
                                                 <div className='bg-gray-100 mb-2 p-2 rounded-lg'>
@@ -339,15 +392,15 @@ const ClientProfile = () => {
                                                 <p className='ml-4'><strong>Premium Type</strong>: {companyPolicy.premiumType}</p>
                                                 </div>
                                                 )
-                                            })} */}
+                                            })}
                                             </div>
                                         </div>
-                                    }
+                                    } 
+                                    */}
                                 </div>
                             }
                         </div>
             }
-
             <Footer />
         </div>
     );
