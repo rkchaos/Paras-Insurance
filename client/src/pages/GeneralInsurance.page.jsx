@@ -38,6 +38,11 @@ const GeneralInsurance = () => {
     useEffect(() => {
         window.scrollTo(0, 0);
         getClientData();
+
+        document.body.classList.add('overflow-hidden');
+        return () => {
+            document.body.classList.remove('overflow-hidden');
+        };
     }, [id]);
 
     const [isUpdateProfileOpen, setIsUpdateProfileOpen] = useState(false);
@@ -49,7 +54,7 @@ const GeneralInsurance = () => {
     tailChase.register();
 
     return (
-        <div>
+        <div className='!overflow-y-hidden'>
             {isLoadingClientData ?
                 <div className='min-h-screen flex justify-center items-center'>
                     <l-tail-chase size='40' speed='1.75' color='#111827' />
@@ -78,10 +83,9 @@ const GeneralInsurance = () => {
                             <p className='text-3xl font-semibold text-gray-900'>No client found</p>
                         </div>
                         :
-                        <div className='h-[100vh] overflow-hidden'>
+                        <div className='h-[100vh]'>
                         </div>
             }
-
             <Footer />
             {isUpdateProfileOpen &&
                 <UpdateProfileForm

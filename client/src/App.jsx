@@ -10,7 +10,7 @@ import AboutUs from './pages/AboutUs.page';
 import ContactUs from './pages/ContactUs.page';
 import Authentication from './pages/Authentication.page';
 import InsuranceForm from './pages/InsuranceForm.page';
-import GeneralInsurance from './pages/GeneralInsurance.page copy';
+import GeneralInsurance from './pages/GeneralInsurance.page';
 import SIP from './pages/SIP.page';
 import ClientProfile from './pages/ClientProfile.page';
 import ClientPolicies from './pages/ClientPolicies.page';
