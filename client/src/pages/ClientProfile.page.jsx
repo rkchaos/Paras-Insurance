@@ -110,52 +110,6 @@ const ClientProfile = () => {
 
     tailChase.register();
 
-    // import { Download } from '@mui/icons-material';
-    // import * as XLSX from 'xlsx';
-    // import Spreadsheet from 'react-spreadsheet';
-    // const handleDownloadExcel = () => {
-    //     const worksheetData = selectedCompanyPolicies.map((row) =>
-    //         Array.isArray(row) ? row.map((cell) => (cell.value ? cell.value : cell)) : row
-    //     );
-    //     const worksheet = XLSX.utils.aoa_to_sheet(worksheetData);
-    //     const workbook = XLSX.utils.book_new();
-    //     XLSX.utils.book_append_sheet(workbook, worksheet, 'Sheet1');
-    //     XLSX.writeFile(workbook, 'Quotation.xlsx');
-    // };
-    // const repeatedFields = (n, field) => {
-    //     const elements = [];
-    //     for (let index = 0; index < n; index++) {
-    //         elements.push(
-    //             ...Object.entries(field.children).map(([key, childField]) => {
-    //                 if (selectedPolicy.data[`${index + 1}${childField.name}`] == null || selectedPolicy.data[`${index + 1}${childField.name}`] == '' || selectedPolicy.data[`${index + 1}${childField.name}`] == 'Self') {
-    //                     return null;
-    //                 } else {
-    //                     return (
-    //                         <p className='ml-4' key={`${index}-${key}`}>
-    //                             <strong>{childField.label}</strong>: {selectedPolicy.data[`${index + 1}${childField.name}`]}
-    //                         </p>
-    //                     );
-    //                 }
-    //             })
-    //         );
-    //     }
-    //     return elements;
-    // };
-    // const [isCompanyPolicySelected, setIsCompanyPolicySelected] = useState(false);
-    // const [selectedCompanyPolicies, setSelectedCompanyPolicies] = useState([]);
-    // const selectCompanyPolicies = (availablePolicies) => {
-    //     setIsCompanyPolicySelected(true);
-    //     console.log(selectedCompanyPolicies);
-    //     setSelectedCompanyPolicies(availablePolicies);
-    // }
-    // const [policies, setPolicies] = useState([]);
-    // const [isPolicySelected, setIsPolicySelected] = useState(false);
-    // const [selectedPolicy, setSelectedPolicy] = useState({});
-    // const selectPolicy = (policyData) => {
-    //     setIsPolicySelected(true);
-    //     setSelectedPolicy(policyData);
-    // }
-
     return (
         <div>
             {isLoadingClientData ?

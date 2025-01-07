@@ -178,7 +178,14 @@ const InsuranceForm = () => {
                     <l-tail-chase size='40' speed='1.75' color='#111827' />
                 </div>
                 :
-                <div className='min-h-screen bg-gray-200 flex items-center justify-center py-8 px-4 sm:px-6 lg:px-8'>
+                <div className='min-h-[85vh] bg-white flex items-center justify-center py-8 px-4 sm:px-6 lg:px-8'>
+                    <div className="absolute inset-0">
+                        <div className="absolute inset-0 bg-[#111827]"></div>
+                        <div
+                            className="absolute inset-0 bg-white"
+                            style={{ clipPath: 'polygon(0 65%, 100% 35%, 100% 100%, 0% 100%)' }}
+                        />
+                    </div>
                     <div className='max-w-lg w-full space-y-8 relative z-10'>
                         <div className='flex relative items-center'>
                             <select onChange={handleChangeForm} value={currentPolicyId}
