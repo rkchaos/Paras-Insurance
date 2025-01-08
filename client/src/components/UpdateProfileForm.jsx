@@ -1,9 +1,11 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { Button, Step, StepLabel, Stepper } from '@mui/material';
-import { Close, Delete, OpenInNew, Upload } from '@mui/icons-material';
+import { Close, Delete, ExpandMore, OpenInNew, Upload } from '@mui/icons-material';
+// importing api end-points
+import { fetchEveryPolicyId } from '../api';
 
-const UpdateProfileForm = ({ clientData, closeUpdateProfile, isNotClosable, onSubmit, label }) => {
+const UpdateProfileForm = ({ clientData, closeUpdateProfile, isNotClosable, onSubmit, label, includePolicyType }) => {
     const [error, setError] = useState('');
 
     const [formData, setFormData] = useState(clientData);
@@ -30,7 +32,22 @@ const UpdateProfileForm = ({ clientData, closeUpdateProfile, isNotClosable, onSu
             }));
         }
     };
-
+    const [currentPolicyId, setCurrentPolicyId] = useState('');
+    const handlePolicyChange = (event) => {
+        setCurrentPolicyId(event.target?.value)
+    }
+    const [everyPolicyId, setEveryPolicyId] = useState([]);
+    const getEveryPolicyIds = async () => {
+        const { data } = await fetchEveryPolicyId();
+        if (currentPolicyId === '') {
+            setCurrentPolicyId(data[0]._id);
+        }
+        setEveryPolicyId(data);
+    }
+    useEffect(() => {
+        window.scrollTo(0, 0);
+        getEveryPolicyIds();
+    }, []);
     const steps = ["User Details", "Financial Details", "Employment Details"]
     const [activeStep, setActiveStep] = useState(0);
     const handleNext = () => {
@@ -98,12 +115,14 @@ const UpdateProfileForm = ({ clientData, closeUpdateProfile, isNotClosable, onSu
     const handleSubmit = async (event) => {
         event.preventDefault();
         setError('');
-        const errorMessage = await onSubmit(formData, removedFiles, files);
-        if (!errorMessage) {
-            closeUpdateProfile();
+        let errorMessage = '';
+        if (includePolicyType) {
+            errorMessage = await onSubmit(formData, removedFiles, files, currentPolicyId);
         } else {
-            setError(errorMessage);
+            errorMessage = await onSubmit(formData, removedFiles, files);
         }
+        if (!errorMessage) { closeUpdateProfile() }
+        else { setError(errorMessage) }
     };
 
     return (
@@ -115,6 +134,18 @@ const UpdateProfileForm = ({ clientData, closeUpdateProfile, isNotClosable, onSu
                         <button onClick={closeUpdateProfile} className="text-gray-500 hover:text-gray-700">
                             <Close />
                         </button>
+                    }
+                    {includePolicyType &&
+                        <div className='flex relative items-center'>
+                            <select onChange={handlePolicyChange} value={currentPolicyId}
+                                className='w-60 py-2 cursor-pointer appearance-none outline-none border p-2 rounded'
+                            >
+                                {everyPolicyId.map(({ _id, policyName }, index) => (
+                                    <option key={index} value={_id}>{policyName}</option>
+                                ))}
+                            </select>
+                            <ExpandMore className='absolute right-1 pointer-events-none' />
+                        </div>
                     }
                 </div>
 
@@ -354,7 +385,7 @@ const UpdateProfileForm = ({ clientData, closeUpdateProfile, isNotClosable, onSu
                             </div>
                         </section>
                     }
-                    <div className='w-full h-12 mt-6'>
+                    <div className='w-full h-16 mt-8'>
                         {(activeStep === 1 || activeStep === 2) &&
                             <div className='float-left'>
                                 <Button variant="outlined" size="large" onClick={handleBack}>Back</Button>

@@ -3,11 +3,11 @@ import { Add } from '@mui/icons-material';
 import { addCompanyPolicy, createCompany, deleteCompany, fetchAllCompanies, removeCompanyPolicy } from '../../api';
 import CompanyTable from './companies/CompanyTable';
 import CompanyForm from './companies/CompanyForm';
-import PolicyForm from './companies/PolicyForm';
+import CompanyPolicyForm from './companies/CompanyPolicyForm';
 
 const CompanyManagement = () => {
     const [showForm, setShowForm] = useState(false);
-    const [showPolicyForm, setShowPolicyForm] = useState(false);
+    const [showCompanyPolicyForm, setShowCompanyPolicyForm] = useState(false);
     const [companiesData, setCompaniesData] = useState([]);
 
     const getAllCompanies = async () => {
@@ -47,7 +47,7 @@ const CompanyManagement = () => {
 
     const handleAddCompanyPolicy = async (newCompanyPolicyData) => {
         try {
-            const { data } = await addCompanyPolicy({ companyId: showPolicyForm, policyData: newCompanyPolicyData });
+            const { data } = await addCompanyPolicy({ companyId: showCompanyPolicyForm, policyData: newCompanyPolicyData });
             getAllCompanies();
             return false;
         } catch (error) {
@@ -75,7 +75,7 @@ const CompanyManagement = () => {
                 <h1 className="text-2xl font-bold text-gray-800">Company Management</h1>
                 <button
                     onClick={() => setShowForm(true)}
-                    className="bg-blue-600 text-white px-4 py-2 rounded-lg flex items-center gap-2 hover:bg-blue-700"
+                    className="text-white bg-gray-900 px-4 py-2 rounded-lg flex items-center gap-2 hover:opacity-95"
                 >
                     <Add />
                     Add New Company
@@ -86,7 +86,7 @@ const CompanyManagement = () => {
                 <div className="p-6">
                     <CompanyTable
                         companiesData={companiesData}
-                        onAddPolicy={(companyId) => setShowPolicyForm(companyId)}
+                        onAddPolicy={(companyId) => setShowCompanyPolicyForm(companyId)}
                         onRemovePolicy={handleRemoveCompanyPolicy}
                         onDelete={handleDeleteCompany}
                     />
@@ -100,9 +100,9 @@ const CompanyManagement = () => {
                 />
             )}
 
-            {showPolicyForm &&
-                <PolicyForm
-                    onClose={() => setShowPolicyForm(false)}
+            {showCompanyPolicyForm &&
+                <CompanyPolicyForm
+                    onClose={() => setShowCompanyPolicyForm(false)}
                     onSubmit={handleAddCompanyPolicy}
                 />
             }

@@ -1,7 +1,8 @@
 import { useMemo, useState } from 'react';
 import { Tooltip } from '@mui/material';
 import { Edit, Delete, FilterAltOutlined, AddCircleOutlineOutlined, SearchOutlined } from '@mui/icons-material';
-import PolicyModal from './PolicyModal';
+// importing components
+import CompanyPolicyModal from './CompanyPolicyModal';
 
 const CompanyTable = ({ companiesData, onAddPolicy, onRemovePolicy, onDelete }) => {
     const [selectedPolicy, setSelectedPolicy] = useState(null);
@@ -12,14 +13,13 @@ const CompanyTable = ({ companiesData, onAddPolicy, onRemovePolicy, onDelete }) 
 
     const filteredCompaniesData = useMemo(() => {
         return companiesData.filter(company => {
-            console.log(company)
             const searchMatch =
-                company.companyName.toLowerCase().includes(searchTerm.toLowerCase()) ||
-                company.contactInfo.contactPerson.toLowerCase().includes(searchTerm.toLowerCase()) ||
-                company.contactInfo.phone.toLowerCase().includes(searchTerm.toLowerCase()) ||
-                company.contactInfo.email.includes(searchTerm);
+                company?.companyName.toLowerCase().includes(searchTerm.toLowerCase()) ||
+                company?.contactInfo?.contactPerson.toLowerCase().includes(searchTerm.toLowerCase()) ||
+                company?.contactInfo?.phone.toLowerCase().includes(searchTerm.toLowerCase()) ||
+                company?.contactInfo?.email.includes(searchTerm);
 
-            const statusMatch = filterStatus === 'ALL' || company.companyStatus?.toLowerCase() === filterStatus.toLowerCase();
+            const statusMatch = filterStatus === 'ALL' || company?.companyStatus?.toLowerCase() === filterStatus.toLowerCase();
 
             return searchMatch && statusMatch;
         });
@@ -64,7 +64,7 @@ const CompanyTable = ({ companiesData, onAddPolicy, onRemovePolicy, onDelete }) 
                 </div>
             </div>
             <div className="overflow-x-auto">
-                <table className="min -w-full divide-y divide-gray-200">
+                <table className="min-w-full divide-y divide-gray-200 whitespace-nowrap">
                     <thead className="bg-gray-50">
                         <tr>
                             <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
@@ -74,13 +74,7 @@ const CompanyTable = ({ companiesData, onAddPolicy, onRemovePolicy, onDelete }) 
                                 Type
                             </th>
                             <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                                Contact Person
-                            </th>
-                            <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                                Contact Number
-                            </th>
-                            <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                                Email
+                                Registration Number
                             </th>
                             <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                                 Policies Offered
@@ -97,26 +91,20 @@ const CompanyTable = ({ companiesData, onAddPolicy, onRemovePolicy, onDelete }) 
                         {currentCompaniesData.map((company, index) => (
                             <tr key={index}>
                                 <td className="px-6 py-4 whitespace-nowrap">
-                                    <div className="text-sm font-medium text-gray-900">{company.companyName}</div>
+                                    <div className="text-sm font-medium text-gray-900">{company?.companyName}</div>
                                 </td>
                                 <td className="px-6 py-4 whitespace-nowrap">
-                                    <div className="text-sm text-gray-500">{company.companyType}</div>
+                                    <div className="text-sm text-gray-500">{company?.companyType}</div>
                                 </td>
                                 <td className="px-6 py-4 whitespace-nowrap">
-                                    <div className="text-sm text-gray-500">{company.contactInfo.contactPerson}</div>
-                                </td>
-                                <td className="px-6 py-4 whitespace-nowrap">
-                                    <div className="text-sm text-gray-500">{company.contactInfo.phone}</div>
-                                </td>
-                                <td className="px-6 py-4 whitespace-nowrap">
-                                    <div className="text-sm text-gray-500">{company.contactInfo.email}</div>
+                                    <div className="text-sm text-gray-500">{company?.companyRegistrationNo}</div>
                                 </td>
                                 <td className="px-6 py-4">
                                     <div className="text-sm text-gray-500">
-                                        {company.policies?.length === 0 ?
+                                        {company?.companyPoliciesProvided?.length === 0 ?
                                             <div>No data available</div>
                                             :
-                                            company.policies.map((policy, index) => (
+                                            company?.companyPoliciesProvided?.map((policy, index) => (
                                                 <button
                                                     key={index}
                                                     onClick={() => setSelectedPolicy({ policy, company })}
@@ -128,18 +116,18 @@ const CompanyTable = ({ companiesData, onAddPolicy, onRemovePolicy, onDelete }) 
                                     </div>
                                 </td>
                                 <td className="px-6 py-4 whitespace-nowrap">
-                                    <span className={`px-2 inline-flex text-xs leading-5 font-semibold rounded-full ${company.companyStatus?.toLowerCase() === 'active'
+                                    <span className={`px-2 inline-flex text-xs leading-5 font-semibold rounded-full ${company?.companyStatus === 'Active'
                                         ? 'bg-green-100 text-green-800'
                                         : 'bg-red-100 text-red-600'
                                         }`}>
-                                        {company.companyStatus?.toLowerCase() === 'active' ? 'Active' : 'Inactive'}
+                                        {company?.companyStatus}
                                     </span>
                                 </td>
                                 <td className="px-6 py-4 whitespace-nowrap text-sm">
                                     <div className="flex space-x-2">
                                         <button className="text-green-600 hover:text-green-900">
                                             <Tooltip title='Add policies'>
-                                                <AddCircleOutlineOutlined onClick={() => onAddPolicy(company._id)} />
+                                                <AddCircleOutlineOutlined onClick={() => onAddPolicy(company?._id)} />
                                             </Tooltip>
                                         </button>
                                         <button className="p-1 border border-gray-300 rounded-md shadow-sm text-blue-600 hover:text-blue-900 hover:bg-gray-50 focus:outline-none">
@@ -149,7 +137,7 @@ const CompanyTable = ({ companiesData, onAddPolicy, onRemovePolicy, onDelete }) 
                                         </button>
                                         <button className="p-1 border border-gray-300 rounded-md shadow-sm text-red-600 hover:text-red-900 hover:bg-gray-50 focus:outline-none ">
                                             <Tooltip title='Delete record'>
-                                                <Delete onClick={() => onDelete(company._id)} />
+                                                <Delete onClick={() => onDelete(company?._id)} />
                                             </Tooltip>
                                         </button>
                                     </div>
@@ -160,7 +148,7 @@ const CompanyTable = ({ companiesData, onAddPolicy, onRemovePolicy, onDelete }) 
                 </table>
 
                 {selectedPolicy && (
-                    <PolicyModal
+                    <CompanyPolicyModal
                         policyData={selectedPolicy}
                         onClose={() => setSelectedPolicy(null)}
                         onRemovePolicy={onRemovePolicy}

@@ -24,9 +24,14 @@ const clientPolicySchema = new mongoose.Schema({
         default: 'Interested',
         required: true,
     },
-    // availablePolicies: {
-    //     type: mongoose.Schema.Types.Mixed,
-    // }
+    assignedBy: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'Client',
+    },
+    policyCertificateURL: {
+        type: String,
+        default: '',
+    }
 }, { timestamps: true });
 
 clientPolicySchema.post('save', async function (document, next) {

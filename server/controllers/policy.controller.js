@@ -8,7 +8,7 @@ const createPolicy = async (req, res) => {
         res.status(200).json(newPolicy);
     } catch (error) {
         console.log(error);
-        res.status(503).json({ message: 'Network error. Try agin' });
+        res.status(503).json({ message: 'Network error. Try again' });
     }
 }
 // working
@@ -18,7 +18,7 @@ const fetchAllPolicies = async (req, res) => {
         res.status(200).json(policies);
     } catch (error) {
         console.log(error);
-        res.status(503).json({ message: 'Network error. Try agin' });
+        res.status(503).json({ message: 'Network error. Try again' });
     }
 }
 // working
@@ -29,7 +29,7 @@ const fetchAllPolicyFields = async (req, res) => {
         res.status(200).json(policy);
     } catch (error) {
         console.log(error);
-        res.status(503).json({ message: 'Network error. Try agin' });
+        res.status(503).json({ message: 'Network error. Try again' });
     }
 }
 // working

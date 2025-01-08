@@ -26,9 +26,11 @@ export const fetchAllPolicies = () => API.get('/policy/fetchAll');
 export const fetchAllPolicyFields = (policyId) => API.get('/policy/fetchAllFields', { params: policyId });
 export const fetchEveryPolicyId = () => API.get('/policy/fetchEveryPolicyId');
 
-// AssignedPolicy
+// ClientPolicy
 export const assignPolicy = (clientPolicyData) => API.post('/clientPolicy/assign', clientPolicyData);
 export const fetchAllUnassignedPolicies = () => API.get('/clientPolicy/fecthAllUnassigned');
+export const fetchAllAssignedPolicies = () => API.get('/clientPolicy/fecthAllAssigned');
+export const countAllAssignedPolicies = () => API.get('/clientPolicy/countAllAssigned');
 export const addAssignPolicy = (clientPolicyId) => API.get('/clientPolicy/addAssign', { params: clientPolicyId });
 export const addAvailableCompanyPolicies = (formData) => API.post('/clientPolicy/addAvailableCompany', formData);
 

@@ -4,6 +4,7 @@ import { ClientContext } from '../../contexts/Client.context';
 import { addEmployee, fetchAllEmployees, removeEmployeeAccess } from '../../api';
 import EmployeeTable from './employees/EmployeeTable';
 import EmployeeForm from './employees/EmployeeForm';
+import { Button } from '@mui/material';
 
 const EmployeeManagement = () => {
     const [showForm, setShowForm] = useState(false);
@@ -49,15 +50,15 @@ const EmployeeManagement = () => {
         <div>
             <div className="flex justify-between items-center mb-6">
                 <h1 className="text-2xl font-bold text-gray-800">Employee Management</h1>
-                {condenseClientInfo.role === 'superAdmin'
+                {condenseClientInfo.role === 'superadmin'
                     &&
-                    <button
+                    <Button
                         onClick={() => setShowForm(true)}
-                        className="bg-blue-600 text-white px-4 py-2 rounded-lg flex items-center gap-2 hover:bg-blue-700"
+                        className="!text-white !bg-gray-900 hover:opacity-95"
                     >
                         <Add />
                         Add New Employee
-                    </button>
+                    </Button>
                 }
             </div>
 

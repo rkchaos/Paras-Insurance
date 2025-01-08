@@ -2,6 +2,7 @@
 import Company from "../models/company.model.js";
 import AssignedPolicy from "../models/clientPolicy.model.js";
 
+// working FIXME: add validation
 const createCompany = async (req, res) => {
     try {
         const company = new Company(req.body);
@@ -9,20 +10,20 @@ const createCompany = async (req, res) => {
         res.status(201).json(company);
     } catch (error) {
         console.log(error);
-        res.status(503).json({ message: 'Network error. Try agin' });
+        res.status(503).json({ message: 'Network error. Try again' });
     }
 }
-
+// working
 const fetchAllCompanies = async (req, res) => {
     try {
         const companies = await Company.find();
         res.status(200).json(companies);
     } catch (error) {
         console.log(error);
-        res.status(503).json({ message: 'Network error. Try agin' });
+        res.status(503).json({ message: 'Network error. Try again' });
     }
 }
-
+// 
 const updateCompany = async (req, res) => {
     try {
         const updatedCompany = await Company.findByIdAndUpdate(req.params.id, req.body, { new: true });
@@ -30,10 +31,10 @@ const updateCompany = async (req, res) => {
         res.status(200).json(updatedCompany);
     } catch (error) {
         console.log(error);
-        res.status(503).json({ message: 'Network error. Try agin' });
+        res.status(503).json({ message: 'Network error. Try again' });
     }
 }
-
+// working
 const deleteCompany = async (req, res) => {
     try {
         const { companyId } = req.query;
@@ -44,10 +45,10 @@ const deleteCompany = async (req, res) => {
         res.status(200).json(deletedCompany);
     } catch (error) {
         console.log(error);
-        res.status(503).json({ message: 'Network error. Try agin' });
+        res.status(503).json({ message: 'Network error. Try again' });
     }
 }
-
+// working FIXME: add validation
 const addCompanyPolicy = async (req, res) => {
     try {
         const { companyId, policyData } = req.body;
@@ -55,15 +56,15 @@ const addCompanyPolicy = async (req, res) => {
 
         if (!company) return res.status(404).json({ message: 'Company not found' });
 
-        company.policies.push(policyData);
+        company.companyPoliciesProvided.push(policyData);
         await company.save();
         res.status(201).json(company);
     } catch (error) {
         console.log(error);
-        res.status(503).json({ message: 'Network error. Try agin' });
+        res.status(503).json({ message: 'Network error. Try again' });
     }
 }
-
+// working
 const removeCompanyPolicy = async (req, res) => {
     try {
         const { companyId, policyId } = req.query;
@@ -71,21 +72,20 @@ const removeCompanyPolicy = async (req, res) => {
 
         if (!company) return res.status(404).json({ message: 'Company not found' });
 
-        const policyIndex = company.policies.findIndex(policy => policy._id.toString() === policyId);
+        const policyIndex = company.companyPoliciesProvided.findIndex(policy => policy._id.toString() === policyId);
 
-        if (policyIndex === -1) {
-            return res.status(404).json({ message: 'Policy not found' });
-        }
-        company.policies.splice(policyIndex, 1);
+        if (policyIndex === -1) return res.status(404).json({ message: 'Policy not found' });
+
+        company.companyPoliciesProvided.splice(policyIndex, 1);
 
         await company.save();
         res.status(200).json(company);
     } catch (error) {
         console.log(error);
-        res.status(503).json({ message: 'Network error. Try agin' });
+        res.status(503).json({ message: 'Network error. Try again' });
     }
 }
-
+// obsolete
 const fetchCompanyPoliciesByType = async (req, res) => {
     try {
         const { policyType } = req.query;
@@ -123,10 +123,10 @@ const fetchCompanyPoliciesByType = async (req, res) => {
         res.status(200).json(policies);
     } catch (error) {
         console.log(error);
-        res.status(503).json({ message: 'Network error. Try agin' });
+        res.status(503).json({ message: 'Network error. Try again' });
     }
 }
-
+// obsolete
 const sendCompanyPolicies = async (req, res) => {
     try {
         const { clientPolicyId, companyPolicies } = req.body;
@@ -140,7 +140,7 @@ const sendCompanyPolicies = async (req, res) => {
         res.sendStatus(200);
     } catch (error) {
         console.log(error);
-        res.status(503).json({ message: 'Network error. Try agin' });
+        res.status(503).json({ message: 'Network error. Try again' });
     }
 }
 

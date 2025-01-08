@@ -33,7 +33,7 @@ const AdminPanel = () => {
     };
 
     return (
-        <div className='flex h-screen bg-gray-100'>
+        <div className='flex h-[100%] bg-gray-100'>
             <Sidebar
                 isCollapsed={isCollapsed} toggleSidebar={toggleSidebar}
                 activeSection={activeSection} setActiveSection={setActiveSection}

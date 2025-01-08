@@ -47,8 +47,12 @@ const GeneralInsurance = () => {
 
     const [isUpdateProfileOpen, setIsUpdateProfileOpen] = useState(false);
     const closeUpdateProfile = () => { }
-    const handleGeneralInsurance = () => {
-        // TODO: SIP table me add kardo
+    const handleGeneralInsurance = async (formData, removedFiles, files, currentPolicyId) => {
+        // TODO: General Insurance table me add kardo
+        console.log(formData);
+        console.log(removedFiles);
+        console.log(files);
+        console.log(currentPolicyId);
     }
 
     tailChase.register();
@@ -83,7 +87,14 @@ const GeneralInsurance = () => {
                             <p className='text-3xl font-semibold text-gray-900'>No client found</p>
                         </div>
                         :
-                        <div className='h-[100vh]'>
+                        <div className='h-[100vh] relative bg-white overflow-hidden'>
+                            <div className="absolute inset-0">
+                                <div className="absolute inset-0 bg-[#111827]"></div>
+                                <div
+                                    className="absolute inset-0 bg-white"
+                                    style={{ clipPath: 'polygon(0 65%, 100% 35%, 100% 100%, 0% 100%)' }}
+                                />
+                            </div>
                         </div>
             }
             <Footer />
@@ -94,6 +105,7 @@ const GeneralInsurance = () => {
                     isNotClosable={true}
                     onSubmit={handleGeneralInsurance}
                     label='General Insurance'
+                    includePolicyType={true}
                 />
             }
         </div>

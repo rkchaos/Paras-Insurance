@@ -7,8 +7,6 @@ const policyProviedSchema = new mongoose.Schema({
     },
     policyType: {
         type: String,
-        enum: ['Life', 'Health', 'Home', 'Travel', 'Vehicle', 'General'],
-        default: 'Life',
         required: true,
     },
     policyDescription: {
@@ -34,6 +32,20 @@ const policyProviedSchema = new mongoose.Schema({
     premiumAmount: {
         type: Number,
         required: true,
+    },
+    contactPerson: {
+        name: {
+            type: String,
+            required: true
+        },
+        phone: {
+            type: String,
+            required: true
+        },
+        email: {
+            type: String,
+            required: true
+        }
     }
 });
 
@@ -48,37 +60,27 @@ const companySchema = new mongoose.Schema({
         default: 'Corporate',
         required: true,
     },
-    companyDescription: {
-        type: String,
-    },
     companyStatus: {
         type: String,
         enum: ['Active', 'Inactive'],
         default: 'Active',
         required: true,
     },
-    contactInfo: {
-        contactPerson: {
-            type: String,
-            required: true
-        },
-        phone: {
-            type: String,
-            required: true
-        },
-        email: {
-            type: String,
-            required: true
-        },
-        website: {
-            type: String,
-        }
+    companyDescription: {
+        type: String,
     },
-    address: {
+    companyRegistrationNo: {
         type: String,
         required: true
     },
-    policiesProvided: [policyProviedSchema]
+    companyWebsite: {
+        type: String,
+    },
+    companyAddress: {
+        type: String,
+        required: true
+    },
+    companyPoliciesProvided: [policyProviedSchema]
 }, { timestamps: true });
 
 const Company = mongoose.model('Company', companySchema);

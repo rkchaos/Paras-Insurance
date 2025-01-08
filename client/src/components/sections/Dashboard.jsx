@@ -1,13 +1,13 @@
 import { useEffect, useState } from 'react';
 import { Tooltip } from '@mui/material';
-// import { Add } from '@mui/icons-material';
+// importing api end-points
 import { addAssignPolicy, fetchAllUnassignedPolicies, fetchCompanyPoliciesByType, sendCompanyPolicies } from '../../api';
+// importing components
 import DashboardTable from './dashboard/DashboardTable';
 import PolicyModal from './dashboard/PoliciesModal';
 
 const Dashboard = () => {
     const [unassignedPolicies, setUnassignedPolicies] = useState([]);
-
     const getAllUnassignedPolicies = async () => {
         try {
             const { data } = await fetchAllUnassignedPolicies();
@@ -21,7 +21,6 @@ const Dashboard = () => {
         getAllUnassignedPolicies();
     }, []);
 
-    // const [currentPolicyId, setCurrentPolicyId] = useState('');
     const [currentAssignedPolicyId, setCurrentAssignedPolicyId] = useState('');
 
     const [isModalOpen, setIsModalOpen] = useState(false);
@@ -70,14 +69,6 @@ const Dashboard = () => {
                         onClick={getAllUnassignedPolicies}
                     />
                 </Tooltip>
-                {/* 
-                <button
-                    className="bg-blue-600 text-white px-4 py-2 rounded-lg flex items-center gap-2 hover:bg-blue-700"
-                >
-                    <Add />
-                    Assign New Policy
-                </button> 
-                */}
             </div>
 
             <div className="bg-white rounded-lg shadow">

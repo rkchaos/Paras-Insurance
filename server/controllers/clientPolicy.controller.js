@@ -110,7 +110,7 @@ const clientPolicyWithClientId = async (res, { policyId, clientId, data, clientD
 
     addAdditionalClientData(clientId, data);
 
-    // send mail to all companies
+    // TODO: send mail to all companies
 
     const { accessToken, refreshToken } = await generateAccessAndRefreshTokens(clientData);
     const clientInfo = await condenseClientInfo(clientData);
@@ -127,11 +127,12 @@ const clientPolicyWithClientId = async (res, { policyId, clientId, data, clientD
         .json({ clientInfo, newClientPolicy });
 }
 
-// if logged in; if not logged in (has account; no account)
+// TODO: if logged in; if not logged in (has account; no account); repeat this for SIP and General Insurance
 const createClientPolicy = async (req, res) => {
     try {
         console.log(req.body);
         const { policyId, clientId, password, formData } = req.body;
+        // this will not be executed for now
         if (!clientId && password) {
             let newClientId;
             const { firstName, lastName, phone, email } = formData;
@@ -200,14 +201,14 @@ const createClientPolicy = async (req, res) => {
         }
     } catch (error) {
         console.log(error);
-        res.status(503).json({ message: 'Network error. Try agin' });
+        res.status(503).json({ message: 'Network error. Try again' });
     }
 }
-
+// working
 const fecthAllUnassignedPolicies = async (req, res) => {
     try {
         const unassignedPolicies = await ClientPolicy.aggregate([
-            { $match: { stage: 1, } },
+            { $match: { stage: 'Interested', } },
             {
                 $lookup: {
                     from: "clients",
@@ -216,9 +217,7 @@ const fecthAllUnassignedPolicies = async (req, res) => {
                     as: "clientData"
                 }
             },
-            {
-                $unwind: "$clientData",
-            },
+            { $unwind: "$clientData" },
             {
                 $lookup: {
                     from: "policies",
@@ -227,34 +226,28 @@ const fecthAllUnassignedPolicies = async (req, res) => {
                     as: "policyData"
                 }
             },
-            {
-                $unwind: "$policyData",
-            },
+            { $unwind: "$policyData" },
             {
                 $project: {
-                    _id: 1,
-                    clientId: 1,
-                    policyId: 1,
                     data: 1,
                     stage: 1,
-                    availablePolicies: 1,
-                    createdAt: 1,
-                    updatedAt: 1,
                     clientDetails: {
                         firstName: "$clientData.personalDetails.firstName",
                         lastName: "$clientData.personalDetails.lastName",
+                        email: "$clientData.personalDetails.contact.email",
+                        phone: "$clientData.personalDetails.contact.phone",
                         dob: "$clientData.personalDetails.dob",
                         gender: "$clientData.personalDetails.gender",
-                        city: "$clientData.personalDetails.address.city",
-                        email: "$clientData.personalDetails.contact.email",
-                        phone: "$clientData.personalDetails.contact.phone"
                     },
-                    policyDetails: {
+                    format: {
                         policyName: "$policyData.policyName",
                         policyType: "$policyData.policyType",
+                        policyIcon: "$policyData.policyIcon",
                         policyDescription: "$policyData.policyDescription",
                         policyForm: "$policyData.form"
-                    }
+                    },
+                    createdAt: 1,
+                    updatedAt: 1,
                 }
             }
         ]);
@@ -262,14 +255,79 @@ const fecthAllUnassignedPolicies = async (req, res) => {
         res.status(200).json(unassignedPolicies);
     } catch (error) {
         console.log(error);
-        res.status(503).json({ message: 'Network error. Try agin' });
+        res.status(503).json({ message: 'Network error. Try again' });
+    }
+}
+// working TODO: assigned by info
+const fecthAllAssignedPolicies = async (req, res) => {
+    try {
+        const assignedPolicies = await ClientPolicy.aggregate([
+            { $match: { stage: 'Assigned', } },
+            {
+                $lookup: {
+                    from: "clients",
+                    localField: "clientId",
+                    foreignField: "_id",
+                    as: "clientData"
+                }
+            },
+            { $unwind: "$clientData" },
+            {
+                $lookup: {
+                    from: "policies",
+                    localField: "policyId",
+                    foreignField: "_id",
+                    as: "policyData"
+                }
+            },
+            { $unwind: "$policyData" },
+            {
+                $project: {
+                    data: 1,
+                    stage: 1,
+                    clientDetails: {
+                        firstName: "$clientData.personalDetails.firstName",
+                        lastName: "$clientData.personalDetails.lastName",
+                        email: "$clientData.personalDetails.contact.email",
+                        phone: "$clientData.personalDetails.contact.phone",
+                        dob: "$clientData.personalDetails.dob",
+                        gender: "$clientData.personalDetails.gender",
+                    },
+                    format: {
+                        policyName: "$policyData.policyName",
+                        policyType: "$policyData.policyType",
+                        policyIcon: "$policyData.policyIcon",
+                        policyDescription: "$policyData.policyDescription",
+                        policyForm: "$policyData.form"
+                    },
+                    createdAt: 1,
+                    updatedAt: 1,
+                }
+            }
+        ]);
+
+        res.status(200).json(assignedPolicies);
+    } catch (error) {
+        console.log(error);
+        res.status(503).json({ message: 'Network error. Try again' });
+    }
+}
+// working
+const countAllAssignedPolicies = async (req, res) => {
+    try {
+        const clientPolicies = await ClientPolicy.find({ stage: 'Assigned' });
+        const count = clientPolicies.length;
+        res.status(200).json(count)
+    } catch (error) {
+        console.log(error);
+        res.status(503).json({ message: 'Network error. Try again' });
     }
 }
 
 const assignPolicy = async (req, res) => {
     try {
         const { clientPolicyId } = req.query;
-        const clientPolicy = await ClientPolicy.findByIdAndUpdate(clientPolicyId, { $set: { stage: 2 } }, { new: true });
+        const clientPolicy = await ClientPolicy.findByIdAndUpdate(clientPolicyId, { $set: { stage: 'Assigned' } }, { new: true });
         const policy = await Policy.findById(clientPolicy.policyId);
         await Client.findByIdAndUpdate(
             clientPolicy.clientId,
@@ -282,14 +340,14 @@ const assignPolicy = async (req, res) => {
                 },
                 $set: {
                     userType: 'Client',
-                    // "policies.$[elem].interestedIn": false,
                 }
             }
         )
+        // upload policy certificate and assignedBy
         res.sendStatus(200);
     } catch (error) {
         console.log(error);
-        res.status(503).json({ message: 'Network error. Try agin' });
+        res.status(503).json({ message: 'Network error. Try again' });
     }
 }
 
@@ -317,13 +375,15 @@ const addAvailableCompanyPolicies = async (req, res) => {
         res.sendStatus(200);
     } catch (error) {
         console.log(error);
-        res.status(503).json({ message: 'Network error. Try agin' });
+        res.status(503).json({ message: 'Network error. Try again' });
     }
 }
 
 export {
     createClientPolicy,
     fecthAllUnassignedPolicies,
+    fecthAllAssignedPolicies,
+    countAllAssignedPolicies,
     assignPolicy,
     addAvailableCompanyPolicies
 };

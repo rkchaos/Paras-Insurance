@@ -1,48 +1,35 @@
 import { useMemo, useState } from 'react';
 import { Checkbox, Tooltip } from '@mui/material';
-import { DoneAllOutlined, FilterAltOutlined, PostAddOutlined, SearchOutlined, Upload, Visibility } from '@mui/icons-material';
+import { DoneAllOutlined, OpenInNew, PostAddOutlined, SearchOutlined, Upload, Visibility } from '@mui/icons-material';
 import Spreadsheet from "react-spreadsheet";
 import * as XLSX from 'xlsx';
+// importing api end-points
 import { addAvailableCompanyPolicies } from '../../../api';
+// importing components
 import { ScrollArea } from '../../subcomponents/ScrollArea';
+import PolicyDetailModal from '../../subcomponents/PolicyDetailModal';
+// importing helper functions
+import { toFormattedDate } from '../../../utils/helperFunctions';
 
 const DashboardTable = ({ unassignedPolicies, onSendCompanyPolicies, onAssignPolicy, reload }) => {
-    console.log(unassignedPolicies);
     const [searchTerm, setSearchTerm] = useState('');
-    const [filterGender, setFilterGender] = useState('ALL');
     const [currentPage, setCurrentPage] = useState(1);
-    const [selectedPolicy, setSelectedPolicy] = useState(null);
     const itemsPerPage = 10;
 
     const nextPage = () => {
         setCurrentPage(prev => Math.min(prev + 1, totalPages));
     };
-
     const prevPage = () => {
         setCurrentPage(prev => Math.max(prev - 1, 1));
     };
 
-    const [anchorEl, setAnchorEl] = useState(null);
-    const open = Boolean(anchorEl);
-    const handleClick = (event) => {
-        setAnchorEl(event.currentTarget);
-    };
-    const handleClose = () => {
-        setAnchorEl(null);
-    };
-
     const handleUploadExcel = () => {
-        // console.log(document.getElementById(`${policyId}FileInput`));
         document.getElementById(`excelUpload`)?.click();
-        handleClose();
     }
 
     const [excelData, setData] = useState([]);
     const handleFileUpload = (event) => {
-        console.log('yay');
-
         const file = event.target.files[0];
-        console.log(file);
         const reader = new FileReader();
 
         reader.onload = (event) => {
@@ -51,16 +38,14 @@ const DashboardTable = ({ unassignedPolicies, onSendCompanyPolicies, onAssignPol
             const sheet = workbook.Sheets[sheetName];
 
             const sheetData = XLSX.utils.sheet_to_json(sheet, { header: 1, defval: '' });
-
-            // Transform the sheetData into the desired structure
             const formattedData = sheetData.map((row) =>
                 row.map((cell) => ({
-                    value: cell || '', // Ensure empty cells are explicitly '<empty>'
+                    value: cell || '',
                     readOnly: true
                 }))
             );
 
-            setData(formattedData); // Set the transformed excelData
+            setData(formattedData);
         };
         reader.readAsBinaryString(file);
         document.getElementById(`excelUploadFileName`).textContent = file.name
@@ -77,9 +62,6 @@ const DashboardTable = ({ unassignedPolicies, onSendCompanyPolicies, onAssignPol
         setData([]);
     }
     const handleSendExcel = async () => {
-        console.log(policyIdForExcel)
-        // excelData
-        console.log(excelData);
         try {
             const { data, status } = await addAvailableCompanyPolicies({ policyIdForExcel, excelData });
             if (status === 200) {
@@ -92,52 +74,28 @@ const DashboardTable = ({ unassignedPolicies, onSendCompanyPolicies, onAssignPol
     }
 
     const filteredUnassignedPolicies = useMemo(() => {
-        return unassignedPolicies.filter(unclientPolicy => {
+        return unassignedPolicies.filter(unassignedPolicy => {
             const searchMatch =
-                unclientPolicy.clientDetails.firstName.toLowerCase().includes(searchTerm.toLowerCase()) ||
-                unclientPolicy.clientDetails.lastName.toLowerCase().includes(searchTerm.toLowerCase()) ||
-                unclientPolicy.clientDetails.email.toLowerCase().includes(searchTerm.toLowerCase()) ||
-                unclientPolicy.clientDetails.phone.includes(searchTerm);
-
-            const genderMatch = filterGender === 'ALL' || unclientPolicy.clientDetails.gender?.toLowerCase() === filterGender.toLowerCase();
+                unassignedPolicy.clientDetails.firstName.toLowerCase().includes(searchTerm.toLowerCase()) ||
+                unassignedPolicy.clientDetails.lastName.toLowerCase().includes(searchTerm.toLowerCase()) ||
+                unassignedPolicy.clientDetails.email.toLowerCase().includes(searchTerm.toLowerCase()) ||
+                unassignedPolicy.clientDetails.phone.includes(searchTerm);
 
             let policyMatch = true;
-            return searchMatch && genderMatch && policyMatch;
+            return searchMatch && policyMatch;
         });
-    }, [searchTerm, filterGender, unassignedPolicies]);
+    }, [searchTerm, unassignedPolicies]);
 
     const totalPages = Math.ceil(filteredUnassignedPolicies.length / itemsPerPage);
     const indexOfLastClient = currentPage * itemsPerPage;
     const indexOfFirstClient = indexOfLastClient - itemsPerPage;
     const currentUnassignedPolicies = filteredUnassignedPolicies.slice(indexOfFirstClient, indexOfLastClient);
 
-    const handleViewDetails = (policy) => {
-        setSelectedPolicy(policy);
-    };
-
-    const closeModal = () => {
-        setSelectedPolicy(null);
-    };
-
-    const repeatedFields = (n, field) => {
-        // need to add default values in policies
-        const elements = [];
-        for (let index = 0; index < n; index++) {
-            elements.push(
-                ...Object.entries(field.children).map(([key, childField]) => {
-                    if (selectedPolicy.data[`${index + 1}${childField.name}`] == null || selectedPolicy.data[`${index + 1}${childField.name}`] == '' || selectedPolicy.data[`${index + 1}${childField.name}`] == 'Self') {
-                        return null;
-                    } else {
-                        return (
-                            <p className='ml-4' key={`${index}-${key}`}>
-                                <strong>{childField.label}</strong>: {selectedPolicy.data[`${index + 1}${childField.name}`]}
-                            </p>
-                        );
-                    }
-                })
-            );
-        }
-        return elements;
+    const [isPolicySelected, setIsPolicySelected] = useState(false);
+    const [selectedPolicy, setSelectedPolicy] = useState(null);
+    const handleSelectPolicy = (policyData) => {
+        setSelectedPolicy(policyData);
+        setIsPolicySelected(true);
     };
 
     return (
@@ -146,27 +104,16 @@ const DashboardTable = ({ unassignedPolicies, onSendCompanyPolicies, onAssignPol
                 <div className="flex items-center space-x-2">
                     <input
                         type="text" placeholder="Search by name, email, or phone..."
-                        value={searchTerm} onChange={(e) => setSearchTerm(e.target.value)}
+                        value={searchTerm} onChange={(event) => setSearchTerm(event.target.value)}
                         className="px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500"
                     />
                     <button className="p-2 border border-gray-300 rounded-md shadow-sm hover:bg-gray-50 focus:outline-none ">
                         <SearchOutlined className="h-4 w-4" />
                     </button>
                 </div>
-                <div className="flex items-center space-x-2">
-                    <select
-                        value={filterGender} onChange={(e) => setFilterGender(e.target.value)}
-                        className="px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500"
-                    >
-                        <option value="ALL">All Genders</option>
-                        <option value="MALE">Male</option>
-                        <option value="FEMALE">Female</option>
-                    </select>
-                    <FilterAltOutlined className="h-4 w-4" />
-                </div>
             </div>
             <div className="overflow-x-auto">
-                <table className="min-w-full divide-y divide-gray-200">
+                <table className="min-w-full divide-y divide-gray-200 whitespace-nowrap">
                     <thead className="bg-gray-50">
                         <tr>
                             <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
@@ -185,7 +132,7 @@ const DashboardTable = ({ unassignedPolicies, onSendCompanyPolicies, onAssignPol
                                 Client Email
                             </th>
                             <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                                Gender
+                                Assigned On
                             </th>
                             <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                                 Details
@@ -194,7 +141,7 @@ const DashboardTable = ({ unassignedPolicies, onSendCompanyPolicies, onAssignPol
                                 Resolve
                             </th>
                             <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                                Assigned
+                                Assign
                             </th>
                         </tr>
                     </thead>
@@ -202,13 +149,18 @@ const DashboardTable = ({ unassignedPolicies, onSendCompanyPolicies, onAssignPol
                         {currentUnassignedPolicies.map((policy, index) => (
                             <tr key={index}>
                                 <td className="px-6 py-4 whitespace-nowrap">
-                                    <div className="text-sm font-medium text-gray-900">{policy.policyDetails.policyName}</div>
+                                    <div className="text-sm font-medium text-gray-900">{policy?.format?.policyName}</div>
                                 </td>
                                 <td className="px-6 py-4 whitespace-nowrap">
-                                    <div className="text-sm text-gray-500">{policy.policyDetails.policyType}</div>
+                                    <div className="text-sm text-gray-500">{policy?.format?.policyType}</div>
                                 </td>
                                 <td className="px-6 py-4 whitespace-nowrap">
-                                    <div className="text-sm text-gray-500">{policy.clientDetails.firstName} {policy.clientDetails.lastName}</div>
+                                    <a href={`/profile/${policy?.clientId}`} target='_blank' className="flex gap-1 !items-center text-sm text-gray-500 cursor-pointer hover:underline">
+                                        {policy.clientDetails.firstName} {policy.clientDetails.lastName}
+                                        <Tooltip title='View profile'>
+                                            <OpenInNew className='!size-4' />
+                                        </Tooltip>
+                                    </a>
                                 </td>
                                 <td className="px-6 py-4 whitespace-nowrap">
                                     <div className="text-sm text-gray-500">{policy.clientDetails.phone}</div>
@@ -217,43 +169,23 @@ const DashboardTable = ({ unassignedPolicies, onSendCompanyPolicies, onAssignPol
                                     <div className="text-sm text-gray-500">{policy.clientDetails.email}</div>
                                 </td>
                                 <td className="px-6 py-4 whitespace-nowrap">
-                                    <span className={`px-2 inline-flex text-xs leading-5 font-semibold rounded-full ${policy.clientDetails.gender?.toLowerCase() === 'male'
-                                        ? 'bg-green-100 text-blue-800'
-                                        : policy.clientDetails.gender?.toLowerCase() === 'female' ? 'bg-red-100 text-pink-800' : 'bg-yellow-100 text-yellow-800'
-                                        }`}>
-                                        {policy.clientDetails.gender?.toLowerCase() === 'male' ? 'Male' : policy.clientDetails.gender?.toLowerCase() === 'female' ? 'Female' : '-'}
-                                    </span>
+                                    <div className="text-sm text-gray-500">{toFormattedDate(policy.createdAt)}</div>
                                 </td>
                                 <td className="px-6 py-4 whitespace-nowrap text-sm text-center">
                                     <button className="text-blue-600 hover:text-blue-900">
                                         <Tooltip title='View policy details'>
-                                            <Visibility onClick={() => handleViewDetails(policy)} />
+                                            <Visibility onClick={() => handleSelectPolicy(policy)} />
                                         </Tooltip>
                                     </button>
                                 </td>
                                 <td className="px-6 py-4 whitespace-nowrap text-sm text-center">
-                                    {/* <button className="text-green-600 hover:text-green-900 !ml-4">
-                                            <Tooltip title='Enter quotation'>
-                                            <PostAddOutlined  onClick={() => onSendCompanyPolicies(policy)} />
-                                            </Tooltip>
-                                            </button> */}
                                     <div className='flex items-center justify-start'>
-                                        {/* <Button
-                                                id="basic-button"
-                                                aria-controls={open ? 'basic-menu' : undefined}
-                                                aria-haspopup="true"
-                                                aria-expanded={open ? 'true' : undefined}
-                                                onClick={handleClick}
-                                                >
-                                                Dashboard
-                                                </Button> */}
                                         <p id={`${policy._id}UploadedFile`}></p>
                                         <button className="flex relative text-green-600 hover:text-green-900">
                                             <Tooltip title='Enter quotation' >
                                                 <PostAddOutlined onClick={() => handleExcelModalOpen(policy._id)} />
                                             </Tooltip>
-                                            {
-                                                policy.availablePolicies !== undefined && policy.availablePolicies?.length !== 0 &&
+                                            {policy.availablePolicies !== undefined && policy.availablePolicies?.length !== 0 &&
                                                 <div className='absolute left-6'>
                                                     <Tooltip title='Policies Sent'>
                                                         {console.log(policy.availablePolicies)}
@@ -262,33 +194,7 @@ const DashboardTable = ({ unassignedPolicies, onSendCompanyPolicies, onAssignPol
                                                 </div>
                                             }
                                         </button>
-                                        {/* <Menu
-                                            id="basic-menu"
-                                            anchorEl={anchorEl}
-                                            open={open}
-                                            onClose={handleClose}
-                                            anchorOrigin={{
-                                                vertical: 'bottom',
-                                                horizontal: 'right',
-                                            }}
-                                            transformOrigin={{
-                                                vertical: 'top',
-                                                horizontal: 'right',
-                                            }}
-                                            MenuListProps={{
-                                                'aria-labelledby': 'basic-button',
-                                            }}
-                                        >
-                                            <MenuItem onClick={handleClose}>Enter details</MenuItem>
-                                            <MenuItem onClick={() => handleUploadExcel(policy._id)}>Upload Excel</MenuItem>
-                                        </Menu>
-                                        <input id={`${policy._id}FileInput`} type="file" accept='.xlsx,.xls,.csv' multiple={false} onChange={() => handleFileUpload(event, policy._id)} className='opacity-0 absolute left-0 pointer-events-none' /> */}
                                     </div>
-                                    {/* <button className="text-green-600 hover:text-green-900">
-                                            <Tooltip title='Send company policies to user'>
-                                                <Send onClick={() => onSendCompanyPolicies(policy)} />
-                                            </Tooltip>
-                                        </button> */}
                                 </td>
                                 <td className="px-6 py-4 whitespace-nowrap text-sm text-center">
                                     <button className="text-green-600 hover:text-green-900">
@@ -324,44 +230,6 @@ const DashboardTable = ({ unassignedPolicies, onSendCompanyPolicies, onAssignPol
                     </div>
                 </div>
 
-                {selectedPolicy && (
-                    <div className="fixed inset-0 bg-gray-600 bg-opacity-50 overflow-y-auto h-full w-full">
-                        <div className="relative top-20 mx-auto p-5 border w-96 shadow-lg rounded-md bg-white">
-                            <div className="mt-3">
-                                <h3 className="text-xl leading-6 font-bold text-gray-900">Policy Details</h3>
-                                <div className="mt-2 px-7 py-3">
-                                    <p><strong>Policy Name:</strong> {selectedPolicy.policyDetails.policyName}</p>
-                                    <p><strong>Policy Type:</strong> {selectedPolicy.policyDetails.policyType}</p>
-                                    <h2 className='text-xl font-semibold my-2'>Applicant Information</h2>
-                                    <p className='ml-4'><strong>Client Name</strong>: {selectedPolicy.clientDetails['firstName']} {selectedPolicy.clientDetails['lastName']}</p>
-                                    <p className='ml-4'><strong>Email</strong>: {selectedPolicy.clientDetails['email']}</p>
-                                    <p className='ml-4'><strong>Phone</strong>: {selectedPolicy.clientDetails['phone']}</p>
-                                    {Object.entries(selectedPolicy.policyDetails.policyForm.sections).map(([key, section]) => (
-                                        Object.entries(section.fields).map(([key, field]) => (
-                                            field.type === 'repeat' ?
-                                                <div>
-                                                    <h2 className='text-xl font-semibold my-2'>Dependents Information</h2>
-                                                    {repeatedFields(field.maxCount, field)}
-                                                </div>
-                                                :
-                                                <p className='ml-4' key={key}>
-                                                    <strong>{field.label}</strong>: {selectedPolicy.data[field.name]}
-                                                </p>
-                                        ))
-                                    ))}
-                                </div>
-                                <div className="items-center px-4 py-3">
-                                    <button
-                                        onClick={closeModal}
-                                        className="px-4 py-2 bg-blue-500 text-white text-base font-medium rounded-md w-full shadow-sm hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-300"
-                                    >
-                                        Close
-                                    </button>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                )}
                 {excelModal && (
                     <div className="fixed inset-0 bg-gray-600 bg-opacity-50 overflow-y-auto h-full w-full">
                         <div className="relative top-10 mx-auto p-5 border w-full lg:w-[50vw] shadow-lg rounded-md bg-white">
@@ -397,6 +265,12 @@ const DashboardTable = ({ unassignedPolicies, onSendCompanyPolicies, onAssignPol
                         </div>
                     </div>
                 )}
+                {isPolicySelected &&
+                    <PolicyDetailModal
+                        selectedPolicy={selectedPolicy}
+                        closeModal={() => setIsPolicySelected(false)}
+                    />
+                }
             </div>
         </div>
     );

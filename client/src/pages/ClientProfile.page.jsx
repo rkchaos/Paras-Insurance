@@ -20,7 +20,7 @@ const ClientProfile = () => {
     const { id } = useParams();
 
     const navigate = useNavigate();
-    const { setIsLoggedIn, condenseClientInfo, setCondenseClientInfo } = useContext(ClientContext);
+    const { setIsLoggedIn, setCondenseClientInfo } = useContext(ClientContext);
     const [isLoadingClientData, setIsLoadingClientData] = useState(true);
     const [isUnauthorisedAction, setIsUnauthorisedAction] = useState(false);
     const [isClientDataFound, setIsClientDataFound] = useState(true);
@@ -78,13 +78,12 @@ const ClientProfile = () => {
                 const { status, data } = await uploadProfileMedia({ ...files, clientId: clientData._id });
                 setClientData(data);
                 if (status === 200) {
-                    closeUpdateProfile();
+                    return false;
                 }
             }
         } catch (error) {
             const errorMessage = error?.response?.data?.message;
-            setError(errorMessage);
-            console.log(error);
+            return errorMessage;
         }
     }
 
@@ -241,16 +240,16 @@ const ClientProfile = () => {
                                                 <p className='border-2 rounded-lg px-2 py-1'>{clientData?.personalDetails?.nominee?.name}&nbsp;</p>
                                             </div>
                                             <div className='w-full'>
-                                                <h3 className="block text-sm font-medium text-gray-700 mb-1">City</h3>
+                                                <h3 className="block text-sm font-medium text-gray-700 mb-1">Nominee Phone</h3>
+                                                <p className='border-2 rounded-lg px-2 py-1'>+91-{clientData?.personalDetails?.nominee?.phone}&nbsp;</p>
+                                            </div>
+                                            <div className='w-full'>
+                                                <h3 className="block text-sm font-medium text-gray-700 mb-1">Nominee DoB</h3>
                                                 <p className='border-2 rounded-lg px-2 py-1'>{clientData?.personalDetails?.nominee?.dob}&nbsp;</p>
                                             </div>
                                             <div className='w-full'>
-                                                <h3 className="block text-sm font-medium text-gray-700 mb-1">State</h3>
+                                                <h3 className="block text-sm font-medium text-gray-700 mb-1">Relationship with Nominee</h3>
                                                 <p className='border-2 rounded-lg px-2 py-1'>{clientData?.personalDetails?.nominee?.relationship}&nbsp;</p>
-                                            </div>
-                                            <div className='w-full'>
-                                                <h3 className="block text-sm font-medium text-gray-700 mb-1">Country</h3>
-                                                <p className='border-2 rounded-lg px-2 py-1'>{clientData?.personalDetails?.nominee?.phone}&nbsp;</p>
                                             </div>
                                         </div>
                                     </AccordionDetails>
@@ -328,6 +327,7 @@ const ClientProfile = () => {
                                         <div className='flex justify-between gap-4 mb-2'>
                                             <div className='w-full'>
                                                 <h3 className="block text-sm font-medium text-gray-700 mb-1">Company Name</h3>
+                                                {console.log(clientData.employmentDetails)}
                                                 <p className='border-2 rounded-lg px-2 py-1'>{clientData?.employmentDetails?.companyName}&nbsp;</p>
                                             </div>
                                             <div className='w-full'>

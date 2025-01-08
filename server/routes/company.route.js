@@ -3,12 +3,17 @@ import { addCompanyPolicy, createCompany, deleteCompany, removeCompanyPolicy, fe
 
 const router = express.Router();
 
+// create
 router.post('/create', createCompany);
-router.get('/fetchAll', fetchAllCompanies);
-router.put('/update', updateCompany);
-router.delete('/delete', deleteCompany);
 router.post('/addPolicy', addCompanyPolicy);
+// read
+router.get('/fetchAll', fetchAllCompanies);
+// update
+router.put('/update', updateCompany);
+// delete
+router.delete('/delete', deleteCompany);
 router.delete('/removePolicy', removeCompanyPolicy);
+// misc
 router.get('/fetchPolicyByType', fetchCompanyPoliciesByType);
 router.put('/sendCompanyPolicies', sendCompanyPolicies);
 

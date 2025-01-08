@@ -70,7 +70,7 @@ const register = async (req, res) => {
             .json(clientInfo);
     } catch (error) {
         console.error(error);
-        res.status(503).json({ message: 'Network error. Try agin' });
+        res.status(503).json({ message: 'Network error. Try again' });
     }
 };
 // working
@@ -168,9 +168,7 @@ const fetchPoliciesData = async (req, res) => {
                     as: 'policyData'
                 }
             },
-            {
-                $unwind: '$policyData'
-            },
+            { $unwind: '$policyData' },
             {
                 $project: {
                     _id: 1,
@@ -234,12 +232,10 @@ const fetchAllClients = async (req, res) => {
         res.status(503).json({ message: 'Network error. Try again' })
     }
 };
-// 
+// I think this works TODO: check reliability
 const updateProfile = async (req, res) => {
     try {
-        console.log(req.body);
         const { formData, removedFiles } = req.body.formData;
-        // console.log(formData);
         const clientId = formData._id;
         const currentClientId = req.client._id;
         if (clientId !== currentClientId.toString()) {
@@ -248,7 +244,7 @@ const updateProfile = async (req, res) => {
             if (!isCurrentClientEmployee) return res.status(400).json({ message: 'Unauthorised action.' });
         }
 
-        const { personalDetails, financialDetails } = formData;
+        const { personalDetails, financialDetails, employmentDetails } = formData;
         if (
             !personalDetails?.firstName ||
             !personalDetails?.contact?.email ||
@@ -290,7 +286,7 @@ const updateProfile = async (req, res) => {
         // update in interaction history
         const updatedClient = await Client.findByIdAndUpdate(
             clientId,
-            { personalDetails, financialDetails },
+            { personalDetails, financialDetails, employmentDetails },
             { new: true, runValidators: true }
         );
 
@@ -308,6 +304,7 @@ const updateProfile = async (req, res) => {
         res.status(503).json({ message: 'Network error. Try again' })
     }
 };
+// I think this works TODO: check reliability
 const uploadProfileMedia = async (req, res) => {
     try {
         const { clientId } = req.body;
@@ -315,7 +312,7 @@ const uploadProfileMedia = async (req, res) => {
         console.log(filesArray);
         const client = await Client.findById(clientId);
         if (!client) return res.status(404).json({ message: 'Client not found.' });
-        
+
         for (let file of filesArray) {
             const fieldName = file.fieldname;
             if (fieldName === 'panCard') {

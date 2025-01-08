@@ -3,13 +3,6 @@ import jwt from 'jsonwebtoken';
 import mongoose from 'mongoose';
 const saltRounds = 10;
 
-// const policySchema = new mongoose.Schema({
-//     policyId: {
-//         type: mongoose.Schema.Types.ObjectId,
-//         ref: 'Policy',
-//     }
-// });
-
 const interactionSchema = new mongoose.Schema({
     type: {
         type: String,
@@ -197,10 +190,6 @@ const clientSchema = new mongoose.Schema({
         type: [interactionSchema],
         default: [],
     },
-    // policies: {
-    //     type: [policySchema],
-    //     default: [],
-    // },
     notes: {
         type: mongoose.Schema.Types.Array,
         default: [],
