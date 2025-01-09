@@ -34,12 +34,12 @@ const FileViewer = () => {
     const fileUrl = `${import.meta.env.VITE_BACKEND_URL}uploads/${filePath}`;
 
     return (
-        <div className="file-viewer">
+        <div className="file-viewer bg-gray-600 w-[100vw] h-[100vh] fixed inset-0 flex justify-center items-center !z-[1000]">
             <iframe
                 src={fileUrl}
                 title="File Viewer"
-                className="fixed top-0 left-0 h-full w-full border-0 z-50"
-            ></iframe>
+                className="h-full w-full"
+            />
         </div>
     );
 };

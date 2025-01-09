@@ -27,11 +27,17 @@ export const fetchAllPolicyFields = (policyId) => API.get('/policy/fetchAllField
 export const fetchEveryPolicyId = () => API.get('/policy/fetchEveryPolicyId');
 
 // ClientPolicy
-export const assignPolicy = (clientPolicyData) => API.post('/clientPolicy/assign', clientPolicyData);
+export const createClientPolicy = (clientPolicyData) => API.post('/clientPolicy/createClientPolicy', clientPolicyData);
+export const fetchClientPolicy = (clientPolicyId) => API.get('/clientPolicy/fetchClientPolicy', { params: clientPolicyId });
 export const fetchAllUnassignedPolicies = () => API.get('/clientPolicy/fecthAllUnassigned');
 export const fetchAllAssignedPolicies = () => API.get('/clientPolicy/fecthAllAssigned');
 export const countAllAssignedPolicies = () => API.get('/clientPolicy/countAllAssigned');
-export const addAssignPolicy = (clientPolicyId) => API.get('/clientPolicy/addAssign', { params: clientPolicyId });
+export const assignClientPolicy = (data) => API.post('/clientPolicy/assignClientPolicy', data);
+export const uploadClientPolicyMedia = (media) => API.post('/clientPolicy/uploadClientPolicyMedia', media, {
+    headers: {
+        "Content-Type": "multipart/form-data",
+    }
+});
 export const addAvailableCompanyPolicies = (formData) => API.post('/clientPolicy/addAvailableCompany', formData);
 
 // Employee
@@ -48,3 +54,25 @@ export const removeCompanyPolicy = (companyId, policyId) => API.delete('/company
 export const fetchCompanyPoliciesByType = (clientId, policyType) => API.get('/company/fetchPolicyByType', { params: { clientId, policyType } });
 export const sendCompanyPolicies = (formData) => API.put('/company/sendCompanyPolicies', formData);
 
+// Quotation
+export const createQuotation = (formData) => API.post('/quotation/create', { formData });
+
+// SIP
+export const createSip = (formData) => API.post('/sip/create', { formData });
+export const uploadSipMedia = (media) => API.post('/sip/uploadMedia', media, {
+    headers: {
+        "Content-Type": "multipart/form-data",
+    }
+});
+export const fetchAllSipsData = (clientId) => API.get('/sip/fetchAllData', { params: clientId });
+export const fetchAllSips = () => API.get('/sip/fetchAllSips');
+
+// SIP
+export const createGeneralInsurance = (formData) => API.post('/generalInsurance/create', { formData });
+export const uploadGeneralInsuranceMedia = (media) => API.post('/generalInsurance/uploadMedia', media, {
+    headers: {
+        "Content-Type": "multipart/form-data",
+    }
+});
+export const fetchAllGeneralInsurancesData = (clientId) => API.get('/generalInsurance/fetchAllData', { params: clientId });
+export const fetchAllGeneralInsurances = () => API.get('/generalInsurance/fetchAllGeneralInsurances');

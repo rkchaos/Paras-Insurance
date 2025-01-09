@@ -29,6 +29,7 @@ import Footer from './components/Footer';
 import SnackBar from './components/subcomponents/SnackBar';
 import ConfirmationDialog from './components/subcomponents/ConfirmationDialog';
 import ProtectedRoute from './utils/ProtectedRoute';
+import CompanyForm from './pages/CompanyForm.page';
 
 const App = () => {
     const { loading, condenseClientInfo } = useFetchClient();
@@ -92,6 +93,10 @@ const App = () => {
                 <Route
                     path='/resetPassword/:resetToken'
                     element={<div><ResetPassword /><Footer /></div>}
+                />
+                <Route
+                    path='/companyForm/:clientId/:clientPolicyId/:companyId'
+                    element={<div><CompanyForm /><Footer /></div>}
                 />
                 <Route
                     path="*"

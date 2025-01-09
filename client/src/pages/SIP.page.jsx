@@ -4,7 +4,7 @@ import { Button, Container, ListItemText } from '@mui/material';
 import { AccountBalanceWallet, CheckCircleOutline, SupervisorAccount, TrendingDown, Update } from '@mui/icons-material';
 import { tailChase } from 'ldrs';
 // importing api end-points
-import { fetchProfileData } from '../api';
+import { createSip, fetchProfileData, uploadSipMedia } from '../api';
 // importing components
 import UpdateProfileForm from '../components/UpdateProfileForm';
 import FeatureCard from '../components/subcomponents/FeatureCard';
@@ -46,7 +46,8 @@ const SIP = () => {
     const getClientData = async () => {
         try {
             const { data } = await fetchProfileData({ clientId: id });
-            setClientData(data);
+            const { personalDetails, financialDetails, employmentDetails } = data;
+            setClientData({ personalDetails, financialDetails, employmentDetails });
             setIsLoadingClientData(false);
         } catch (error) {
             const { status } = error;
@@ -74,8 +75,19 @@ const SIP = () => {
     const closeUpdateProfile = () => {
         setIsUpdateProfileOpen(false);
     }
-    const handleAddSip = () => {
-        // TODO: SIP table me add kardo
+    const handleAddSip = async (formData, removedFiles, files) => {
+        try {
+            const { status, data } = await createSip({ formData, removedFiles, id });
+            if (status === 200) {
+                const { status, data } = await uploadSipMedia({ ...files, sipId: data._id });
+                if (status === 200) {
+                    return false;
+                }
+            }
+        } catch (error) {
+            const errorMessage = error?.response?.data?.message;
+            return errorMessage;
+        }
     }
 
     tailChase.register();

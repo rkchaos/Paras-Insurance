@@ -137,7 +137,7 @@ const fetchProfileData = async (req, res) => {
         res.status(503).json({ message: 'Network error. Try again' })
     }
 };
-// working TODO: (needs to be updated for quotation)
+// working 
 const fetchPoliciesData = async (req, res) => {
     try {
         const { clientId } = req.query;
@@ -178,6 +178,9 @@ const fetchPoliciesData = async (req, res) => {
                     stage: 1,
                     createdAt: 1,
                     updatedAt: 1,
+                    expiryDate: 1,
+                    quotation: 1,
+                    policyCertificateURL: 1,
                     policyDetails: {
                         policyName: '$policyData.policyName',
                         policyType: '$policyData.policyType',
@@ -304,12 +307,11 @@ const updateProfile = async (req, res) => {
         res.status(503).json({ message: 'Network error. Try again' })
     }
 };
-// I think this works TODO: check reliability
+// working
 const uploadProfileMedia = async (req, res) => {
     try {
         const { clientId } = req.body;
         const filesArray = req.files;
-        console.log(filesArray);
         const client = await Client.findById(clientId);
         if (!client) return res.status(404).json({ message: 'Client not found.' });
 
@@ -331,6 +333,7 @@ const uploadProfileMedia = async (req, res) => {
                 client.financialDetails.aadhaarURL = file.filename;
             }
         }
+        await client.save();
         res.status(200).json(client);
         // const filesPath = { panCardFilePath: '', aadhaarFilePath: '' };
         // for (let i = 0; i < filesArray.length; i++) {

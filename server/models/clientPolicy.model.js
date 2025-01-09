@@ -24,13 +24,18 @@ const clientPolicySchema = new mongoose.Schema({
         default: 'Interested',
         required: true,
     },
+    expiryDate: {
+        type: String,
+    },
     assignedBy: {
-        type: mongoose.Schema.Types.ObjectId,
-        ref: 'Client',
+        type: String,
     },
     policyCertificateURL: {
         type: String,
         default: '',
+    },
+    quotation: {
+        type: mongoose.Schema.Types.Mixed,
     }
 }, { timestamps: true });
 

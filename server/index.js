@@ -9,8 +9,10 @@ const app = express();
 const PORT = 8080;
 
 // Middleware setup
-app.use(express.json());
-app.use(express.urlencoded({ extended: true }));
+// app.use(express.json());
+// app.use(express.urlencoded({ extended: true }));
+app.use(express.json({ limit: '10mb' })); // Adjust '10mb' to your required size
+app.use(express.urlencoded({ limit: '10mb', extended: true }));
 app.use(cookieParser());
 
 const corsOptions = {
@@ -38,6 +40,12 @@ import companyRoutes from './routes/company.route.js';
 app.use('/company', companyRoutes);
 import clientPolicyRoutes from './routes/clientPolicy.route.js';
 app.use('/clientPolicy', clientPolicyRoutes);
+import sipRoutes from './routes/sip.route.js';
+app.use('/sip', sipRoutes);
+import generalInsuranceRoutes from './routes/generalInsurance.route.js';
+app.use('/generalInsurance', generalInsuranceRoutes);
+import quotationRoutes from './routes/quotation.route.js';
+app.use('/quotation', quotationRoutes);
 
 app.get('/', (req, res) => {
     res.send('Working!');

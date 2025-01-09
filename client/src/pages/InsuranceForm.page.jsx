@@ -3,7 +3,7 @@ import { useLocation, useNavigate } from 'react-router-dom';
 import { ExpandMore } from '@mui/icons-material';
 import { tailChase } from 'ldrs';
 // importing api end-points
-import { assignPolicy, fetchAllPolicyFields, fetchEveryPolicyId } from '../api';
+import { createClientPolicy, fetchAllPolicyFields, fetchEveryPolicyId } from '../api';
 // importing contexts
 import { ClientContext } from '../contexts/Client.context';
 // importing components
@@ -142,7 +142,7 @@ const InsuranceForm = () => {
             if (isLoggedIn) {
                 const copyCondenseClientInfo = structuredClone(condenseClientInfo);
                 delete copyCondenseClientInfo._id;
-                const { data } = await assignPolicy({ formData: { ...copyCondenseClientInfo, ...formData }, policyId: currentPolicyId, clientId: condenseClientInfo._id });
+                const { data } = await createClientPolicy({ formData: { ...copyCondenseClientInfo, ...formData }, policyId: currentPolicyId, clientId: condenseClientInfo._id });
                 const { clientInfo } = data;
                 setCondenseClientInfo(clientInfo);
                 navigate('/');
@@ -158,7 +158,7 @@ const InsuranceForm = () => {
 
     const handleLogin = async (password) => {
         try {
-            const { data } = await assignPolicy({ formData: formData, policyId: currentPolicyId, clientId: '', password: password });
+            const { data } = await createClientPolicy({ formData: formData, policyId: currentPolicyId, clientId: '', password: password });
             const { clientInfo } = data;
             setShowRegisterModal(false);
             setIsLoggedIn(true);

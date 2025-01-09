@@ -85,7 +85,7 @@ const removeCompanyPolicy = async (req, res) => {
         res.status(503).json({ message: 'Network error. Try again' });
     }
 }
-// obsolete
+// =
 const fetchCompanyPoliciesByType = async (req, res) => {
     try {
         const { policyType } = req.query;
@@ -119,6 +119,7 @@ const fetchCompanyPoliciesByType = async (req, res) => {
                 },
             },
         ]);
+        console.log(policies);
 
         res.status(200).json(policies);
     } catch (error) {
@@ -137,6 +138,8 @@ const sendCompanyPolicies = async (req, res) => {
             new: true
         });
         console.log(clientPolicy);
+        console.log('jdcbjsdb');
+
         res.sendStatus(200);
     } catch (error) {
         console.log(error);

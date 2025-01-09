@@ -120,7 +120,6 @@ const PolicyTable = ({ assignedPolicies, reload }) => {
                                         </Tooltip>
                                     </button>
                                 </td>
-                                {/* TODO: assigned by */}
                                 <td className="px-6 py-4 whitespace-nowrap">
                                     <div className="text-sm text-gray-500">{policy.assignedBy}</div>
                                 </td>

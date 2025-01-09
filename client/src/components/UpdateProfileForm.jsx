@@ -117,7 +117,7 @@ const UpdateProfileForm = ({ clientData, closeUpdateProfile, isNotClosable, onSu
         setError('');
         let errorMessage = '';
         if (includePolicyType) {
-            errorMessage = await onSubmit(formData, removedFiles, files, currentPolicyId);
+            errorMessage = await onSubmit(formData, removedFiles, files, everyPolicyId.filter(policy => policy._id === currentPolicyId)[0].policyName);
         } else {
             errorMessage = await onSubmit(formData, removedFiles, files);
         }

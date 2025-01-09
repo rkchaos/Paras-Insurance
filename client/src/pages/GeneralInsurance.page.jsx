@@ -1,14 +1,15 @@
 import { useEffect, useState } from 'react';
 import { tailChase } from 'ldrs';
 // importing api end-points
-import { fetchProfileData } from '../api';
+import { createGeneralInsurance, fetchProfileData, uploadGeneralInsuranceMedia } from '../api';
 // importing components
 import UpdateProfileForm from '../components/UpdateProfileForm';
 import Footer from '../components/Footer';
-import { useParams } from 'react-router-dom';
+import { useNavigate, useParams } from 'react-router-dom';
 
 const GeneralInsurance = () => {
     const { id } = useParams();
+    const navigate = useNavigate();
 
     const [isLoadingClientData, setIsLoadingClientData] = useState(true);
     const [isUnauthorisedAction, setIsUnauthorisedAction] = useState(false);
@@ -47,12 +48,26 @@ const GeneralInsurance = () => {
 
     const [isUpdateProfileOpen, setIsUpdateProfileOpen] = useState(false);
     const closeUpdateProfile = () => { }
-    const handleGeneralInsurance = async (formData, removedFiles, files, currentPolicyId) => {
+    const handleGeneralInsurance = async (formData, removedFiles, files, currentPolicyName) => {
         // TODO: General Insurance table me add kardo
+        formData.policyType = currentPolicyName;
         console.log(formData);
         console.log(removedFiles);
         console.log(files);
-        console.log(currentPolicyId);
+        // console.log(currentPolicyName);
+        try {
+            const { status, data } = await createGeneralInsurance({ formData, removedFiles, id });
+            if (status === 200) {
+                const { status, data } = await uploadGeneralInsuranceMedia({ ...files, generalInsuranceId: data._id });
+                if (status === 200) {
+                    navigate('/')
+                    return false;
+                }
+            }
+        } catch (error) {
+            const errorMessage = error?.response?.data?.message;
+            return errorMessage;
+        }
     }
 
     tailChase.register();

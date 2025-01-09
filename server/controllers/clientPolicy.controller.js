@@ -1,11 +1,16 @@
+import fs from 'fs';
+import ejs from 'ejs';
+import mongoose from 'mongoose';
 import { ObjectId } from "mongodb";
 // importing models
 import Client from "../models/client.model.js";
 import Policy from "../models/policy.model.js";
 import Company from "../models/company.model.js";
+import Quotation from '../models/quotation.model.js';
 import ClientPolicy from "../models/clientPolicy.model.js";
+import CombinedQuotation from '../models/combinedQuotation.model.js';
 // importing helper functions
-import { condenseClientInfo, cookiesOptions, generateAccessAndRefreshTokens } from "../utils/helperFunctions.js";
+import { condenseClientInfo, cookiesOptions, generateAccessAndRefreshTokens, transporter } from '../utils/helperFunctions.js';
 
 const processFormData = (formData) => {
     const fieldMappings = {
@@ -100,6 +105,40 @@ const addAdditionalClientData = async (clientId, formData) => {
     }
 }
 
+const sendQuotationMail = async ({ to, clientPolicyId, clientId, policyId, policyType }) => {
+    const a = await CombinedQuotation.create({
+        clientPolicyId: clientPolicyId,
+        clientId: clientId,
+        policyId: policyId,
+        quotationData: [],
+        countTotalEmails: to.length,
+        countRecievedQuotations: 0,
+    });
+
+    console.log(a);
+    for (let i = 0; i < to.length; i++) {
+        const emailTemplate = fs.readFileSync('./assets/quotationEmailTemplate.ejs', 'utf-8');
+        const emailContent = ejs.render(emailTemplate, {
+            formLink: `${process.env.FRONT_END_URL}/companyForm/${clientId}/${clientPolicyId}/${to[i]._id}`,
+            policyType: policyType,
+            year: new Date().getFullYear(),
+        });
+
+        const mailOptions = {
+            from: process.env.SMTP_EMAIL,
+            to: to[i].emails?.toString(),
+            subject: 'New Quotation!',
+            html: emailContent
+        };
+        await transporter.sendMail(mailOptions, (error, info) => {
+            if (error) {
+                console.error('Error on Nodemailer side: ', error);
+            }
+        });
+    }
+
+
+};
 const clientPolicyWithClientId = async (res, { policyId, clientId, data, clientData, isNewClient }) => {
     const newClientPolicy = await ClientPolicy.create({
         policyId: policyId,
@@ -110,8 +149,37 @@ const clientPolicyWithClientId = async (res, { policyId, clientId, data, clientD
 
     addAdditionalClientData(clientId, data);
 
-    // TODO: send mail to all companies
+    const policy = await Policy.findById(policyId);
+    const policyType = policy.policyType.toLowerCase();
 
+    const result = await Company.aggregate([
+        { $unwind: "$companyPoliciesProvided" },
+        {
+            $match: {
+                $expr: {
+                    $eq: [
+                        { $toLower: "$companyPoliciesProvided.policyType" },
+                        policyType.toLowerCase()
+                    ]
+                }
+            }
+        },
+        {
+            $group: {
+                _id: '$_id',
+                emails: { $push: "$companyPoliciesProvided.contactPerson.email" }
+            }
+        },
+        {
+            $project: {
+                _id: 1,
+                emails: 1
+            }
+        }
+    ]);
+    console.log(result);
+
+    sendQuotationMail({ to: result, clientPolicyId: newClientPolicy._id, clientId, policyId, policyType });
     const { accessToken, refreshToken } = await generateAccessAndRefreshTokens(clientData);
     const clientInfo = await condenseClientInfo(clientData);
 
@@ -126,17 +194,15 @@ const clientPolicyWithClientId = async (res, { policyId, clientId, data, clientD
         .cookie('refreshToken', refreshToken, cookiesOptions)
         .json({ clientInfo, newClientPolicy });
 }
-
 // TODO: if logged in; if not logged in (has account; no account); repeat this for SIP and General Insurance
 const createClientPolicy = async (req, res) => {
     try {
         console.log(req.body);
         const { policyId, clientId, password, formData } = req.body;
-        // this will not be executed for now
+        // FIXME: this will not be executed for now
         if (!clientId && password) {
             let newClientId;
             const { firstName, lastName, phone, email } = formData;
-            // working
             if (email) {
                 const clientCorrespondingToEmail = await Client.findOne({ 'personalDetails.contact.email': email });
                 if (clientCorrespondingToEmail) {
@@ -188,7 +254,6 @@ const createClientPolicy = async (req, res) => {
             });
             return;
         } else {
-            // working
             const client = await Client.findById(new ObjectId(clientId));
             await clientPolicyWithClientId(res, {
                 policyId,
@@ -199,6 +264,50 @@ const createClientPolicy = async (req, res) => {
             });
             return;
         }
+    } catch (error) {
+        console.log(error);
+        res.status(503).json({ message: 'Network error. Try again' });
+    }
+}
+// working
+const fetchClientPolicy = async (req, res) => {
+    try {
+        const { clientPolicyId, companyId } = req.query;
+        const company = await Company.findById(companyId);
+
+        if (!company) return res.status(404).json({ message: 'Invalid company' });
+        const dejaVuIHaveBeenInThisPlaceBefore = await Quotation.findOne({ clientPolicyId: clientPolicyId, companyId: companyId });
+        if (dejaVuIHaveBeenInThisPlaceBefore) return res.status(401).json({ message: 'dejaVuIHaveBeenInThisPlaceBefore' });
+        const clientPolicy = await ClientPolicy.aggregate([
+            { $match: { _id: new mongoose.Types.ObjectId(clientPolicyId) } },
+            {
+                $lookup: {
+                    from: 'policies',
+                    localField: 'policyId',
+                    foreignField: '_id',
+                    as: 'format'
+                }
+            },
+            { $unwind: '$format' },
+            { $unset: ['data.email', 'data.phone'] },
+            {
+                $project: {
+                    _id: 1,
+                    clientId: 1,
+                    data: 1,
+                    createdAt: 1,
+                    updatedAt: 1,
+                    format: {
+                        policyName: 1,
+                        policyType: 1,
+                        policyDescription: 1,
+                        policyIcon: 1,
+                        policyForm: '$format.form',
+                    }
+                }
+            }
+        ]);
+        res.status(200).json(clientPolicy[0]);
     } catch (error) {
         console.log(error);
         res.status(503).json({ message: 'Network error. Try again' });
@@ -230,7 +339,10 @@ const fecthAllUnassignedPolicies = async (req, res) => {
             {
                 $project: {
                     data: 1,
+                    clientId: 1,
+                    policyId: 1,
                     stage: 1,
+                    quotation: 1,
                     clientDetails: {
                         firstName: "$clientData.personalDetails.firstName",
                         lastName: "$clientData.personalDetails.lastName",
@@ -285,6 +397,9 @@ const fecthAllAssignedPolicies = async (req, res) => {
                 $project: {
                     data: 1,
                     stage: 1,
+                    clientId: 1,
+                    policyId: 1,
+                    assignedBy: 1,
                     clientDetails: {
                         firstName: "$clientData.personalDetails.firstName",
                         lastName: "$clientData.personalDetails.lastName",
@@ -323,11 +438,17 @@ const countAllAssignedPolicies = async (req, res) => {
         res.status(503).json({ message: 'Network error. Try again' });
     }
 }
-
-const assignPolicy = async (req, res) => {
+// working
+const assignClientPolicy = async (req, res) => {
     try {
-        const { clientPolicyId } = req.query;
-        const clientPolicy = await ClientPolicy.findByIdAndUpdate(clientPolicyId, { $set: { stage: 'Assigned' } }, { new: true });
+        const { assignPolicyID, expiryDate } = req.body;
+        const clientPolicy = await ClientPolicy.findByIdAndUpdate(assignPolicyID, {
+            $set: {
+                stage: 'Assigned',
+                expiryDate: expiryDate,
+                assignedBy: `${req.client?.personalDetails?.firstName} ${req.client?.personalDetails?.lastName}`
+            }
+        }, { new: true });
         const policy = await Policy.findById(clientPolicy.policyId);
         await Client.findByIdAndUpdate(
             clientPolicy.clientId,
@@ -343,7 +464,22 @@ const assignPolicy = async (req, res) => {
                 }
             }
         )
-        // upload policy certificate and assignedBy
+        res.sendStatus(200);
+    } catch (error) {
+        console.log(error);
+        res.status(503).json({ message: 'Network error. Try again' });
+    }
+}
+// working
+const uploadClientPolicyMedia = async (req, res) => {
+    try {
+        const { assignPolicyID } = req.body;
+        const file = req.files[0];
+        const clientPolicy = await ClientPolicy.findById(assignPolicyID);
+        if (!clientPolicy) return res.status(404).json({ message: 'client Policy not found.' });
+
+        clientPolicy.policyCertificateURL = file.filename;
+        await clientPolicy.save();
         res.sendStatus(200);
     } catch (error) {
         console.log(error);
@@ -356,7 +492,7 @@ const addAvailableCompanyPolicies = async (req, res) => {
         console.log(req.body);
         const { policyIdForExcel, excelData } = req.body;
         const clientPolicy = await ClientPolicy.findByIdAndUpdate(policyIdForExcel,
-            { $set: { availablePolicies: excelData } },
+            { $set: { quotation: excelData } },
             { new: true }
         );
         console.log(clientPolicy);
@@ -381,9 +517,11 @@ const addAvailableCompanyPolicies = async (req, res) => {
 
 export {
     createClientPolicy,
+    fetchClientPolicy,
     fecthAllUnassignedPolicies,
     fecthAllAssignedPolicies,
     countAllAssignedPolicies,
-    assignPolicy,
-    addAvailableCompanyPolicies
+    assignClientPolicy,
+    uploadClientPolicyMedia,
+    addAvailableCompanyPolicies,
 };

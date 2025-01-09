@@ -1,6 +1,6 @@
 import { useMemo, useState } from 'react';
 import { Checkbox, Tooltip } from '@mui/material';
-import { DoneAllOutlined, OpenInNew, PostAddOutlined, SearchOutlined, Upload, Visibility } from '@mui/icons-material';
+import { DoneAllOutlined, OpenInNew, PostAddOutlined, SearchOutlined, Send, Upload, Visibility } from '@mui/icons-material';
 import Spreadsheet from "react-spreadsheet";
 import * as XLSX from 'xlsx';
 // importing api end-points
@@ -53,6 +53,47 @@ const DashboardTable = ({ unassignedPolicies, onSendCompanyPolicies, onAssignPol
 
     const [excelModal, setExcelModal] = useState(false);
     const [policyIdForExcel, setPolicyIdForExcel] = useState('');
+    const [isCompanyPolicySelected, setIsCompanyPolicySelected] = useState(false);
+    const [selectedCompanyPolicies, setSelectedCompanyPolicies] = useState([]);
+    function transformData(inputArray) {
+        if (inputArray[0].length === 0) {
+            inputArray.shift();
+        }
+        let transformedArray = [];
+
+        let headerRow = inputArray[0].map(item => ({
+            value: item || "",
+            readOnly: true
+        }));
+        transformedArray.push(headerRow);
+
+        inputArray.slice(1).forEach(row => {
+            let transformedRow = row.map(item => ({
+                value: item || "",
+                readOnly: true
+            }));
+            transformedArray.push(transformedRow);
+        });
+
+        return transformedArray;
+    }
+    const selectCompanyPolicies = (quotation) => {
+        setSelectedCompanyPolicies(transformData(quotation));
+        setIsCompanyPolicySelected(true);
+    }
+    const closeCompanyPolicies = () => {
+        setSelectedCompanyPolicies([]);
+        setIsCompanyPolicySelected(false);
+    }
+    const handleDownloadExcel = () => {
+        const worksheetData = selectedCompanyPolicies.map((row) =>
+            Array.isArray(row) ? row.map((cell) => (cell.value ? cell.value : cell)) : row
+        );
+        const worksheet = XLSX.utils.aoa_to_sheet(worksheetData);
+        const workbook = XLSX.utils.book_new();
+        XLSX.utils.book_append_sheet(workbook, worksheet, "Sheet1");
+        XLSX.writeFile(workbook, "Quotation.xlsx");
+    };
     const handleExcelModalOpen = (policyId) => {
         setPolicyIdForExcel(policyId);
         setExcelModal(true);
@@ -138,7 +179,7 @@ const DashboardTable = ({ unassignedPolicies, onSendCompanyPolicies, onAssignPol
                                 Details
                             </th>
                             <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                                Resolve
+                                Quotation
                             </th>
                             <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                                 Assign
@@ -182,16 +223,15 @@ const DashboardTable = ({ unassignedPolicies, onSendCompanyPolicies, onAssignPol
                                     <div className='flex items-center justify-start'>
                                         <p id={`${policy._id}UploadedFile`}></p>
                                         <button className="flex relative text-green-600 hover:text-green-900">
-                                            <Tooltip title='Enter quotation' >
-                                                <PostAddOutlined onClick={() => handleExcelModalOpen(policy._id)} />
-                                            </Tooltip>
-                                            {policy.availablePolicies !== undefined && policy.availablePolicies?.length !== 0 &&
-                                                <div className='absolute left-6'>
-                                                    <Tooltip title='Policies Sent'>
-                                                        {console.log(policy.availablePolicies)}
-                                                        <DoneAllOutlined />
-                                                    </Tooltip>
-                                                </div>
+                                            {(policy.quotation !== undefined && policy.quotation?.length !== 0)
+                                                ?
+                                                <Tooltip title='Quotation Sent'>
+                                                    <DoneAllOutlined />
+                                                </Tooltip>
+                                                :
+                                                <Tooltip title='Enter quotation' >
+                                                    <PostAddOutlined onClick={() => handleExcelModalOpen(policy._id)} />
+                                                </Tooltip>
                                             }
                                         </button>
                                     </div>
@@ -231,7 +271,7 @@ const DashboardTable = ({ unassignedPolicies, onSendCompanyPolicies, onAssignPol
                 </div>
 
                 {excelModal && (
-                    <div className="fixed inset-0 bg-gray-600 bg-opacity-50 overflow-y-auto h-full w-full">
+                    <div className="fixed z-[1000] inset-0 bg-black/10 overflow-y-auto h-full w-full">
                         <div className="relative top-10 mx-auto p-5 border w-full lg:w-[50vw] shadow-lg rounded-md bg-white">
                             <input id='excelUpload' type='file' multiple={false} accept='.xlsx,.xls,.csv' onChange={handleFileUpload} className='opacity-0 absolute pointer-events-none' />
                             <div className='bg-gray-100 rounded-md p-4'>
@@ -265,6 +305,35 @@ const DashboardTable = ({ unassignedPolicies, onSendCompanyPolicies, onAssignPol
                         </div>
                     </div>
                 )}
+
+                {isCompanyPolicySelected &&
+                    <div className='fixed inset-0 bg-black/10 !z-[1000] flex justify-center items-center' onClick={closeCompanyPolicies}>
+                        <div onClick={(event) => event.stopPropagation()} className='bg-white max-w-[75vw] max-h-[75vh] rounded-lg'>
+                            <div className='px-6 py-4 flex justify-between items-center'>
+                                <h2 className='text-2xl font-bold mb-2'>Quotation(s)</h2>
+                                <Close onClick={closeCompanyPolicies} className='cursor-pointer' />
+                            </div>
+                            <Divider />
+                            <div className='mx-6 mt-3 mb-4'>
+                                <Button
+                                    type='button'
+                                    onClick={handleDownloadExcel}
+                                    className='!flex !items-center !gap-2 !bg-gray-900 !text-white float-right'
+                                >
+                                    Download Excel
+                                    <Download className='!size-4' />
+                                </Button>
+                                <br />
+                                <ScrollArea className='w-full mt-6'>
+                                    <div>
+                                        <Spreadsheet data={selectedCompanyPolicies} />
+                                    </div>
+                                </ScrollArea>
+                            </div>
+                        </div>
+                    </div>
+                }
+
                 {isPolicySelected &&
                     <PolicyDetailModal
                         selectedPolicy={selectedPolicy}
